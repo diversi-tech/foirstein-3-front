@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Select } from '@mui/material';
+import { Alert, Select } from '@mui/material';
 import {InputLabel} from '@mui/material';
 // import { Dialog } from '@mui/material';
 
@@ -76,8 +76,9 @@ const FormBook = (observer(() => {
           <Button onClick={handleClose}>Cancel</Button>
         </DialogActions>
     </React.Fragment>
+    {!bookStore.isUpload && <Alert severity='error'>File failed to upload </Alert>}
+    {bookStore.isUpload && <Alert severity='success'>File uploaded successfully</Alert>}
     </div>
-
   );
 }))
 export default FormBook
