@@ -1,9 +1,9 @@
 import './App.css';
-import Open from './components/Open';
+import Form from './components/form';
 
 function App() {
   return (
-    <Open></Open>
+    <Form></Form>
   );
 }
 
