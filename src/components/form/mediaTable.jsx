@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import mediaStore from '../../store/mediaStore';
 import {
@@ -17,7 +17,7 @@ import {
     Button,
     useMediaQuery,
     useTheme,
-    Grid
+    Stack, Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -58,15 +58,15 @@ const MediaTable = observer(() => {
 
     return (
         <>
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{direction:"rtl"}}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell align="center">כותרת</TableCell>
                             <TableCell align="center">תיאור</TableCell>
-                            <TableCell align="center">תגית</TableCell>
                             <TableCell align="center">מדף/קובץ</TableCell>
                             <TableCell align="center">פעולה</TableCell>
+                            <TableCell align="center">תגית</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -74,7 +74,8 @@ const MediaTable = observer(() => {
                             <TableRow key={item.id}>
                                 <TableCell align="center">{item.title}</TableCell>
                                 <TableCell align="center">{item.description}</TableCell>
-                                <TableCell align="center">{item.tag}</TableCell>
+                                {/* <TableCell align="center">{item.tag}</TableCell> */}
+                                {/* {mediaStore.mediaList.map()}    צריך לשלוף מתוך */}
                                 <TableCell align="center">{item.shelf}</TableCell>
                                 <TableCell>
                                     <IconButton
@@ -91,6 +92,10 @@ const MediaTable = observer(() => {
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
+                                <Stack direction="row" spacing={1}>
+                                   <Chip label="תגית" color="primary" variant="outlined" />
+                                   {/* <Chip label="success" color="success" variant="outlined" /> */}
+                                </Stack>
                             </TableRow>
                         ))}
                     </TableBody>

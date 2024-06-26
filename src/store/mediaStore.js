@@ -189,8 +189,9 @@ class MediaStore {
             type: 'file'
         }
     ];
-   
+    isUpdate = false;
     isError = true;
+    message = "הקובץ  עודכן בהצלחה! ✅";
 
     constructor() {
         makeAutoObservable(this, {
@@ -220,14 +221,19 @@ class MediaStore {
                 method: 'POST',
                 body: formData
             });
+            if (res.status === 200) {
+                this.isError = true;
+                this.message = " הועלה בהצלחה! ✅"
+            }
+            else{
+                this.isError = false;
+                this.message = "העלאה נכשלה"
+            }
 
             this.fetchMedia();
         } catch (error) {
             console.error('Failed to upload media:', error);
             this.isError = true;
-        }
-        if (res.status === 200) {
-            this.isError = false;
         }
     }
 
@@ -257,6 +263,11 @@ class MediaStore {
             });
             if (res.status === 200) {
                 this.isUpdate = true;
+                this.message = "  הקובץ  עודכן בהצלחה! ✅";
+            }
+            else{
+                this.isUpdate = false;
+                this.message = "!עדכון הקובץ לא הצליח"
             }
             this.fetchMedia();
         } catch (error) {

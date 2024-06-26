@@ -132,7 +132,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const BookList = observer(() => {
   const [open, setOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [ setIsEditing] = useState(false);
   const [editedItem, setEditedItem] = useState(null); // הוספת מצב עריכה
 
   // פתיחת חלון העריכה
@@ -157,7 +157,7 @@ const BookList = observer(() => {
 
   // טבלת ספרים
   return (
-    <div>
+    <div style={{direction: "rtl"}}>
       <TableContainer>
         <Table>
           <TableHead>
@@ -196,7 +196,7 @@ const BookList = observer(() => {
       </TableContainer>
 
       {/* דיאלוג לעריכה */}
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} style={{direction: "rtl"}}>
         <DialogTitle>עריכה</DialogTitle>
         <DialogContent>
           <DialogContentText>

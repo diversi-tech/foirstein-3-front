@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import mediaStore from '../../store/mediaStore';
+import Success from '../message/success';
 import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 const UpdateDialog = ({ mediaItem, onClose }) => {
@@ -24,6 +25,11 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
     }));
   };
 
+  const handleUpdate = () =>{
+    mediaStore.updateMedia();
+    
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     await mediaStore.updateMedia(mediaItem.id, formData);
@@ -39,11 +45,11 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
       fullWidth
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle>Update Media</DialogTitle>
+        <DialogTitle>עריכת פרטים</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
-            label="Title"
+            label="כותרת"
             type="text"
             fullWidth
             name="title"
@@ -56,7 +62,7 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           )}
           <TextField
             margin="dense"
-            label="Description"
+            label="תיאור"
             type="text"
             fullWidth
             name="description"
@@ -68,9 +74,9 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
           <FormControl fullWidth margin="dense">
-            <InputLabel id="tag-label">Tag</InputLabel>
+            <InputLabel id="tag-label">תגית</InputLabel>
             <Select
-              labelId="tag-label"
+              labelId="תגית"
               name="tag"
               value={availableTags.includes(formData.tag) ? formData.tag : ''}
               onChange={handleChange}
@@ -87,7 +93,7 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           {mediaItem.type === 'book' && (
             <TextField
               margin="dense"
-              label="Shelf"
+              label="מדף"
               type="text"
               fullWidth
               name="shelf"
@@ -99,7 +105,7 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           {mediaItem.type === 'file' && (
             <TextField
               margin="dense"
-              label="File"
+              // label="קובץ"
               type="file"
               fullWidth
               name="file"
@@ -109,11 +115,12 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} color="primary">
-            Cancel
+            ביטול
           </Button>
-          <Button type="submit" color="primary">
-            Update
+          <Button type="submit" color="primary" onClick={handleUpdate}>
+            שמירה
           </Button>
+          {mediaStore.isUpdate && <Success/>}
         </DialogActions>
       </form>
     </Dialog>

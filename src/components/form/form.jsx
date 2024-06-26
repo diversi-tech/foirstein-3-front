@@ -16,10 +16,13 @@ import {
     InputLabel,
     Typography,
     FormControl,
+    Checkbox,
     Grid
 } from '@mui/material';
 import mediaStore from '../../store/mediaStore'; // Import the merged store
 import MediaTable from './mediaTable';
+import Success from '../message/success';
+import Failure from '../message/failure';
 
 const Form = observer(() => {
     const [formData, setFormData] = useState({
@@ -175,7 +178,7 @@ const Form = observer(() => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
-                                            <InputLabel id="tag-label">תגית</InputLabel>
+                                            {/* <InputLabel id="tag-label">תגית</InputLabel>
                                             <Select
                                                 labelId="tag-label"
                                                 id="demo-simple-select"
@@ -192,7 +195,9 @@ const Form = observer(() => {
                                             </Select>
                                             {!formData.tag && (
                                                 <Typography color="error">זהו שדה חובה</Typography>
-                                            )}
+                                            )} */}
+
+                                          <FormControlLabel control={<Checkbox defaultChecked />} label="תגית" />
                                         </FormControl>
                                     </Grid>
                                     {formData.selectedValue === 'book' && (
@@ -240,11 +245,13 @@ const Form = observer(() => {
                                 <Button onClick={handleClose}>ביטול</Button>
                             </DialogActions>
 
-                            {isUpload && mediaStore.isError && (
-                                <Alert severity="error">.אירעה שגיאה בהעלאת המדיה. אנא נסה שוב</Alert>
-                            )}
                             {isUpload && !mediaStore.isError && (
-                                <Alert severity="success">המדיה הועלה בהצלחה!</Alert>
+                                // <Alert severity="error">.אירעה שגיאה בהעלאת המדיה. אנא נסה שוב</Alert>
+                                <Failure></Failure>
+                            )}
+                            {isUpload && mediaStore.isError && (
+                                // <Alert severity="success">המדיה הועלה בהצלחה!</Alert>
+                                <Success></Success>
                             )}
                         </div>
                     )}
