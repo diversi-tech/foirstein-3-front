@@ -94,7 +94,7 @@ const MediaTable = observer(() => {
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
+                                    <TableCell  style={{ minWidth: '200px', overflowX: 'auto' }}>
                                         <Stack direction="row" spacing={1} style={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
                                             {tagStore.tagList.map((tag) => (
                                                 <Chip key={tag.id} label={tag.name} color="primary" variant="outlined" />

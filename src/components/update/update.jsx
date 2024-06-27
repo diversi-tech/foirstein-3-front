@@ -25,10 +25,10 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
     }));
   };
 
-  const handleUpdate = () =>{
-    mediaStore.updateMedia();
+  // const handleUpdate = () =>{
+  //   mediaStore.updateMedia();
     
-  }
+  // }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -117,7 +117,7 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           <Button onClick={onClose} color="primary">
             ביטול
           </Button>
-          <Button type="submit" color="primary" onClick={handleUpdate}>
+          <Button type="submit" color="primary" >
             שמירה
           </Button>
           {mediaStore.isUpdate && <Success/>}
