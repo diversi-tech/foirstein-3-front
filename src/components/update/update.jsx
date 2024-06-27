@@ -1,21 +1,215 @@
+// import React, { useState, useEffect } from 'react';
+// import mediaStore from '../../store/mediaStore';
+// import Success from '../message/success';
+// import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip } from '@mui/material';
+// import tagStore from '../../store/tagStore';
+
+// const UpdateDialog = ({ mediaItem, onClose }) => {
+//   const [formData, setFormData] = useState({
+//     id : mediaItem.id,
+//     title: mediaItem.title,
+//     description: mediaItem.description,
+//     tag: Array.isArray(mediaItem.tag) ? mediaItem.tag : [],
+//     shelf: mediaItem.shelf || '',
+//     file: mediaItem.file || ''
+//   });
+
+//   const ITEM_HEIGHT = 48;
+//   const ITEM_PADDING_TOP = 8;
+//   const MenuProps = {
+//     PaperProps: {
+//       style: {
+//         maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+//         width: 250,
+//       },
+//     },
+//   };
+
+//   const theme = useTheme(); // רספונסיבי
+//   const fullScreen = useMediaQuery(theme.breakpoints.down('sm')); // רספונסיבי
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prevFormData) => ({
+//       ...prevFormData,
+//       [name]: value
+//     }));
+//   };
+
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+//     await mediaStore.updateMedia(mediaItem.id, formData);
+//     onClose();
+//   };
+
+//   const handleChangeChip = (event) => {
+//     const {
+//       target: { value },
+//     } = event;
+
+//     let updatedTags = value;
+
+//     if (typeof value === 'string') {
+//       // Split the string into an array using commas as delimiters
+//       updatedTags = value.split(',');
+//     }
+
+//     setFormData((prevData) => ({
+//       ...prevData,
+//       tag: updatedTags,
+//     }));
+//   };
+
+
+
+//   return (
+//     <Dialog
+//       open={true}
+//       onClose={onClose}
+//       fullScreen={fullScreen}
+//       maxWidth="sm"
+//       fullWidth
+//     >
+//       <form onSubmit={handleSubmit}>
+//         <DialogTitle>עריכת פרטים</DialogTitle>
+//         <DialogContent>
+//           <TextField
+//             margin="dense"
+//             label="כותרת"
+//             type="text"
+//             fullWidth
+//             name="title"
+//             value={formData.title}
+//             onChange={handleChange}
+//             required
+//           />
+//           {formData.title && formData.title.length < 2 && (
+//             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
+//           )}
+//           <TextField
+//             margin="dense"
+//             label="תיאור"
+//             type="text"
+//             fullWidth
+//             name="description"
+//             value={formData.description}
+//             onChange={handleChange}
+//             required
+//           />
+//           {formData.description && formData.description.length < 5 && (
+//             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+//           )}
+
+//           <FormControl fullWidth>
+//             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
+//             <Select
+//               labelId="demo-multiple-chip-label"
+//               id="demo-multiple-chip"
+//               name='tag'
+//               multiple
+//               value={formData.tag}
+//               onChange={handleChangeChip}
+//               input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
+//               renderValue={(selected) => (
+//                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+//                   {selected.map((value) => (
+//                     <Chip key={value} label={value} />
+//                   ))}
+//                 </Box>
+//               )}
+//               MenuProps={MenuProps}
+//             >
+//               {tagStore.tagList.map((name) => (
+//                 <MenuItem
+//                   key={name.id}
+//                   value={name.name}
+//                 >
+//                   {name.name}
+//                 </MenuItem>
+//               ))}
+//             </Select>
+//           </FormControl>
+
+//           {mediaItem.type === 'book' && (
+//             <TextField
+//               margin="dense"
+//               label="מדף"
+//               type="text"
+//               fullWidth
+//               name="shelf"
+//               value={formData.shelf}
+//               onChange={handleChange}
+//               required
+//             />
+//           )}
+//           {mediaItem.type === 'file' && (
+//             <TextField
+//               margin="dense"
+//               type="file"
+//               fullWidth
+//               name="file"
+//               onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+//             />
+//           )}
+//         </DialogContent>
+//         <DialogActions>
+//           <Button onClick={onClose} color="primary">
+//             ביטול
+//           </Button>
+//           <Button type="submit" color="primary">
+//             שמירה
+//           </Button>
+//           {mediaStore.isUpdate && <Success />}
+//         </DialogActions>
+//       </form>
+//     </Dialog>
+//   );
+// };
+
+// export default UpdateDialog;
+
+
+
+
+
 import React, { useState } from 'react';
 import mediaStore from '../../store/mediaStore';
 import Success from '../message/success';
-import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme } from '@mui/material';
+import {
+  TextField, Button,
+  Dialog, DialogActions, DialogContent,
+  DialogTitle, Select, MenuItem, InputLabel,
+  FormControl, Typography, useMediaQuery, useTheme,
+  OutlinedInput, Box, Chip
+} from '@mui/material';
+import tagStore from '../../store/tagStore';
+import Failure from '../message/failure';
 
 const UpdateDialog = ({ mediaItem, onClose }) => {
   const [formData, setFormData] = useState({
+    id: mediaItem.id,
     title: mediaItem.title,
     description: mediaItem.description,
-    tag: mediaItem.tag,
+    tag: Array.isArray(mediaItem.tag) ? mediaItem.tag : [],
     shelf: mediaItem.shelf || '',
     file: mediaItem.file || ''
   });
 
-  const theme = useTheme();//רספונסיבי
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));//רספונסיבי
+  const [send, setSend] = useState(false)
 
-  const availableTags = ['Tag1', 'Tag2'];
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const theme = useTheme(); // רספונסיבי
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm')); // רספונסיבי
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,15 +219,43 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
     }));
   };
 
-  const handleUpdate = () =>{
-    mediaStore.updateMedia();
-    
-  }
+  const handleChangeChip = (event) => {
+    const {
+      target: { value },
+    } = event;
+
+    let updatedTags = value;
+
+    if (typeof value === 'string') {
+      updatedTags = value.split(',');
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      tag: updatedTags,
+    }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await mediaStore.updateMedia(mediaItem.id, formData);
-    onClose();
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('id', formData.id);
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('description', formData.description);
+    formDataToSend.append('tag', formData.tag.id);
+    formDataToSend.append('shelf', formData.shelf);
+    if (formData.file) {
+      formDataToSend.append('file', formData.file);
+    }
+
+    try {
+     // await mediaStore.updateMedia(mediaItem.id, formDataToSend);
+     console.log("sendToServerEditChanges");
+      onClose();
+    } catch (error) {
+      console.error('Error updating media:', error);
+    }
   };
 
   return (
@@ -73,23 +295,37 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
-          <FormControl fullWidth margin="dense">
-            <InputLabel id="tag-label">תגית</InputLabel>
+
+          <FormControl fullWidth>
+            <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
             <Select
-              labelId="תגית"
-              name="tag"
-              value={availableTags.includes(formData.tag) ? formData.tag : ''}
-              onChange={handleChange}
-              required
+              labelId="demo-multiple-chip-label"
+              id="demo-multiple-chip"
+              name='tag'
+              multiple
+              value={formData.tag}
+              onChange={handleChangeChip}
+              input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} />
+                  ))}
+                </Box>
+              )}
+              MenuProps={MenuProps}
             >
-              {availableTags.map((tag) => (
-                <MenuItem key={tag} value={tag}>{tag}</MenuItem>
+              {tagStore.tagList.map((name) => (
+                <MenuItem
+                  key={name.id}
+                  value={name.name}
+                >
+                  {name.name}
+                </MenuItem>
               ))}
             </Select>
-            {!formData.tag && (
-              <Typography color="error">זהו שדה חובה</Typography>
-            )}
           </FormControl>
+
           {mediaItem.type === 'book' && (
             <TextField
               margin="dense"
@@ -105,7 +341,6 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           {mediaItem.type === 'file' && (
             <TextField
               margin="dense"
-              // label="קובץ"
               type="file"
               fullWidth
               name="file"
@@ -117,10 +352,11 @@ const UpdateDialog = ({ mediaItem, onClose }) => {
           <Button onClick={onClose} color="primary">
             ביטול
           </Button>
-          <Button type="submit" color="primary" onClick={handleUpdate}>
+          <Button type="submit" color="primary" onClick={()=>{setSend(true)}}>
             שמירה
           </Button>
-          {mediaStore.isUpdate && <Success/>}
+          {/*לטפל בזה אח"כ*/}
+          {send &&(mediaStore.isUpdate ? <Success /> : <Failure/>)}
         </DialogActions>
       </form>
     </Dialog>

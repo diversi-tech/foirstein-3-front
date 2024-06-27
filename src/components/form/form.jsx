@@ -10,32 +10,47 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Alert,
+    Typography,
+    FormControl,
+    Grid,
     Select,
     MenuItem,
     InputLabel,
-    Typography,
-    FormControl,
-    Checkbox,
-    Grid
+    Chip,
+    Box,
+    OutlinedInput,
 } from '@mui/material';
 import mediaStore from '../../store/mediaStore'; // Import the merged store
 import MediaTable from './mediaTable';
 import Success from '../message/success';
 import Failure from '../message/failure';
+import tagStore from '../../store/tagStore';
+import { useTheme } from '@mui/material/styles';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 const Form = observer(() => {
+    const theme = useTheme();
     const [formData, setFormData] = useState({
         open: false,
         title: '',
         description: '',
-        tag: '',
+        tag: [],
         shelf: '',
         file: null,
         isHandleUpload: false,
-        selectedValue: ''
+        selectedValue: '',
     });
-    const [isUpload, setIsUpload] = useState(false)
+    const [isUpload, setIsUpload] = useState(false);
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4'];
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -43,17 +58,9 @@ const Form = observer(() => {
     const handleClose = () => {
         setFormData((prevData) => ({
             ...prevData,
-            open: false
+            open: false,
         }));
     };
-
-    // const handleUpload = () => {
-    //     setFormData((prevData) => ({
-    //         ...prevData,
-    //         isHandleUpload: true
-    //     }));
-    //     // Perform upload action here
-    // };
 
     const handleRadioChange = (event) => {
         const value = event.target.value;
@@ -61,7 +68,7 @@ const Form = observer(() => {
             ...prevData,
             selectedValue: value,
             open: true,
-            shelf: value === 'book' ? '' : prevData.shelf // Reset shelf value if switching to file upload
+            shelf: value === 'book' ? '' : prevData.shelf, // Reset shelf value if switching to file upload
         }));
     };
 
@@ -69,7 +76,7 @@ const Form = observer(() => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -77,27 +84,34 @@ const Form = observer(() => {
         const file = e.target.files[0];
         setFormData((prevData) => ({
             ...prevData,
-            file: file
+            file: file,
+        }));
+    };
+
+    const handleChangeChip = (event) => {
+        const {
+            target: { value },
+        } = event;
+        setFormData((prevData) => ({
+            ...prevData,
+            tag:
+                // On autofill we get a stringified value.
+                typeof value === 'string' ? value.split(',') : value,
         }));
     };
 
     const fileExtension = formData.file ? formData.file.name.split('.').pop().toLowerCase() : '';
 
-    const handleSubmit = async (event) => {
+   
 
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const { selectedValue, file, ...dataToSend } = formData;
         const formDataToSend = selectedValue === 'book' ? { ...dataToSend } : { ...dataToSend, file };
 
-        if (selectedValue === 'book') {
-            delete formDataToSend.file;
-        } else {
-            delete formDataToSend.shelf;
-        }
-
         try {
             if (selectedValue === 'book') {
-                //await mediaStore.uploadMedia('book', formDataToSend);
+                // await mediaStore.uploadMedia('book', formDataToSend);
                 console.log("add book");
             } else {
                 // await mediaStore.uploadMedia('file', formDataToSend);
@@ -111,13 +125,13 @@ const Form = observer(() => {
                 shelf: '',
                 file: null,
                 isHandleUpload: true,
-                selectedValue: ''
+                selectedValue: '',
             });
+            setIsUpload(true);
         } catch (error) {
             console.error('Failed to upload media:', error);
             // Handle error state or alert the user
         }
-        setIsUpload(true)
     };
 
     return (
@@ -178,26 +192,33 @@ const Form = observer(() => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
-                                            {/* <InputLabel id="tag-label">תגית</InputLabel>
+                                            <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
                                             <Select
-                                                labelId="tag-label"
-                                                id="demo-simple-select"
+                                                labelId="demo-multiple-chip-label"
+                                                id="demo-multiple-chip"
+                                                name='tag'
+                                                multiple
                                                 value={formData.tag}
-                                                label="תגית"
-                                                name="tag"
-                                                onChange={handleChange}
-                                                error={!formData.tag}
-                                                displayEmpty
+                                                onChange={handleChangeChip}
+                                                input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
+                                                renderValue={(selected) => (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                        {selected.map((value) => (
+                                                            <Chip key={value} label={value} />
+                                                        ))}
+                                                    </Box>
+                                                )}
+                                            // MenuProps={MenuProps}
                                             >
-                                                <MenuItem value=""><em>אחר</em></MenuItem>
-                                                <MenuItem value="Tag1">תגית1</MenuItem>
-                                                <MenuItem value="Tag2">תגית2</MenuItem>
+                                                {tagStore.tagList.map((name) => (
+                                                    <MenuItem
+                                                        key={name.id}
+                                                        value={name.name}
+                                                    >
+                                                        {name.name}
+                                                    </MenuItem>
+                                                ))}
                                             </Select>
-                                            {!formData.tag && (
-                                                <Typography color="error">זהו שדה חובה</Typography>
-                                            )} */}
-
-                                          <FormControlLabel control={<Checkbox defaultChecked />} label="תגית" />
                                         </FormControl>
                                     </Grid>
                                     {formData.selectedValue === 'book' && (
@@ -245,13 +266,10 @@ const Form = observer(() => {
                                 <Button onClick={handleClose}>ביטול</Button>
                             </DialogActions>
 
-                            {isUpload && !mediaStore.isError && (
-                                // <Alert severity="error">.אירעה שגיאה בהעלאת המדיה. אנא נסה שוב</Alert>
-                                <Failure></Failure>
-                            )}
-                            {isUpload && mediaStore.isError && (
-                                // <Alert severity="success">המדיה הועלה בהצלחה!</Alert>
-                                <Success></Success>
+                            {isUpload && (
+                                <>
+                                    {mediaStore.isError ? <Failure /> : <Success />}
+                                </>
                             )}
                         </div>
                     )}
@@ -262,3 +280,4 @@ const Form = observer(() => {
 });
 
 export default Form;
+
