@@ -60,9 +60,9 @@ const MediaTable = observer(() => {
 
     return (
         <>
-            <div style={{width: "100%", height: "25%", marginTop: "0%"}}>
+            <div style={{ width: "100%", height: "25%", marginTop: "0%" }}>
                 <h2 style={{ textAlign: "center" }}>רשימת קבצים</h2>
-                <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl' , width: "100vw"}}>
+                <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -94,7 +94,7 @@ const MediaTable = observer(() => {
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell  style={{ minWidth: '200px', overflowX: 'auto' }}>
+                                    <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
                                         <Stack direction="row" spacing={1} style={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
                                             {tagStore.tagList.map((tag) => (
                                                 <Chip key={tag.id} label={tag.name} color="primary" variant="outlined" />
@@ -127,21 +127,7 @@ const MediaTable = observer(() => {
                 </Dialog>
 
                 {editedItem && (
-                    <Dialog
-                        open={editOpen}
-                        onClose={handleClose}
-                        fullScreen={fullScreen}
-                    >
-                        <DialogTitle>עריכת מדיה</DialogTitle>
-                        <DialogContent>
-                            <UpdateDialog mediaItem={editedItem} onClose={handleClose} />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose} color="primary">
-                                ביטול
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    <UpdateDialog mediaItem={editedItem} onClose={handleClose} />
                 )}
             </div>
         </>

@@ -121,11 +121,11 @@ const Form = observer(() => {
                 open: true,
                 title: '',
                 description: '',
-                tag: '',
+                tag: [],
                 shelf: '',
                 file: null,
                 isHandleUpload: true,
-                selectedValue: '',
+                selectedValue: selectedValue,
             });
             setIsUpload(true);
         } catch (error) {
