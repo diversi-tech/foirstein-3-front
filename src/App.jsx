@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
+// import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
 
-import Form from './components/form/form'
+// import Form from './components/form/form'
+import MediaTable from './components/form/mediaTable'
 
 
 function App() {
@@ -8,7 +9,8 @@ function App() {
 
 
   return (<>
-    <Form></Form>
+    {/* <Form></Form> */}
+    <MediaTable></MediaTable>
 
 
 

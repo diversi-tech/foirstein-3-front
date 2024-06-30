@@ -170,7 +170,7 @@
 
 //חדש********************************************************************************************
 
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable, observable, action } from 'mobx';
 
 class MediaStore {
     mediaList = [
@@ -189,6 +189,7 @@ class MediaStore {
             type: 'file'
         }
     ];
+    add = false;
     isUpdate = false;
     isError = true;
     message = "הקובץ  עודכן בהצלחה! ✅";
@@ -198,9 +199,14 @@ class MediaStore {
             isDelete: observable,
             isAdd: observable,
             isUpdate: observable,
-            isError: observable
+            isError: observable,
+            // setAdd: action,
+            add: observable
         });
     }
+    // setAdd(value) {
+    //     this.add = value;
+    // }
 
     async fetchMedia() {
         try {

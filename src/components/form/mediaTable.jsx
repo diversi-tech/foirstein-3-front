@@ -20,10 +20,13 @@ import {
     Chip,
     Stack
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateDialog from '../update/update';
 import tagStore from '../../store/tagStore';
+// import { Form } from 'react-router-dom';
+import Form from '../form/form';
 
 const MediaTable = observer(() => {
     const [deleteItem, setDeleteItem] = useState(null);
@@ -45,6 +48,16 @@ const MediaTable = observer(() => {
             setDeleteOpen(false);
         }
     };
+
+    const handleClickAdd = () =>{
+        console.log("beforeClick", mediaStore.add);
+        // mediaStore.setAdd(true); // Use the setAdd action instead of modifying add directly
+mediaStore.add = true;
+        console.log("afterClick", mediaStore.add);
+
+    }
+
+    
 
     const handleClickEdit = (item) => {
         setEditedItem(item);
@@ -71,6 +84,7 @@ const MediaTable = observer(() => {
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>מדף/קובץ</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>פעולה</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תגית</TableCell>
+                                <Button onClick={handleClickAdd}><AddIcon></AddIcon></Button>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -143,6 +157,8 @@ const MediaTable = observer(() => {
                         </DialogActions>
                     </Dialog>
                 )}
+
+                 {mediaStore.add && <Form />}
             </div>
         </>
     );
