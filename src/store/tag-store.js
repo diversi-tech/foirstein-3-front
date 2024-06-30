@@ -3,11 +3,11 @@ import { makeAutoObservable, observable } from 'mobx';
 class TagStore {
     tagList = [
         {
-            id: "101",
+            id: "1",
             name: "היסטוריה"
         },
         {
-            id: "102",
+            id: "2",
             name: "מתח"
         }
     ];
@@ -99,5 +99,4 @@ class TagStore {
 }
 
 const tagStore = new TagStore();
-export default tagStore;
-
+export default tagStore

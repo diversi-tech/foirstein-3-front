@@ -170,9 +170,9 @@
 
 //חדש********************************************************************************************
 
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable, observable, action } from 'mobx';
 
-class MediaStore {
+class ItemStore {
     mediaList = [
         {
             title: "bbbb",
@@ -189,6 +189,7 @@ class MediaStore {
             type: 'file'
         }
     ];
+    add = false;
     isUpdate = false;
     isError = true;
     message = "הקובץ  עודכן בהצלחה! ✅";
@@ -198,15 +199,21 @@ class MediaStore {
             isDelete: observable,
             isAdd: observable,
             isUpdate: observable,
-            isError: observable
+            isError: observable,
+            // setAdd: action,
+            add: observable
         });
     }
+    // setAdd(value) {
+    //     this.add = value;
+    // }
 
     async fetchMedia() {
         try {
             const res = await fetch('/api/media');
             this.mediaList = await res.json();
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Failed to fetch media:', error);
         }
     }
@@ -276,6 +283,5 @@ class MediaStore {
     }
 }
 
-const mediaStore = new MediaStore();
-export default mediaStore;
-
+const itemStore = new ItemStore();
+export default itemStore;

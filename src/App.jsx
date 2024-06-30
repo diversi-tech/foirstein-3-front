@@ -1,17 +1,10 @@
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
 
-import Form from './components/form/form'
-
+import ItemList from './components/item/item-list'
 
 function App() {
-
-
-
   return (<>
-    <Form></Form>
-
-
-
+    <ItemList />
   </>
   )
 }

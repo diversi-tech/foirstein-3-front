@@ -1,11 +1,18 @@
-import  { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-// import bookStore from '../../store/bookStore';
-import mediaStore from '../../store/mediaStore';
+import itemStore from '../../store/item-store';
 
-function Success() {
-
+export default function Success() {
   const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpen(false);
+    }, 3000);
+
+    // Clean up the timer if the component unmounts before the timer completes
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -17,8 +24,8 @@ function Success() {
       <DialogTitle>הצלחה</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {mediaStore.message}
-          {console.log(mediaStore.message)}
+          {itemStore.message}
+          {console.log(itemStore.message)}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -29,5 +36,3 @@ function Success() {
     </Dialog>
   );
 }
-
-export default Success;

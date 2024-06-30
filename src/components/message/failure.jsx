@@ -1,9 +1,8 @@
 import  { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import mediaStore from '../../store/mediaStore';
-// import bookStore from '../../store/bookStore';
+import itemStore from '../../store/item-store';
 
-function Success() {
+export default function Failure() {
 
   const [open, setOpen] = useState(true);
 
@@ -17,7 +16,7 @@ function Success() {
       <DialogTitle style={{color: "red"}}>שגיאה</DialogTitle>
       <DialogContent>
         <DialogContentText>
-         {mediaStore.message}
+         {itemStore.message}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -28,5 +27,3 @@ function Success() {
     </Dialog>
   );
 }
-
-export default Success;
