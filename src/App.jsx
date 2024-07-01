@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom'
 
-import ItemList from './components/item/item-list'
+import AppRoutes from './appRoutes'
 
 function App() {
   return (<>
-    <ItemList />
+    <AppRoutes />
   </>
   )
 }

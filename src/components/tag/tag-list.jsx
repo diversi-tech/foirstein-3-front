@@ -33,7 +33,7 @@ export default function TagList() {
 
   const [rows, setRows] = useState(tagStore.tagList);
 
-  // פתיחת חלון
+  // פתיחת חלון דיאלוג
   const dialogOpen = (dialogType) => {
     switch(dialogType){
       case 'deleteOpen':
@@ -50,14 +50,14 @@ export default function TagList() {
     }
   }
 
-  // סגירת חלון
+  // סגירת חלון דיאלוג
   const dialogClose = (dialogType) => {
     switch(dialogType){
       case 'deleteOpen':
         setDeleteOpen(false);
         break;
       case 'editOpen':
-        setEditOpen(false); // סגירת דיאלוג עריכה
+        setEditOpen(false);
         break;
       default:
         break;
@@ -122,7 +122,7 @@ export default function TagList() {
       {/* דיאלוג לעריכה */}
       <Dialog open={editOpen} onClose={() => dialogClose('editOpen')} style={{ direction: "rtl" }}>
         <DialogTitle>
-          {`עריכת #${editItem.id}`}
+          {editItem && `עריכת #${editItem.id}`}
         </DialogTitle>
         <DialogContent>
           <TextField
