@@ -170,9 +170,10 @@
 
 //חדש********************************************************************************************
 
-import { makeAutoObservable, observable, action } from 'mobx';
-
+import { makeAutoObservable, observable, action, computed } from 'mobx';
+import { toJS } from 'mobx'
 class ItemStore {
+    pendingItemsList=[]
     mediaList = [
         {
             title: "bbbb",
@@ -193,21 +194,84 @@ class ItemStore {
     isUpdate = false;
     isError = true;
     message = "הקובץ  עודכן בהצלחה! ✅";
-
+    isApprov = false;
+    isDeind = false;
     constructor() {
         makeAutoObservable(this, {
-            isDelete: observable,
-            isAdd: observable,
-            isUpdate: observable,
-            isError: observable,
+            // isDelete: observable,
+            // isAdd: observable,
+            // isUpdate: observable,
+            // isError: observable,
             // setAdd: action,
-            add: observable
+            isApprov:observable,
+            // add: observable,
+            pendingItemsList:observable,
+            getPendingList: computed,
+            fetchPendingItems:action,
+            approvalItem:action,
+            deniedItem:action
         });
+       this.fetchPendingItems(); 
     }
     // setAdd(value) {
     //     this.add = value;
     // }
-
+     
+    get getPendingList() {
+        return this.pendingItemsList;
+    }
+    async fetchPendingItems() {
+       
+        try {
+            const res = await fetch('https://localhost:7297/api/Item/Pending');
+            const obj = await res.json();
+            let list = toJS(obj);
+            this.pendingItemsList = list;
+            console.log(list);
+            console.log(toJS(obj));
+        } 
+        catch (error) {
+            console.error('Failed to fetch media:', error);
+        }
+    }
+    async approvalItem(itemId) {
+        console.log(itemId)
+        this.isApprov = false;
+        try {
+              const res = await fetch(`https://localhost:7297/api/Item/approvItem/${itemId}`, { method: 'PUT'});
+              console.log("status:" + res.status);
+            if (res.status === 200) {
+                this.isApprov = true;
+                this.message = " הפריט אושר";
+            }
+            else{
+             this.message = "אישור פריט לא הצליח"
+            }
+            this.fetchPendingItems();
+        } catch (error) {
+            console.error('Failed to approv the item:', error);
+        }
+    }
+    async deniedItem(itemId) {
+        console.log(itemId)
+        this.isDeind = false;
+        try {
+              const res = await fetch(`https://localhost:7297/api/Item/deny/${itemId}`, {
+                method: 'PUT'
+                });
+            if (res.status === 200) {
+                this.isDeind = true;
+                this.message = " הפריט נדחה ✅";
+            }
+            else{
+                this.isUpdate = false;
+                this.message = "!אישור פריט לא הצליח"
+            }
+            this.fetchPendingItems();
+        } catch (error) {
+            console.error('Failed to approv the item:', error);
+        }
+    }
     async fetchMedia() {
         try {
             const res = await fetch('/api/media');
