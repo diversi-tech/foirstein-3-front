@@ -120,7 +120,7 @@ const ItemList = observer(() => {
                                     <TableCell align="center">{item.description}</TableCell>
                                     <TableCell align="center">{item.category}</TableCell>
                                     <TableCell align="center">{item.author}</TableCell>
-                                    {item.isApproved ? <TableCell align="center">מאושר</TableCell> : <TableCell align="center" >ממתין לאישור</TableCell> }
+                                    {item.isApproved ? <TableCell align="center" style={{color: "green"}}>מאושר</TableCell> : <TableCell align="center" style={{color: "red"}}>ממתין לאישור</TableCell> }
                                     <TableCell align="center">{item.filePath}</TableCell>
                                     <TableCell align='center'>
                                         <IconButton
