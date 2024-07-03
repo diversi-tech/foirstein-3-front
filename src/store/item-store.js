@@ -198,13 +198,13 @@ class ItemStore {
     isDeind = false;
     constructor() {
         makeAutoObservable(this, {
-            // isDelete: observable,
-            // isAdd: observable,
-            // isUpdate: observable,
-            // isError: observable,
-            // setAdd: action,
+            isDelete: observable,
+            isAdd: observable,
+            isUpdate: observable,
+            isError: observable,
+            setAdd: action,
             isApprov:observable,
-            // add: observable,
+            add: observable,
             pendingItemsList:observable,
             getPendingList: computed,
             fetchPendingItems:action,
