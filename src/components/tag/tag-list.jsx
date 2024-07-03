@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   TableRow,
@@ -14,152 +14,175 @@ import {
   DialogActions,
   TableContainer,
   Typography,
-  Box
+  Box,
+  styled,
 } from "@mui/material";
+import { observer } from "mobx-react-lite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import tagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
 
-const tableStyle = {
-  width: "100%", // קבעתי את הרוחב של הטבלה ל־60% מרוחב העמודה
-};
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  padding: theme.spacing(2),
+  textAlign: "center",
+}));
 
-export default function TagList() {
+const TagList = observer(() => {
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
-  const [addOpen, setAddOpen] = useState(false);
+  const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
-  const [rows, setRows] = useState(tagStore.tagList);
+  useEffect(() => {
+    tagStore.fetchTag();
+  }, []);
 
-  // פתיחת חלון דיאלוג
   const dialogOpen = (dialogType) => {
     switch (dialogType) {
-      case 'deleteOpen':
+      case "deleteOpen":
         setDeleteOpen(true);
         break;
-      case 'editOpen':
+      case "editOpen":
         setEditOpen(true);
         break;
       default:
         break;
     }
-  }
+  };
 
-  // סגירת חלון דיאלוג
   const dialogClose = (dialogType) => {
     switch (dialogType) {
-      case 'deleteOpen':
+      case "deleteOpen":
         setDeleteOpen(false);
         break;
-      case 'editOpen':
+      case "editOpen":
         setEditOpen(false);
         break;
       default:
         break;
     }
-  }
+  };
 
-  // מחיקה
   const tagDelete = () => {
     if (deleteItem) {
-      const updatedRows = rows.filter((r) => r.id !== deleteItem.id);
-      setRows(updatedRows);
-      // עדכון בסרבר את המחיקה
-      dialogClose('deleteOpen');
+      tagStore.deleteTag(deleteItem.id);
+      dialogClose("deleteOpen");
     }
-  }
+  };
 
-  // עריכה
   const tagEdit = () => {
-    // עריכה לסרבר
-    dialogClose('editOpen');
-  }
+    if (editItem) {
+      tagStore.updateTag(editItem.id, { name: editItem.name });
+      dialogClose("editOpen");
+    }
+  };
 
-  //הוספה
   const tagAdd = () => {
-    console.log("in tad");
-    // setAddOpen(true);
-    // {addOpen && <TagAdd/>}
-    <TagAdd />
-  }
+    setIsAddTagOpen(true);
+  };
 
   return (
-    <div className="divForm" style={{ direction: "rtl",marginTop:'35%' }}>
-      <Box sx={{ marginTop: "25%" }}>
-        <Grid container spacing={1} justifyContent="center" style={{ paddingTop: '300px' }}>
-          {/* מרכז */}
-          <Grid item xs={12} style={{ maxWidth: "100%" }}>
-
-            {/* שוליים */}
-            <TableContainer  component={Paper} style={tableStyle}>
-              <Table aria-label="simple table">
+    <Grid
+      container
+      justifyContent="center"
+      style={{ marginTop: "20px", direction: "rtl" }}
+    >
+      <Grid item xs={12} md={8} lg={6}>
+        <Paper elevation={3}>
+          <Box padding={3}>
+            <Typography variant="h5" component="h2" align="center" gutterBottom>
+              -תגים-
+            </Typography>
+            <TableContainer>
+              <Table aria-label="תגים">
                 <TableBody>
-                  {rows.map((row) => (
+                  {/* כותרות העמודות */}
+                  <TableRow>
+                    <StyledTableCell align="right">שם</StyledTableCell>
+                    <StyledTableCell align="right">עריכה</StyledTableCell>
+                    <StyledTableCell align="right">מחיקה</StyledTableCell>
+                  </TableRow>
+                  {/* תוכן הטבלה */}
+                  {tagStore.tagList.map((row) => (
                     <TableRow key={row.id}>
-                      <TableCell component="th" scope="row">
-                        {row.id}
-                      </TableCell>
-                      <TableCell align="right">{row.name}</TableCell>
-                      <TableCell>
-                        <Button onClick={() => { setEditItem(row); dialogOpen('editOpen') }}>
+                      <StyledTableCell align="right">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <Button
+                          onClick={() => {
+                            setEditItem(row);
+                            dialogOpen("editOpen");
+                          }}
+                        >
                           <EditIcon />
                         </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button onClick={() => { setDeleteItem(row); dialogOpen('deleteOpen') }}>
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <Button
+                          onClick={() => {
+                            setDeleteItem(row);
+                            dialogOpen("deleteOpen");
+                          }}
+                        >
                           <DeleteIcon />
                         </Button>
-                      </TableCell>
+                      </StyledTableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-            <Button onClick={tagAdd}>הוספת תג</Button>
+            <Box textAlign="center" marginTop={3}>
+              <Button variant="contained" color="primary" onClick={tagAdd}>
+                הוספת תג
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Grid>
 
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* דיאלוג לעריכה */}
-      <Dialog open={editOpen} onClose={() => dialogClose('editOpen')} style={{ direction: "rtl" }}>
-        <DialogTitle>
-          {editItem && `עריכת #${editItem.id}`}
-        </DialogTitle>
+      {/* dialog edit */}
+      <Dialog open={editOpen} style={{ direction: "rtl" }}>
+        <DialogTitle>{editItem && `עריכת #${editItem.id}`}</DialogTitle>
         <DialogContent>
           <TextField
             label="שם"
             value={editItem ? editItem.name : ""}
             fullWidth
-            onChange={(e) =>
-              setEditItem({ ...editItem, name: e.target.value })
+            onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
+            error={editItem && (!editItem.name || editItem.name.length < 2)}
+            helperText={
+              editItem && !editItem.name
+                ? "זהו שדה חובה"
+                : editItem && editItem.name.length < 2
+                ? "השם חייב להכיל לפחות 2 תווים"
+                : ""
             }
           />
-          {editItem && !editItem.name ? (
-            <Typography color="error">זהו שדה חובה</Typography>
-          ) : editItem && editItem.name.length < 2 ? (
-            <Typography color="error">השם חייב להכיל לפחות 2 תווים</Typography>
-          ) : null}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => dialogClose('editOpen')}>ביטול</Button>
-          <Button onClick={tagEdit}>שמור</Button>
+          <Button onClick={() => dialogClose("editOpen")}>ביטול</Button>
+          <Button
+            onClick={tagEdit}
+            disabled={!editItem || !editItem.name || editItem.name.length < 2}
+            color="primary"
+          >
+            שמור
+          </Button>
         </DialogActions>
       </Dialog>
 
-      {/* דיאלוג למחיקה */}
-      <Dialog open={deleteOpen} onClose={() => dialogClose('deleteOpen')} style={{ direction: "rtl" }}>
+      {/* dialog delete */}
+      <Dialog open={deleteOpen} style={{ direction: "rtl" }}>
         <DialogTitle>אישור מחיקה</DialogTitle>
         <DialogContent>
-          <Typography>
-            האם אתה בטוח שברצונך למחוק את הפריט הזה?
-          </Typography>
+          <Typography>האם אתה בטוח שברצונך למחוק את הפריט הזה?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => dialogClose('deleteOpen')} color="primary">
+          <Button onClick={() => dialogClose("deleteOpen")} color="primary">
             ביטול
           </Button>
           <Button onClick={tagDelete} color="secondary">
@@ -167,6 +190,10 @@ export default function TagList() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+
+      {isAddTagOpen && <TagAdd onClose={() => setIsAddTagOpen(false)} />}
+    </Grid>
   );
-}
+});
+
+export default TagList;

@@ -1,28 +1,27 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  Paper,
   TextField,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography,
   FormControl,
-  Grid,
   Dialog,
 } from "@mui/material";
+import TagStore from "../../store/tag-store";
 
-export default function TagAdd() {
+const TagAdd = ({ onClose }) => {
+  const [addItem, setAddItem] = useState("");
   const [addOpen, setAddOpen] = useState(true);
-  const [addItem, setAddItem] = useState(null);
 
   const dialogClose = () => {
+    setAddItem("");
     setAddOpen(false);
+    onClose();
   };
 
   const tagAdd = () => {
-    tagStore.addTag(addItem); // Replace with actual logic to store the tag
+    TagStore.addTag({ name: addItem });
     setAddItem(null);
     dialogClose();
   };
@@ -37,19 +36,27 @@ export default function TagAdd() {
             label="שם התג"
             variant="outlined"
             onChange={(e) => setAddItem(e.target.value)}
-            error={!addItem}
+            error={addItem.length < 2 && addItem !== ""}
+            helperText={
+              addItem === ""
+                ? "שדה חובה"
+                : addItem.length > 0 && addItem.length < 2
+                ? "השם חייב להכיל לפחות 2 תווים"
+                : ""
+            }
           />
-          {!addItem && <Typography color="error">שדה חובה</Typography>}
-          {addItem && addItem.length < 2 && (
-            <Typography color="error">השם חייב להכיל לפחות 2 תווים</Typography>
-          )}
         </FormControl>
       </DialogContent>
-
       <DialogActions>
         <Button onClick={dialogClose}>ביטול</Button>
-        <Button onClick={tagAdd}>הוספה</Button>
+        <Button
+          onClick={tagAdd}
+          disabled={addItem === "" || addItem.length < 2}
+        >
+          הוספה
+        </Button>
       </DialogActions>
     </Dialog>
   );
-}
+};
+export default TagAdd;
