@@ -174,22 +174,7 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx'
 class ItemStore {
     pendingItemsList=[]
-    mediaList = [
-        {
-            title: "bbbb",
-            description: "aaaaaa",
-            tag: "Tag1",
-            shelf: "k1",
-            type: 'book'
-        },
-        {
-            title: "fffff",
-            description: "hhhhh",
-            tag: "Tag2",
-            shelf: "1",
-            type: 'file'
-        }
-    ];
+    mediaList = []
     add = false;
     isUpdate = false;
     isError = true;

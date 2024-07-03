@@ -29,7 +29,7 @@ class StudentsRequestStore {
   async fetchRequest() {
     try {
       const res = await fetch(baseUrl + "BorrowRequest");
-      let data = await res.json();
+      const data = await res.json();
 
       runInAction(() => {
         this.requestList = this.extractRawData(data);
