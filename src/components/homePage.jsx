@@ -10,7 +10,9 @@ import { FaHandPointDown } from "react-icons/fa";
 const peachPink = '#FFD1DC';
 const textColor = '#000000';
 
-const ImageHomePage = () => {
+const ImageHomePage = () => { 
+
+  const navigate = useNavigate();
   const [anchorElBorrowRequest, setAnchorElBorrowRequest] = useState(null);
   const [anchorElItemRequest, setAnchorElItemRequest] = useState(null);
   const handleMouseEnterBorrowRequest = (event) => {
@@ -35,9 +37,9 @@ const ImageHomePage = () => {
     navigate(`${route}`)
     setAnchorElItemRequest(null);
   }
-  const navigate = useNavigate();
+ 
   return (
-    <div>
+    <div style={{ marginTop: '7%' }}>
       <img
         src={books}
         alt="Local"
@@ -85,8 +87,8 @@ const ImageHomePage = () => {
               autoFocus={false}
             >
               <div dir="rtl">
-                <MenuItem onClick={() => handleClickBorrowRequests('waitApproval')}>{"בקשות שממתינות לאישור"}</MenuItem>
-                <MenuItem onClick={() => handleClickBorrowRequests('afterHandle')}>{"בקשות לאחר טיפול"}</MenuItem>
+                <MenuItem onClick={() => handleClickBorrowRequests('/studentRequest')}>{"בקשות שממתינות לאישור"}</MenuItem>
+                <MenuItem onClick={() => handleClickBorrowRequests('/afterHandle')}>{"בקשות לאחר טיפול"}</MenuItem>
               </div>
             </Menu>
           </div>
@@ -124,8 +126,8 @@ const ImageHomePage = () => {
               autoFocus={false}
             >
               <div dir="rtl">
-                <MenuItem onClick={() => handleClickItemsRequests('items')}>{"כל הפריטים"}</MenuItem>
-                <MenuItem onClick={() => handleClickItemsRequests('itemsPendingApproval')}>{"פריטים שממתינים לאישור"}</MenuItem>
+                <MenuItem onClick={() => handleClickItemsRequests('/items')}>{"כל הפריטים"}</MenuItem>
+                <MenuItem onClick={() => handleClickItemsRequests('/itemsPendingApproval')}>{"פריטים שממתינים לאישור"}</MenuItem>
               </div>
             </Menu>
           </div>

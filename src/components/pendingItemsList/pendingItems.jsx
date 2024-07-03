@@ -25,6 +25,7 @@ import itemStore from '../../store/item-store';
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite';
 import './PendingItems.css';
+
 function createData(itemId,title, author, category, createdAt, description, fileP) {
   return {
     itemId,
@@ -179,9 +180,9 @@ async function deny(itemId)
       }
     });
 }
-export const PendingItems= observer(() => {
-const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
-    
+export const PendingItems = observer(() => {
+// const rows = toJS(itemStore.getPendingList)?.map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
+    const rows=[{author:'aa',title:'bb',category:'cc',date:'dd'}]
   return (
     <TableContainer component={Paper} dir="rtl">
       <Table aria-label="collapsible table">
@@ -189,15 +190,15 @@ const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i
           <TableRow className="table-head-cell" >
             <TableCell className="table-head-cell"/>
             <TableCell  className="table-head-cell" style={{  color: 'white' }} align="right" >כותרת</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >מחבר</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >קטגוריה</TableCell>
-            <TableCell className="table-head-cell"style={{  color: 'white' }} align="right" >תאריך יצירה</TableCell>
-            <TableCell className="table-head-cell"style={{  color: 'white' }} align="right" ></TableCell>
-            <TableCell className="table-head-cell"style={{  color: 'white' }} align="right" ></TableCell>
+            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >מחבר</TableCell>
+            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >קטגוריה</TableCell>
+            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >תאריך יצירה</TableCell>
+            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" ></TableCell>
+            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows?.map((row) => (
             <Row key={row.title} row={row} />
           ))}
         </TableBody>
