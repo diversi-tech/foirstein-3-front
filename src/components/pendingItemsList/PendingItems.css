@@ -1,0 +1,52 @@
+/* PendingItems.css */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .table {
+    width: 100%;
+    min-width: 600px; /* Adjust based on your needs */
+  }
+  
+  .table-head-cell {
+    background-color: black;
+    color: white;
+    text-align: right;
+    
+  }
+  
+  .table-cell {
+    color: white;
+    text-align: right;
+  }
+  .details-container {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    margin: 1rem;
+  }
+  detail-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+  
+  .detail-title {
+    font-weight: bold;
+    margin-left: 0.5rem;
+  }
+  
+  /* Responsive design for mobile devices */
+  @media (max-width: 600px) {
+    .table-cell {
+      font-size: 14px; /* Adjust font size for smaller screens */
+      padding: 8px; /* Adjust padding for smaller screens */
+    }
+  
+    .icon-button {
+      padding: 4px; /* Adjust padding for smaller screens */
+    }
+  }
+  
