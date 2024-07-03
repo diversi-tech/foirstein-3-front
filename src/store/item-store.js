@@ -236,13 +236,14 @@ class ItemStore {
     }
     async approvalItem(itemId) {
         console.log(itemId)
-        this.isApprov = false;
+       // this.isApprov = false;
         try {
               const res = await fetch(`https://localhost:7297/api/Item/approvItem/${itemId}`, { method: 'PUT'});
               console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
                 this.message = " הפריט אושר";
+                await itemStore.fetchPendingItems();
             }
             else{
              this.message = "אישור פריט לא הצליח"

@@ -22,12 +22,13 @@
     text-align: right;
   }
   .details-container {
+    direction: rtl;
+    text-align: right;
     display: flex;
     flex-direction: column;
-    text-align: right;
-    margin: 1rem;
+    /* margin: 1rem; */
   }
-  detail-row {
+  .detail-row {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 0.5rem;

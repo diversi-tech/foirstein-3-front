@@ -1,5 +1,6 @@
 body {
   font-family: 'Rubik';
+  direction: rtl;
 }
 #root {
   max-width: 1280px;
