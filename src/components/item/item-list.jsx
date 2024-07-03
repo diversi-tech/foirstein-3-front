@@ -96,7 +96,7 @@ const ItemList = observer(() => {
 
     return (
         <>
-            <div style={{ width: "100%", height: "25%", marginTop: "0%" }}>
+            <div style={{ width: "100%", height: "25%", marginTop: "15%" }}>
                 <h2 style={{ textAlign: "center" }}>רשימת קבצים</h2>
                 <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
                     <Table>
@@ -153,6 +153,7 @@ const ItemList = observer(() => {
                     open={deleteOpen}
                     onClose={handleClose}
                     fullScreen={fullScreen}
+                    style={{ direction: "rtl" }}
                 >
                     <DialogTitle>אישור מחיקה</DialogTitle>
                     <DialogContent>
