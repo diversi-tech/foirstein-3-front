@@ -125,6 +125,7 @@ const ItemList = observer(() => {
                     open={deleteOpen}
                     onClose={handleClose}
                     fullScreen={fullScreen}
+                    style={{ direction: "rtl" }}
                 >
                     <DialogTitle>אישור מחיקה</DialogTitle>
                     <DialogContent>

@@ -17,11 +17,11 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 import tagStore from "../../store/tag-store";
+import TagAdd from "./tag-add";
 
 const tableStyle = {
-  // width: "40%", // קבעתי את הרוחב של הטבלה ל־60% מרוחב העמודה
+  width: "100%", // קבעתי את הרוחב של הטבלה ל־60% מרוחב העמודה
 };
 
 export default function TagList() {
@@ -33,31 +33,28 @@ export default function TagList() {
 
   const [rows, setRows] = useState(tagStore.tagList);
 
-  // פתיחת חלון
+  // פתיחת חלון דיאלוג
   const dialogOpen = (dialogType) => {
-    switch(dialogType){
+    switch (dialogType) {
       case 'deleteOpen':
         setDeleteOpen(true);
         break;
       case 'editOpen':
-        setEditOpen(true); // פתיחת דיאלוג עריכה
-        break;
-      case 'tagAdd':
-        setAddOpen(true); // פתיחת דיאלוג הוספת תג
+        setEditOpen(true);
         break;
       default:
         break;
     }
   }
 
-  // סגירת חלון
+  // סגירת חלון דיאלוג
   const dialogClose = (dialogType) => {
-    switch(dialogType){
+    switch (dialogType) {
       case 'deleteOpen':
         setDeleteOpen(false);
         break;
       case 'editOpen':
-        setEditOpen(false); // סגירת דיאלוג עריכה
+        setEditOpen(false);
         break;
       default:
         break;
@@ -80,49 +77,56 @@ export default function TagList() {
     dialogClose('editOpen');
   }
 
-  // פתיחת הוספת תג
+  //הוספה
   const tagAdd = () => {
-    setAddOpen(true);
+    console.log("in tad");
+    // setAddOpen(true);
+    // {addOpen && <TagAdd/>}
+    <TagAdd />
   }
 
   return (
-    <div className="divForm" style={{ direction: "rtl" }}>
-      <Grid container spacing={1} justifyContent="center">
-        {/* מרכז */}
-        <Grid item xs={12} style={{ maxWidth: "100%" }}>
-          {/* שוליים */}
-          <TableContainer component={Paper} style={tableStyle}>
-            <Table aria-label="simple table">
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.id}
-                    </TableCell>
-                    <TableCell align="right">{row.name}</TableCell>
-                    <TableCell>
-                      <Button onClick={() => {setEditItem(row); dialogOpen('editOpen')}}>
-                        <EditIcon />
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <Button onClick={() => {setDeleteItem(row); dialogOpen('deleteOpen')}}>
-                        <DeleteIcon />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Button onClick={tagAdd}>הוספת תג</Button>
+    <div className="divForm" style={{ direction: "rtl",marginTop:'35%' }}>
+      <Box sx={{ marginTop: "25%" }}>
+        <Grid container spacing={1} justifyContent="center" style={{ paddingTop: '300px' }}>
+          {/* מרכז */}
+          <Grid item xs={12} style={{ maxWidth: "100%" }}>
+
+            {/* שוליים */}
+            <TableContainer  component={Paper} style={tableStyle}>
+              <Table aria-label="simple table">
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {row.id}
+                      </TableCell>
+                      <TableCell align="right">{row.name}</TableCell>
+                      <TableCell>
+                        <Button onClick={() => { setEditItem(row); dialogOpen('editOpen') }}>
+                          <EditIcon />
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Button onClick={() => { setDeleteItem(row); dialogOpen('deleteOpen') }}>
+                          <DeleteIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Button onClick={tagAdd}>הוספת תג</Button>
+
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
 
       {/* דיאלוג לעריכה */}
       <Dialog open={editOpen} onClose={() => dialogClose('editOpen')} style={{ direction: "rtl" }}>
         <DialogTitle>
-          {`עריכת #${editItem.id}`}
+          {editItem && `עריכת #${editItem.id}`}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -160,22 +164,6 @@ export default function TagList() {
           <Button onClick={tagDelete} color="secondary">
             מחיקה
           </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* דיאלוג להוספת תג */}
-      <Dialog open={addOpen} onClose={() => setAddOpen(false)} style={{ direction: "rtl" }}>
-        <DialogTitle>הוספת תג חדש</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="שם"
-            fullWidth
-            onChange={(e) => setRows([...rows, { id: rows.length + 1, name: e.target.value }])}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setAddOpen(false)}>ביטול</Button>
-          <Button onClick={() => setAddOpen(false)}>הוספה</Button>
         </DialogActions>
       </Dialog>
     </div>
