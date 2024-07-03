@@ -46,10 +46,22 @@ import './index.css'
 import ReactDOM from 'react-dom/client'
 import React from 'react'
 import App from './App'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Rubik, Arial, sans-serif',
+  },
+})
 ReactDOM.createRoot(document.getElementById('root')).render(
+  
   <React.StrictMode>
-    <App />
+    {/* <App /> */}
     {/* <RouterProvider router={router} />  */}
+    <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <App />
+  </ThemeProvider>,
   </React.StrictMode>,
 )
