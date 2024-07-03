@@ -173,36 +173,26 @@
 import { makeAutoObservable, observable, action } from 'mobx';
 
 class ItemStore {
-    mediaList = [
-        {
-            title: "bbbb",
-            description: "aaaaaa",
-            tag: "Tag1",
-            shelf: "k1",
-            type: 'book'
-        },
-        {
-            title: "fffff",
-            description: "hhhhh",
-            tag: "Tag2",
-            shelf: "1",
-            type: 'file'
-        }
-    ];
+    mediaList = [];
     add = false;
     isUpdate = false;
     isError = true;
-    message = "הקובץ  עודכן בהצלחה! ✅";
+    isDelete = false;
+    message = "";
 
     constructor() {
         makeAutoObservable(this, {
             isDelete: observable,
+            mediaList: observable,
             isAdd: observable,
             isUpdate: observable,
             isError: observable,
             // setAdd: action,
-            add: observable
+            add: observable,
+            fetchMedia: action,
+            updateMedia: action
         });
+        this.fetchMedia();
     }
     // setAdd(value) {
     //     this.add = value;
@@ -210,8 +200,10 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch('/api/media');
-            this.mediaList = await res.json();
+            const res = await fetch('https://localhost:7297/api/Item');
+            const obj = await res.json();
+            this.mediaList = obj.data;
+            console.log("list media: ",this.mediaList);
         } 
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -224,7 +216,7 @@ class ItemStore {
             for (const key in mediaData) {
                 formData.append(key, mediaData[key]);
             }
-            const res = await fetch('/api/upload', {
+            const res = await fetch('https://localhost:7297/api/Item', {
                 method: 'POST',
                 body: formData
             });
@@ -236,21 +228,27 @@ class ItemStore {
                 this.isError = false;
                 this.message = "העלאה נכשלה"
             }
-
             this.fetchMedia();
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Failed to upload media:', error);
             this.isError = true;
         }
-    }
+    }      
 
     async deleteMedia(mediaId) {
         try {
-            const res = await fetch(`/api/media/${mediaId}`, {
+            const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
                 this.isDelete = true;
+                this.message = " נמחק בהצלחה! ✅"
+
+            }
+            else{
+                this.isDelete = false;
+                this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
@@ -264,10 +262,13 @@ class ItemStore {
             for (const key in mediaData) {
                 formData.append(key, mediaData[key]);
             }
-            const res = await fetch(`/api/media/${mediaId}`, {
+            console.log("formData: ", formData, "beforeFetch");
+            const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
                 method: 'PUT',
                 body: formData
             });
+            console.log("formData: ", formData, "afterFetch");
+
             if (res.status === 200) {
                 this.isUpdate = true;
                 this.message = "  הקובץ  עודכן בהצלחה! ✅";
@@ -281,7 +282,43 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
-}
+ 
 
+    // async updateMedia(id, updatedItem) {
+    //     console.log("Updating media with ID:", id);
+    //     console.log("Updated item:", updatedItem);
+    
+    //     if (!id) {
+    //       throw new Error("ID is not defined");
+    //     }
+    
+    //     try {
+    //       const response = await fetch(`https://localhost:7297/api/Item/${id}`, {
+    //         method: 'PUT',
+    //         body: updatedItem
+    //       });
+    
+    //       console.log("Fetch response:", response);
+    //       const responseBody = await response.text();
+    //       console.log("Response body:", responseBody);
+    
+    //       if (!response.ok) {
+    //         throw new Error(`Error: ${response.statusText}`);
+    //       }
+    
+    //       const index = this.mediaList.findIndex(item => item.id === id);
+    //       if (index !== -1) {
+    //         this.mediaList[index] = updatedItem;
+    //       } else {
+    //         this.mediaList.push(updatedItem);
+    //       }
+    
+    //       return response;
+    //     } catch (error) {
+    //       console.error('Fetch error:', error);
+    //       throw error;
+    //     }
+    //   }
+}
 const itemStore = new ItemStore();
 export default itemStore;

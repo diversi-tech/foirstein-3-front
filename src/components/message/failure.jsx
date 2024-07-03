@@ -1,9 +1,18 @@
-import  { useState } from 'react';
+import  { useState, useEffect } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import itemStore from '../../store/item-store';
 
 export default function Failure() {
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpen(false);
+    }, 4000);
+
+    // Clean up the timer if the component unmounts before the timer completes
+    return () => clearTimeout(timer);
+  }, []);
+  
   const [open, setOpen] = useState(true);
 
   const handleClose = () => {

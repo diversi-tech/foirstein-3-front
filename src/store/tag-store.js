@@ -1,16 +1,8 @@
-import { makeAutoObservable, observable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 class TagStore {
-    tagList = [
-        {
-            id: "1",
-            name: "היסטוריה"
-        },
-        {
-            id: "2",
-            name: "מתח"
-        }
-    ];
+
+    tagList = [];
     isUpdate = false;
     isError = true;
     message = "הקובץ  עודכן בהצלחה! ✅";
@@ -20,16 +12,19 @@ class TagStore {
             isDelete: observable,
             isAdd: observable,
             isUpdate: observable,
-            isError: observable
+            isError: observable,
+            fetchTag: action
         });
+        this.fetchTag();
     }
 
     async fetchTag() {
         try {
-            const res = await fetch('/api/tag');
-            this.tagList = await res.json();
+            const res = await fetch('https://localhost:7297/api/Tag');
+            const obj = await res.json();
+            this.tagList = obj.data;
         } catch (error) {
-            console.error('Failed to fetch tag:', error);
+            console.error('Failed to fetch tag:', error); 
         }
     }
 
@@ -39,7 +34,7 @@ class TagStore {
             for (const key in tagData) {
                 formData.append(key, tagData[key]);
             }
-            const res = await fetch('/api/upload', {
+            const res = await fetch('https://localhost:7297/api/Tag', {
                 method: 'POST',
                 body: formData
             });
@@ -51,9 +46,9 @@ class TagStore {
                 this.isError = false;
                 this.message = "העלאה נכשלה"
             }
-
             this.fetchTag();
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Failed to upload tag:', error);
             this.isError = true;
         }
@@ -61,7 +56,7 @@ class TagStore {
 
     async deleteTag(tagId) {
         try {
-            const res = await fetch(`/api/tag/${tagId}`, {
+            const res = await fetch(`https://localhost:7297/api/Tag/${tagId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
@@ -79,7 +74,7 @@ class TagStore {
             for (const key in tagData) {
                 formData.append(key, tagData[key]);
             }
-            const res = await fetch(`/api/tag/${tagId}`, {
+            const res = await fetch(`https://localhost:7297/api/Tag/${tagId}`, {
                 method: 'PUT',
                 body: formData
             });
