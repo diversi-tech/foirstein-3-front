@@ -21,11 +21,11 @@ import GppBadIcon from '@mui/icons-material/GppBad';
 import GppGoodIcon from '@mui/icons-material/GppGood';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultRounded';
+import Link from '@mui/material/Link';
 import itemStore from '../../store/item-store';
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite';
 import './PendingItems.css';
-
 function createData(itemId,title, author, category, createdAt, description, fileP) {
   return {
     itemId,
@@ -56,7 +56,7 @@ function Row(props) {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <React.Fragment>
+    <React.Fragment >
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <IconButton
@@ -80,37 +80,35 @@ function Row(props) {
         {/* <Button variant="contained" color="primary" size="small">אישור</Button> */}
         {/* <Button variant="contained" color="secondary" size="small" sx={{ ml: 1 }}>דחייה</Button> */}
       </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }} dir="rtl">
-              {/* <Typography variant="h6" gutterBottom component="div" dir="rtl">
-                פרטים נוספים
-              </Typography> */}
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className="table-cell" style={{  color: 'secondary' }}>תיאור</TableCell>
-                    <TableCell className="table-cell" style={{  color: 'secondary' }} align="right">קובץ</TableCell>
-                    {/* <TableCell style={{ backgroundColor: 'black', color: 'white' }} align="right">פעולות</TableCell> */}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.moreDetails.map((moreDetail) => (
-                    <TableRow key={moreDetail.desc}>
-                      <TableCell className="detail-title" component="th" scope="row">
-                        {moreDetail.desc}
-                      </TableCell>
-                      <TableCell className="detail-title"  align="right">{moreDetail.filePath}</TableCell>
-                    
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+      <TableRow dir='rtl'>
+  <TableCell dir='rtl' style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+ 
+    <Collapse dir='rtl' in={open} timeout="auto" unmountOnExit>
+
+      {row.moreDetails.map((moreDetail) => (
+        
+        <div dir='rtl' key={moreDetail.id} style={{paddingRight:"11%"}} >
+          <Box display="flex" dir='rtl' >
+          <Typography variant="subtitle1" dir='rtl'> <b>תאור: </b></Typography>
+            <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+              {moreDetail.desc}
+            </Typography>
+            
+          </Box>
+          <Box display="flex"  dir='rtl'> 
+          <Typography variant="subtitle1" dir='rtl'><b>קובץ: </b></Typography>
+            <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
+              <Link href="#" underline="hover">
+                {`קישור לקובץ`}
+              </Link>
+            </Typography>
+          
+          </Box>
+        </div>
+      ))}
+    </Collapse>
+  </TableCell>
+</TableRow>
     </React.Fragment>
   );
 }
@@ -180,25 +178,25 @@ async function deny(itemId)
       }
     });
 }
-export const PendingItems = observer(() => {
-// const rows = toJS(itemStore.getPendingList)?.map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
-    const rows=[{author:'aa',title:'bb',category:'cc',date:'dd'}]
+export const PendingItems= observer(() => {
+const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
+    
   return (
     <TableContainer component={Paper} dir="rtl">
       <Table aria-label="collapsible table">
         <TableHead className="table-head-cell">
           <TableRow className="table-head-cell" >
             <TableCell className="table-head-cell"/>
-            <TableCell  className="table-head-cell" style={{  color: 'white' }} align="right" >כותרת</TableCell>
-            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >מחבר</TableCell>
-            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >קטגוריה</TableCell>
-            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" >תאריך יצירה</TableCell>
-            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" ></TableCell>
-            <TableCell className="table-head-cell"  style={{  color: 'white' }} align="right" ></TableCell>
+            <TableCell  className="table-head-cell"style={{  color: 'white' }} align="right" >כותרת</TableCell>
+            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >מחבר</TableCell>
+            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >קטגוריה</TableCell>
+            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >תאריך יצירה</TableCell>
+            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" ></TableCell>
+            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows?.map((row) => (
+          {rows.map((row) => (
             <Row key={row.title} row={row} />
           ))}
         </TableBody>
