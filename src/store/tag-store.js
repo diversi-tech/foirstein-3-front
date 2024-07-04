@@ -5,9 +5,8 @@ const baseUrl = "https://localhost:7297/api/Tag";
 
 class TagStore {
   tagList = [];
-  addOpen = false;
-  isUpdate = false;
-  isError = true;
+  isMessage = false;
+  message = "";
 
   constructor() {
     makeObservable(this, {
@@ -54,13 +53,12 @@ class TagStore {
         method: "DELETE",
       });
       if (res.status === 200) {
-        this.isDelete = true;
         this.success("!נמחק בהצלחה");
-        this.fetchTag();
+      } else {
+        this.failure("!המחיקה נכשלה");
       }
       this.fetchTag();
     } catch (error) {
-      this.failure("!המחיקה נכשלה");
       console.error("Failed to delete tag:", error);
     }
   }
@@ -68,17 +66,32 @@ class TagStore {
   async addTag(tagData) {
     try {
       console.log("tagData: " + JSON.stringify(tagData));
-      const res = await fetch(baseUrl + "/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tagData),
-      });
-      if (res.status === 200) {
-        this.success("!התווסף בהצלחה");
-        this.isUpdate = true;
+      const existingTag = this.tagList.find((tag) => tag.name === tagData.name);
+      if (existingTag) {
+        if (this.isMessage) {
+          this.message = "❌תג עם שם זהה כבר קיים!";
+        } else {
+          this.failure("!תג עם שם זהה כבר קיים");
+        }
       } else {
-        this.isUpdate = false;
-        this.failure("!ההוספה נכשלה");
+        const res = await fetch(baseUrl + "/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tagData),
+        });
+        if (res.status === 200) {
+          if (this.isMessage) {
+            this.message = "✅נוסף בהצלחה!";
+          } else {
+            this.success("!נוסף בהצלחה");
+          }
+        } else {
+          if (this.isMessage) {
+            this.message = "❌ההוספה נכשלה!";
+          } else {
+            this.failure("!ההוספה נכשלה");
+          }
+        }
       }
       this.fetchTag();
     } catch (error) {
@@ -89,19 +102,22 @@ class TagStore {
   async updateTag(tagId, tagData) {
     try {
       console.log("tagData: " + JSON.stringify(tagData));
-      const res = await fetch(baseUrl + "/" + tagId, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tagData),
-      });
-      if (res.status === 200) {
-        this.success("!עודכן בהצלחה");
-        this.isUpdate = true;
+      const existingTag = this.tagList.find((tag) => tag.name === tagData.name);
+      if (existingTag) {
+        this.failure("!תג עם שם זהה כבר קיים");
       } else {
-        this.failure("!העדכון נכשל");
-        this.isUpdate = false;
+        const res = await fetch(baseUrl + "/" + tagId, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tagData),
+        });
+        if (res.status === 200) {
+          this.success("!עודכן בהצלחה");
+        } else {
+          this.failure("!העדכון נכשל");
+        }
+        this.fetchTag();
       }
-      this.fetchTag();
     } catch (error) {
       console.error("Failed to update tag:", error);
     }
@@ -111,6 +127,7 @@ class TagStore {
     Swal.fire({
       text: message,
       icon: "success",
+      timer: 1700,
     });
   }
   failure(message) {
@@ -118,6 +135,7 @@ class TagStore {
       icon: "error",
       title: "...אופס",
       text: message,
+      timer: 1700,
     });
   }
 }
