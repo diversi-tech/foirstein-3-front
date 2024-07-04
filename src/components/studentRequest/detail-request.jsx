@@ -19,6 +19,13 @@ function DetailRequest({ userId }) {
       return proxyObject;
     }
   }
+  function formatDate(dateString) {
+    const dateParts = dateString.split('T')[0].split('-');
+    const day = dateParts[2];
+    const month = dateParts[1];
+    const year = dateParts[0];
+    return `${day}/${month}/${year}`;
+  }
   //קורא פעם אחת מיד כשהמחלקה עולה
   useEffect(() => {
     const fetchRequest = async () => {
@@ -63,22 +70,16 @@ function DetailRequest({ userId }) {
           {request.data.userName}
         </Typography>
         <Typography variant="subtitle1">:שם משתמש</Typography>
-      </Box>
+      </Box>     
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.passwordHash}
-        </Typography>
-        <Typography variant="subtitle1">:סיסמא</Typography>
-      </Box>
-      <Box display="flex" justifyContent="flex-end">
-        <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.createdAt}
+          {formatDate(request.data.createdAt)}
         </Typography>
         <Typography variant="subtitle1">:תאריך בקשה</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.updatedAt}
+          {formatDate(request.data.updatedAt)}
         </Typography>
         <Typography variant="subtitle1">:תאריך אישור</Typography>
       </Box>

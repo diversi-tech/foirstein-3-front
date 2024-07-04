@@ -46,12 +46,16 @@ function Row(props) {
         </TableCell>
         <StyledTableCell>
           <Box display="flex" justifyContent="center">
-            <AlertDialog option="אישור" requestId={row.requestId} />
             <AlertDialog option="דחיה" requestId={row.requestId} />
+            <AlertDialog option="אישור" requestId={row.requestId} />
           </Box>
         </StyledTableCell>
-        <StyledTableCell align="right">{row.approvalDate}</StyledTableCell>
-        <StyledTableCell align="right">{row.requestDate}</StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.approvalDate)}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.requestDate)}
+        </StyledTableCell>
         <StyledTableCell align="right">{row.userId}</StyledTableCell>
         <StyledTableCell align="right">{row.itemId}</StyledTableCell>
         <StyledTableCell align="right">{row.requestId}</StyledTableCell>
@@ -78,6 +82,7 @@ Row.propTypes = {
     approvalDate: PropTypes.string.isRequired,
   }).isRequired,
 };
+//פונקציה שמחלצת מהפרוקסי
 function extractRawData(proxyObject) {
   if (proxyObject != undefined && proxyObject.data != null) {
     console.log("Extracting data from proxy object:", proxyObject.data);
@@ -86,6 +91,14 @@ function extractRawData(proxyObject) {
     console.log("Returning original object as it's not a proxy:", proxyObject);
     return proxyObject;
   }
+}
+//פונקציה שמחזירה תאריך ושעה בצורה מסודרת
+function formatDate(dateString) {
+  const dateParts = dateString.split("T")[0].split("-");
+  const day = dateParts[2];
+  const month = dateParts[1];
+  const year = dateParts[0];
+  return `${day}/${month}/${year}`;
 }
 //קומפוננטה שמציגה בטבלה את רשימת בקשות התלמידה
 const StudentRequest = observer(() => {
@@ -115,8 +128,8 @@ const StudentRequest = observer(() => {
               <StyledTableCell align="center"></StyledTableCell>
               <StyledTableCell align="center">תאריך בקשה</StyledTableCell>
               <StyledTableCell align="center">תאריך אישור</StyledTableCell>
-              <StyledTableCell align="center">מספר משתמש</StyledTableCell>
-              <StyledTableCell align="center">מספר פריט</StyledTableCell>
+              <StyledTableCell align="center">שם משתמש</StyledTableCell>
+              <StyledTableCell align="center">שם פריט</StyledTableCell>
               <StyledTableCell align="center">מספר בקשה</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -167,7 +180,7 @@ function AlertDialog({ option, requestId }) {
             id="alert-dialog-description"
             style={{ fontWeight: "bold" }}
           >
-            האם אתה רוצה לבצע {option}?
+            ? האם אתה רוצה לבצע {option}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
