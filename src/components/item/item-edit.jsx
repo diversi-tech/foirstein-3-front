@@ -169,33 +169,36 @@
 // export default UpdateDialog;
 
 
-
-
-
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
-import Success from '../message/success';
-import {
-  TextField, Button,
-  Dialog, DialogActions, DialogContent,
-  DialogTitle, Select, MenuItem, InputLabel,
-  FormControl, Typography, useMediaQuery, useTheme,
-  OutlinedInput, Box, Chip
-} from '@mui/material';
 import tagStore from '../../store/tag-store';
+import Success from '../message/success';
 import Failure from '../message/failure';
+import { TextField, Button,
+  Dialog, DialogActions, DialogContent,
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip
+} from '@mui/material';
 
 export default function ItemEdit ({ mediaItem, onClose }) {
   const [formData, setFormData] = useState({
     id: mediaItem.id,
     title: mediaItem.title,
-    description: mediaItem.description,
+    description: mediaItem.description, 
+    category: mediaItem.category,
+    author: mediaItem.author,
+    isApproved: mediaItem.isApproved,
     tag: Array.isArray(mediaItem.tag) ? mediaItem.tag : [],
-    shelf: mediaItem.shelf || '',
+    filePath: mediaItem.filePath || '',
     file: mediaItem.file || ''
   });
+  console.log("id:  ",mediaItem.id);  
 
-  const [send, setSend] = useState(false)
+  const [send, setSend] = useState(false);
+  useEffect(() =>{
+    checkLink();
+  })
+
+
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -223,9 +226,7 @@ export default function ItemEdit ({ mediaItem, onClose }) {
     const {
       target: { value },
     } = event;
-
     let updatedTags = value;
-
     if (typeof value === 'string') {
       updatedTags = value.split(',');
     }
@@ -238,24 +239,52 @@ export default function ItemEdit ({ mediaItem, onClose }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
-    formDataToSend.append('tag', formData.tag.id);
-    formDataToSend.append('shelf', formData.shelf);
+    formDataToSend.append('category', formData.category);
+    formDataToSend.append('author', formData.author);
+    formDataToSend.append('isApproved', formData.isApproved);
+    formDataToSend.append('tags', JSON.stringify(formData.tag));
+    formDataToSend.append('filePath', formData.filePath);
     if (formData.file) {
       formDataToSend.append('file', formData.file);
     }
-
+    console.log("id: ", itemStore.mediaList.id);
     try {
-     // await itemStore.updateMedia(mediaItem.id, formDataToSend);
-     console.log("sendToServerEditChanges");
-      onClose();
+      const response = await itemStore.updateMedia(formData.id, formDataToSend);
+      console.log("Server Response:", response);
+      console.log("id- ", formData.id);
+      // בדיקת תגובה לפני גישה למאפיינים שלה
+      if (response && response.ok) {
+        console.log("sendToServerEditChanges");
+        onClose();
+      } else {
+        console.error('Error updating media:', response ? response.statusText : 'No response from server');
+      }
     } catch (error) {
       console.error('Error updating media:', error);
     }
+  };
+  
+  const [link, setLink] = useState(false);
+  // const checkLink = () => {
+  //   if (itemStore.filePath.include('http') || itemStore.filePath.include('.')) {
+  //     setLink(true);
+  //   } 
+  //   else {
+  //     setLink(false);
+  //   }
+  // };  
+
+  // הבדיקה לא עובדת לי נכון
+  const checkLink = () => {
+    const filePath = formData.filePath;
+    // console.log("beforeLink: ", link);
+    // return filePath.includes('http');
+    setLink(filePath.includes('http') || filePath.includes('.'));
+    // console.log("afterLink:",link);
   };
 
   return (
@@ -266,7 +295,7 @@ export default function ItemEdit ({ mediaItem, onClose }) {
       maxWidth="sm"
       fullWidth
       style={{ direction: "rtl" }}
-    >
+       >
       <form onSubmit={handleSubmit}>
         <DialogTitle>עריכת פרטים</DialogTitle>
         <DialogContent>
@@ -278,6 +307,7 @@ export default function ItemEdit ({ mediaItem, onClose }) {
             name="title"
             value={formData.title}
             onChange={handleChange}
+            // onBlur={checkLink}
             required
           />
           {formData.title && formData.title.length < 2 && (
@@ -296,7 +326,32 @@ export default function ItemEdit ({ mediaItem, onClose }) {
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
-
+          <TextField
+            margin="dense"
+            label="קטגוריה"
+            type="text"
+            fullWidth
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            required
+          />
+          {formData.category && formData.category.length < 2 && (
+            <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
+          )}
+          <TextField
+            margin="dense"
+            label="מחבר"
+            type="text"
+            fullWidth
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            required
+          />
+            {formData.author && formData.author.length < 2 && (
+            <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
+          )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
             <Select
@@ -316,6 +371,7 @@ export default function ItemEdit ({ mediaItem, onClose }) {
               )}
               MenuProps={MenuProps}
             >
+              {/* צריך לשלוח לשרת מספר תג ולא שם */}
               {tagStore.tagList.map((name) => (
                 <MenuItem
                   key={name.id}
@@ -326,26 +382,29 @@ export default function ItemEdit ({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
-
-          {mediaItem.type === 'book' && (
+          {/* בדיקה אם הוא לינק או לא */}
+          {!link && (
             <TextField
               margin="dense"
               label="מדף"
               type="text"
               fullWidth
-              name="shelf"
-              value={formData.shelf}
+              name="filePath"
+              value={formData.filePath}
               onChange={handleChange}
               required
             />
           )}
-          {mediaItem.type === 'file' && (
+          {/* {formData.filePath && formData.filePath.length < 2 && (
+            <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
+          )} */}
+          {link && (
             <TextField
               margin="dense"
               type="file"
               fullWidth
-              name="file"
-              onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+              name="filePath"
+              onChange={(e) => setFormData({ ...formData, filePath: e.target.files[0] })}
             />
           )}
         </DialogContent>
@@ -362,4 +421,6 @@ export default function ItemEdit ({ mediaItem, onClose }) {
       </form>
     </Dialog>
   );
-};
+}
+
+

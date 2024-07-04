@@ -71,8 +71,6 @@ function Row(props) {
         <IconButton  className="icon-button" aria-label="DisabledByDefaultRounded" variant="contained" color="secondary" onClick={() => deny(row.itemId)}>
          <DisabledByDefaultRoundedIcon />
         </IconButton> 
-        {/* <Button variant="contained" color="primary" size="small">אישור</Button> */}
-        {/* <Button variant="contained" color="secondary" size="small" sx={{ ml: 1 }}>דחייה</Button> */}
       </TableRow>
       <TableRow dir='rtl'>
   <TableCell dir='rtl' style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -159,7 +157,12 @@ async function approval(itemId)
       });
       } 
       else if (result.isDenied) {
-        Swal.fire("לא נשמרו שינויים", "", "info");
+        Swal.fire({
+          icon: "info",
+          title: "לא נשמרו שינויים",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }
     });
 }
