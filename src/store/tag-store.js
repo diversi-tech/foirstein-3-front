@@ -33,6 +33,7 @@ class TagStore {
       console.error("Failed to fetch tag:", error);
     }
   }
+
   extractRawData(proxyObject) {
     if (proxyObject != undefined && proxyObject.data != null) {
       console.log("Extracting data from proxy object:", proxyObject.data);
@@ -43,9 +44,11 @@ class TagStore {
         proxyObject
       );
       return proxyObject;
+
     }
   }
 
+   
   async deleteTag(tagId) {
     try {
       console.log("in delete");
@@ -122,15 +125,15 @@ class TagStore {
       console.error("Failed to update tag:", error);
     }
   }
-
-  success(message) {
+    success(message) {
     Swal.fire({
       text: message,
       icon: "success",
       timer: 1700,
     });
   }
-  failure(message) {
+
+   failure(message) {
     Swal.fire({
       icon: "error",
       title: "...אופס",

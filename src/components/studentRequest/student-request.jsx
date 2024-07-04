@@ -24,13 +24,35 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DetailRequest from "./detail-request";
 import requestStore from "../../store/studentsRequest-store";
 import { observer } from "mobx-react-lite";
+
 const StyledTableCell = styled(TableCell)(() => ({
   textAlign: "center", // Center align content in the table cell
 }));
-//הטבלה שולחת כל פעם לקומפוננטה של השורה-כל שורה זה בעצם בקשה
+
+const baseUrl = "https://localhost:7297/api/";
+
 function Row(props) {
   const { row } = props;
+  const [detailRequest, setDetailRequest] = useState(null); // Initiate with null
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchRequest = async () => {
+      try {
+        const res = await fetch(
+          `${baseUrl}BorrowApprovalRequest/details/${row.requestId}`
+        );
+        let data = await res.json();
+        console.log("Data fetched from server:", data); // Log the fetched data
+        const _detailRequest = extractRawData(data);
+        setDetailRequest(_detailRequest);
+        console.log("Extracted data:", _detailRequest); // Log the extracted data
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+    fetchRequest();
+  }, [row.requestId]); // Dependency array should include row.requestId
 
   return (
     <React.Fragment>
@@ -46,21 +68,33 @@ function Row(props) {
         </TableCell>
         <StyledTableCell>
           <Box display="flex" justifyContent="center">
-            <AlertDialog option="אישור" requestId={row.requestId} />
             <AlertDialog option="דחיה" requestId={row.requestId} />
+            <AlertDialog option="אישור" requestId={row.requestId} />
           </Box>
         </StyledTableCell>
-        <StyledTableCell align="right">{row.approvalDate}</StyledTableCell>
-        <StyledTableCell align="right">{row.requestDate}</StyledTableCell>
-        <StyledTableCell align="right">{row.userId}</StyledTableCell>
-        <StyledTableCell align="right">{row.itemId}</StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.approvalDate)}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.requestDate)}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {detailRequest && detailRequest.userName
+            ? detailRequest.userName
+            : "טוען..."}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {detailRequest && detailRequest.itemName
+            ? detailRequest.itemName
+            : "טוען..."}
+        </StyledTableCell>
         <StyledTableCell align="right">{row.requestId}</StyledTableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <DetailRequest userId={row.userId} />
+              <DetailRequest detailRequest={detailRequest}/>
             </Box>
           </Collapse>
         </TableCell>
@@ -68,6 +102,18 @@ function Row(props) {
     </React.Fragment>
   );
 }
+
+DetailRequest.propTypes = {
+  detailRequest: PropTypes.shape({
+    tz:PropTypes.string.isRequired,
+    phoneNumber:PropTypes.string.isRequired,
+    email:PropTypes.string.isRequired,
+    userName: PropTypes.string.isRequired,
+    itemName: PropTypes.string.isRequired,
+    requestDate:PropTypes.string.isRequired,
+    numUserRequests: PropTypes.number.isRequired,
+  }).isRequired,
+};
 
 Row.propTypes = {
   row: PropTypes.shape({
@@ -78,8 +124,9 @@ Row.propTypes = {
     approvalDate: PropTypes.string.isRequired,
   }).isRequired,
 };
+
 function extractRawData(proxyObject) {
-  if (proxyObject != undefined && proxyObject.data != null) {
+  if (proxyObject && proxyObject.data) {
     console.log("Extracting data from proxy object:", proxyObject.data);
     return proxyObject.data;
   } else {
@@ -87,23 +134,33 @@ function extractRawData(proxyObject) {
     return proxyObject;
   }
 }
-//קומפוננטה שמציגה בטבלה את רשימת בקשות התלמידה
+
+function formatDate(dateString) {
+  const dateObj = new Date(dateString);
+  const day = dateObj.getDate().toString().padStart(2, "0");
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+  const year = dateObj.getFullYear();
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+  const seconds = dateObj.getSeconds().toString().padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
 const StudentRequest = observer(() => {
-  const baseUrl = "https://localhost:7297/api/";
   useEffect(() => {
     const fetchRequest = async () => {
       try {
         const res = await fetch(baseUrl + `BorrowRequest`);
         let data = await res.json();
         const rows = extractRawData(data);
-        console.log(rows, "useefect");
-        console.log("data:", data, "Rows:", rows);
+        console.log(rows, "useEffect");
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
     };
     fetchRequest();
   }, []);
+
   const rows = requestStore.getRequest;
   return (
     <Box margin="10vh">
@@ -115,14 +172,14 @@ const StudentRequest = observer(() => {
               <StyledTableCell align="center"></StyledTableCell>
               <StyledTableCell align="center">תאריך בקשה</StyledTableCell>
               <StyledTableCell align="center">תאריך אישור</StyledTableCell>
-              <StyledTableCell align="center">מספר משתמש</StyledTableCell>
-              <StyledTableCell align="center">מספר פריט</StyledTableCell>
+              <StyledTableCell align="center">שם משתמש</StyledTableCell>
+              <StyledTableCell align="center">שם פריט</StyledTableCell>
               <StyledTableCell align="center">מספר בקשה</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <Row key={row.requestId} row={row} />
+              <Row key={row.requestId} row={row} requestId={row.requestId} />
             ))}
           </TableBody>
         </Table>
@@ -130,10 +187,12 @@ const StudentRequest = observer(() => {
     </Box>
   );
 });
+
 export default StudentRequest;
 
 function AlertDialog({ option, requestId }) {
   const [open, setOpen] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -141,9 +200,10 @@ function AlertDialog({ option, requestId }) {
   const handleClose = () => {
     setOpen(false);
   };
+
   const handleSumbit = () => {
     handleClickOpen();
-    if (option == "אישור") {
+    if (option === "אישור") {
       requestStore.updateApproveRequest(requestId);
     } else {
       requestStore.updateDenyRequest(requestId);
@@ -167,7 +227,7 @@ function AlertDialog({ option, requestId }) {
             id="alert-dialog-description"
             style={{ fontWeight: "bold" }}
           >
-            האם אתה רוצה לבצע {option}?
+            ? האם אתה רוצה לבצע {option}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -183,5 +243,5 @@ function AlertDialog({ option, requestId }) {
 
 AlertDialog.propTypes = {
   option: PropTypes.string.isRequired,
-  requestId: PropTypes.string.isRequired,
+  requestId: PropTypes.number.isRequired, // should be number instead of string
 };
