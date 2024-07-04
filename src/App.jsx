@@ -4,8 +4,8 @@ import AppRoutes from './appRoutes'
 import PendingItems from './components/pendingItemsList/pendingItems'
 function App() {
   return (<>
-    {/* <AppRoutes /> */}
-    <PendingItems />
+    <AppRoutes />
+    {/* <PendingItems /> */}
   </>
   )
 }
