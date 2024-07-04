@@ -16,6 +16,9 @@ import MarkEmailUnreadOutlinedIcon from '@mui/icons-material/MarkEmailUnreadOutl
 import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread';
 import MarkEmailUnreadRoundedIcon from '@mui/icons-material/MarkEmailUnreadRounded';
 import { useNavigate } from 'react-router-dom';
+import Badge from '@mui/material/Badge';
+import MailIcon from '@mui/icons-material/Mail';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 // import { AccessAlarm, ThreeDRotation } from '@mui/icons-material';
 // import { IconButton } from '@mui/icons-material';
 
@@ -37,8 +40,21 @@ const handleNavigateToAnotherPage = () => {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-          <MarkEmailUnreadOutlinedIcon  sx={{ color: 'black' ,margin:4 }}  onClick={handleNavigateToAnotherPage}/>
-         
+          {/* <MarkEmailUnreadOutlinedIcon  sx={{ color: 'black' ,margin:4 }}  onClick={handleNavigateToAnotherPage}/> */}
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={4} color="error">
+                <MailIcon style={{ color: 'inherit' }}/>
+              </Badge>
+            </IconButton>
+            {/* <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton> */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
           <Typography
             variant="h6"

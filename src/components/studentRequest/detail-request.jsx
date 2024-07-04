@@ -23,15 +23,12 @@ function DetailRequest({ userId }) {
   useEffect(() => {
     const fetchRequest = async () => {
       try {
+        const requestDetails=await fetch(`${baseUrl}`)
         const res = await fetch(
           `${baseUrl}BorrowApprovalRequest/user/${userId}`
         );
         const data = await res.json();
         setRequest(data);
-        const res2 = await fetch(
-          `https://localhost:7297/api/BorrowApprovalRequest/user/numRequests/${userId}`
-        );
-        const data2 = await res2.json();
         const d=extractRawData(data2);
         setNumOfRequest(d);
       } catch (error) {
