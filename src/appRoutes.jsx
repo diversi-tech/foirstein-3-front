@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import ResponsiveAppBar from './components/ResponsiveAppBar';
 // import HomePage from "./components/homePage";
@@ -11,7 +11,7 @@ import ImageHomePage from "./components/homePage"
 import Header from './components/Header'
 import Footer from "./components/footer";
 import PendingItems from "./components/pendingItemsList/pendingItems";
-import { RiH1 } from "react-icons/ri";
+// import { RiH1 } from "react-icons/ri";
 import StudentRequest from "./components/studentRequest/student-request";
 
 export default function AppRoutes() {

@@ -101,7 +101,7 @@ const ItemList = observer(() => {
                 <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow >
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>כותרת</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תיאור</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>קטגוריה</TableCell>
@@ -113,7 +113,7 @@ const ItemList = observer(() => {
                                 <Button onClick={handleClickAdd}><AddIcon></AddIcon></Button>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        <TableBody >
                             {itemStore.mediaList.map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell align="center">{item.title}</TableCell>
@@ -121,7 +121,10 @@ const ItemList = observer(() => {
                                     <TableCell align="center">{item.category}</TableCell>
                                     <TableCell align="center">{item.author}</TableCell>
                                     {item.isApproved ? <TableCell align="center" style={{color: "green"}}>מאושר</TableCell> : <TableCell align="center" style={{color: "red"}}>ממתין לאישור</TableCell> }
-                                    <TableCell align="center">{item.filePath}</TableCell>
+                                    {/* <TableCell align="center">{item.filePath}</TableCell> */}
+                                    <TableCell align="center">
+                                        <a href={item.filePath} target="_blank" rel="noopener noreferrer">{item.filePath}</a>
+                                    </TableCell>
                                     <TableCell align='center'>
                                         <IconButton
                                             color="primary"
@@ -140,7 +143,7 @@ const ItemList = observer(() => {
                                     <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
                                         <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto' , width:"200px"}}>
                                             {tagStore.tagList.map((tag) => (
-                                                <Chip onDelete={handleDelete} key={tag.id} label={tag.name} color="primary" variant="outlined"/>
+                                                <Chip key={tag.id} label={tag.name} color="primary" variant="outlined" onDelete={handleDelete}/>
                                             ))}
                                         </Stack>
                                     </TableCell>
@@ -179,3 +182,5 @@ const ItemList = observer(() => {
 });
 
 export default ItemList;
+
+
