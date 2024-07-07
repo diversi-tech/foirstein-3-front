@@ -34,6 +34,27 @@ class ItemStore {
        this.fetchPendingItems(); 
        this.fetchMedia();
     }
+
+    async deleteTag(itemId, tagId){
+        try {
+            const res = await fetch(`https://localhost:7297/api/Item/${itemId}/${tagId}`, {
+                method: 'DELETE'
+            });
+            console.log("delete tag:");
+            if (res.status === 200) {
+                this.isDelete = true;
+                this.message = " נמחק בהצלחה! ✅"
+
+            }
+            else{
+                this.isDelete = false;
+                this.message = "מחיקה נכשלה"
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+    }
      
     get getPendingList() {
         return this.pendingItemsList;
@@ -91,6 +112,7 @@ class ItemStore {
             console.error('Failed to approv the item:', error);
         }
     }
+
     async fetchMedia() {
         try {
             const res = await fetch('https://localhost:7297/api/Item');
@@ -151,16 +173,14 @@ class ItemStore {
 
     async updateMedia(mediaId, mediaData) {
         try {
-            const formData = new FormData();
-            for (const key in mediaData) {
-                formData.append(key, mediaData[key]);
-            }
-            console.log("formData: ", formData, "beforeFetch");
+           
+            console.log("formData: ", mediaData, "beforeFetch");
             const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
                 method: 'PUT',
-                body: formData
+                body: mediaData
             });
-            console.log("formData: ", formData, "afterFetch");
+            console.log("formData: ", mediaData, "afterFetch");
+            this.fetchMedia();
 
             if (res.status === 200) {
                 this.isUpdate = true;
@@ -170,11 +190,37 @@ class ItemStore {
                 this.isUpdate = false;
                 this.message = "!עדכון הקובץ לא הצליח"
             }
-            this.fetchMedia();
         } catch (error) {
             console.error('Failed to update media:', error);
         }
     }
+   
+    // async updateMedia(mediaId, mediaData) {
+    //     try {
+    //         console.log("media data: ", mediaData);
+    //         const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
+    //             method: 'PUT',
+    //             body: JSON.stringify(mediaData),
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+            
+         
+    //         console.log("res: ", res);
+    
+    //         if (res.status === 200) {
+    //             this.isUpdate = true;
+    //             this.message = "הקובץ עודכן בהצלחה! ✅";
+    //         } else {
+    //             this.isUpdate = false;
+    //             this.message = "!עדכון הקובץ לא הצליח";
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to update media:', error);
+    //     }
+    // }
+    
 }
 const itemStore = new ItemStore();
 export default itemStore;
