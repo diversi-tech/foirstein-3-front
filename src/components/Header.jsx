@@ -59,6 +59,7 @@ function Header() {
 
 
   return (
+    // כאן יוצג קומפוננטת ה HEADER בכל האפליקציה
     <AppBar position="fixed" sx={{ backgroundColor: 'white', height: '15%' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
