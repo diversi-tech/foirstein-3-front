@@ -55,62 +55,64 @@ function Row(props) {
   }, [row.requestId]); // Dependency array should include row.requestId
 
   return (
-    <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <StyledTableCell>
-          <Box display="flex" justifyContent="center">
-            <AlertDialog option="דחיה" requestId={row.requestId} />
-            <AlertDialog option="אישור" requestId={row.requestId} />
-          </Box>
-        </StyledTableCell>
-        <StyledTableCell align="right">
-          {formatDate(row.approvalDate)}
-        </StyledTableCell>
-        <StyledTableCell align="right">
-          {formatDate(row.requestDate)}
-        </StyledTableCell>
-        <StyledTableCell align="right">
-          {detailRequest && detailRequest.userName
-            ? detailRequest.userName
-            : "טוען..."}
-        </StyledTableCell>
-        <StyledTableCell align="right">
-          {detailRequest && detailRequest.itemName
-            ? detailRequest.itemName
-            : "טוען..."}
-        </StyledTableCell>
-        <StyledTableCell align="right">{row.requestId}</StyledTableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <DetailRequest detailRequest={detailRequest}/>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
+    <Box marginTop="10vh">
+        <React.Fragment>
+          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+            <TableCell>
+              <IconButton
+                aria-label="expand row"
+                size="small"
+                onClick={() => setOpen(!open)}
+              >
+                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              </IconButton>
+            </TableCell>
+            <StyledTableCell>
+              <Box display="flex" justifyContent="center">
+                <AlertDialog option="דחיה" requestId={row.requestId} />
+                <AlertDialog option="אישור" requestId={row.requestId} />
+              </Box>
+            </StyledTableCell>
+            <StyledTableCell align="right">
+              {formatDate(row.approvalDate)}
+            </StyledTableCell>
+            <StyledTableCell align="right">
+              {formatDate(row.requestDate)}
+            </StyledTableCell>
+            <StyledTableCell align="right">
+              {detailRequest && detailRequest.userName
+                ? detailRequest.userName
+                : "טוען..."}
+            </StyledTableCell>
+            <StyledTableCell align="right">
+              {detailRequest && detailRequest.itemName
+                ? detailRequest.itemName
+                : "טוען..."}
+            </StyledTableCell>
+            <StyledTableCell align="right">{row.requestId}</StyledTableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box margin={1}>
+                  <DetailRequest detailRequest={detailRequest} />
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        </React.Fragment>
+    </Box>
   );
 }
 
 DetailRequest.propTypes = {
   detailRequest: PropTypes.shape({
-    tz:PropTypes.string.isRequired,
-    phoneNumber:PropTypes.string.isRequired,
-    email:PropTypes.string.isRequired,
+    tz: PropTypes.string.isRequired,
+    phoneNumber: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
     userName: PropTypes.string.isRequired,
     itemName: PropTypes.string.isRequired,
-    requestDate:PropTypes.string.isRequired,
+    requestDate: PropTypes.string.isRequired,
     numUserRequests: PropTypes.number.isRequired,
   }).isRequired,
 };
