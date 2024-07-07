@@ -31,6 +31,7 @@ import ItemAdd from './item-add';
 import Success from '../message/success';
 import Failure from '../message/failure';
 
+
 const ItemList = observer(() => {
     const [deleteItem, setDeleteItem] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -39,7 +40,7 @@ const ItemList = observer(() => {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const [send, setSend] = useState(false);
+    const [send, setSend] = useState(false);
 
 
     const handleDelete = (item) => {
@@ -57,19 +58,19 @@ const ItemList = observer(() => {
     const confirmDelete = async () => {
         // בדוק ש-deleteItem מוגדר ויש לו ID
         if (deleteItem && deleteItem.id) {
-          try {
-            await itemStore.deleteMedia(deleteItem.id);
-            setDeleteOpen(false);
-            console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
-            setSend(true);
-          } catch (error) {
-            console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
-          }
+            try {
+                await itemStore.deleteMedia(deleteItem.id);
+                setDeleteOpen(false);
+                console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
+                setSend(true);
+            } catch (error) {
+                console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
+            }
         } else {
-          console.warn('No item selected or item ID is missing.');
+            console.warn('No item selected or item ID is missing.');
         }
-      };
-    
+    };
+
     //   const handleDeleteTag = () => {
     //     // console.info('You clicked the delete icon.');
     //   };       
@@ -120,30 +121,43 @@ const ItemList = observer(() => {
                                     <TableCell align="center">{item.description}</TableCell>
                                     <TableCell align="center">{item.category}</TableCell>
                                     <TableCell align="center">{item.author}</TableCell>
-                                    {item.isApproved ? <TableCell align="center">מאושר</TableCell> : <TableCell align="center" >ממתין לאישור</TableCell> }
+                                    {item.isApproved ? <TableCell align="center">מאושר</TableCell> : <TableCell align="center" >ממתין לאישור</TableCell>}
                                     <TableCell align="center">{item.filePath}</TableCell>
                                     <TableCell align='center'>
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleClickEdit(item)}
-                                            >
+                                        >
                                             <EditIcon />
                                         </IconButton>
                                         <IconButton
                                             color="secondary"
                                             onClick={() => handleDelete(item)}
                                             style={{ marginLeft: '10px' }}
-                                            >
+                                        >
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>
-                                    <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
-                                        <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto' , width:"200px"}}>
-                                            {tagStore.tagList.map((tag) => (
-                                                <Chip onDelete={handleDelete} key={tag.id} label={tag.name} color="primary" variant="outlined"/>
-                                            ))}
+                                    <TableCell>
+                                        <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto', width: "200px" }}>
+                                            {item.tags.map((tagId) => {
+                                                const tag = tagStore.tagList.find((tag) => tag.id === tagId);
+                                                if (tag) {
+                                                    return (
+                                                        <Chip
+                                                            key={tag.id}
+                                                            label={tag.name}
+                                                            color="primary"
+                                                            variant='outlined'
+                                                            onDelete={() => handleDelete(tag.id)}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            })}
                                         </Stack>
                                     </TableCell>
+
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -167,7 +181,7 @@ const ItemList = observer(() => {
                             מחיקה
                         </Button>
                     </DialogActions>
-                {send &&(itemStore.isDelete ? <Success /> : <Failure/>)}
+                    {send && (itemStore.isDelete ? <Success /> : <Failure />)}
                 </Dialog>
                 {editedItem && (
                     <ItemEdit mediaItem={editedItem} onClose={handleClose} />

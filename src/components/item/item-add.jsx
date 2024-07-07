@@ -45,7 +45,7 @@ const ItemDdd = observer(() => {
     const [error, setError] = useState(false);
 
     const [formData, setFormData] = useState({
-        id:'',
+        id: '',
         title: '',
         description: '',
         category: '',
@@ -185,8 +185,8 @@ const ItemDdd = observer(() => {
                                         value={formData.title}
                                         onChange={handleChange}
                                         required
-                                        // error={!formData.title}
-                                        // helperText={!formData.title && 'זהו שדה חובה'}
+                                    // error={!formData.title}
+                                    // helperText={!formData.title && 'זהו שדה חובה'}
                                     />
                                     {formData.title && formData.title.length < 2 && (
                                         <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
@@ -203,8 +203,8 @@ const ItemDdd = observer(() => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         required
-                                        // error={!formData.description}
-                                        // helperText={!formData.description && 'זהו שדה חובה'}
+                                    // error={!formData.description}
+                                    // helperText={!formData.description && 'זהו שדה חובה'}
                                     />
                                     {formData.description && formData.description.length < 5 && (
                                         <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
