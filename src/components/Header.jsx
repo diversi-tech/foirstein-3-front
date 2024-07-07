@@ -14,8 +14,9 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
 import MailIcon from '@mui/icons-material/Mail';
 import Badge from '@mui/material/Badge';
-
-
+import RoofingOutlinedIcon from '@mui/icons-material/RoofingOutlined';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 function Header() {
   
   const baseUrl = "https://localhost:7297/api/";
@@ -61,7 +62,7 @@ function Header() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <MarkEmailUnreadOutlinedIcon  sx={{ color: 'black' ,margin:4 }}  onClick={handleNavigateToAnotherPage}/> */}
-          <Tooltip title="התראות" arrow>
+          <Tooltip title="בקשות שמחכות לאישור" arrow>
           <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={() => { navigate('/studentRequest') }}>
             <Badge badgeContent={count} color="error">
               <MailIcon sx={{ color: 'GrayText' }} />
@@ -90,7 +91,8 @@ function Header() {
                 },
               }}
             >
-              אודות
+              {"אודות"}
+              <StickyNote2OutlinedIcon style={{ height: '1.3em', marginLeft: '5px' }}/>
             </Typography>
             {/* again */}
             <Typography
@@ -115,7 +117,8 @@ function Header() {
                 },
               }}
             >
-              בית
+               {"בית"}
+              <RoofingOutlinedIcon style={{ height: '1.3em', marginLeft: '5px' }}/>          
             </Typography>
 
           </Box>
