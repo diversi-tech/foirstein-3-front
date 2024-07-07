@@ -7,7 +7,7 @@ export default function Failure() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpen(false);
-    }, 4000);
+    },3000);
 
     // Clean up the timer if the component unmounts before the timer completes
     return () => clearTimeout(timer);

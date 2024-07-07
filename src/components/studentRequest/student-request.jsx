@@ -94,7 +94,7 @@ function Row(props) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
-              <DetailRequest detailRequest={detailRequest}/>
+              <DetailRequest detailRequest={detailRequest} />
             </Box>
           </Collapse>
         </TableCell>
@@ -105,12 +105,12 @@ function Row(props) {
 
 DetailRequest.propTypes = {
   detailRequest: PropTypes.shape({
-    tz:PropTypes.string.isRequired,
-    phoneNumber:PropTypes.string.isRequired,
-    email:PropTypes.string.isRequired,
+    tz: PropTypes.string.isRequired,
+    phoneNumber: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
     userName: PropTypes.string.isRequired,
     itemName: PropTypes.string.isRequired,
-    requestDate:PropTypes.string.isRequired,
+    requestDate: PropTypes.string.isRequired,
     numUserRequests: PropTypes.number.isRequired,
   }).isRequired,
 };
@@ -163,7 +163,7 @@ const StudentRequest = observer(() => {
 
   const rows = requestStore.getRequest;
   return (
-    <Box margin="10vh">
+    <Box>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
@@ -231,10 +231,13 @@ function AlertDialog({ option, requestId }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>ביטול</Button>
-          <Button onClick={handleSumbit} autoFocus>
-            אישור
-          </Button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end',direction:'rtl' }}>
+            <Button onClick={handleClose}>ביטול</Button>
+            <Button onClick={handleSumbit} autoFocus variant="contained">
+              אישור
+            </Button>
+          </div>
+
         </DialogActions>
       </Dialog>
     </React.Fragment>
