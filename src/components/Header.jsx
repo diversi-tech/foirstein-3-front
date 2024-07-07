@@ -29,9 +29,13 @@ function Header() {
    const handleNavigateToHome = () => {
     navigate('/');
    };
-const handleNavigateToAnotherPage = () => {
+   const handleNavigateToAbout = () => {
+    navigate('/about'); 
+  };
+  const handleNavigateToAnotherPage = () => {
     navigate('/another-page'); 
   };
+
   return (
     <AppBar position="fixed" sx={{ backgroundColor: 'white',height:'15%' }}>
       <Container maxWidth="xl">
@@ -44,7 +48,7 @@ const handleNavigateToAnotherPage = () => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            onClick={handleNavigateToAbout}
             sx={{
               mr: 8,
               display: { xs: 'none', md: 'flex' },
