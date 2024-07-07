@@ -163,7 +163,7 @@ const StudentRequest = observer(() => {
 
   const rows = requestStore.getRequest;
   return (
-    <Box margin="10vh">
+    <Box>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>

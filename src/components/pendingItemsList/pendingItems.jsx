@@ -208,7 +208,7 @@ export const PendingItems= observer(() => {
 const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center"  padding={2}>
+    <Box display="flex" justifyContent="center" alignItems="center" >
     <Paper elevation={3} sx={{ width: '90%', maxWidth: 1200 }}>
     <Box padding={2} textAlign="center" >
           <Typography variant="h4" component="h1"><b>פריטים ממתינים לאישור</b></Typography>
