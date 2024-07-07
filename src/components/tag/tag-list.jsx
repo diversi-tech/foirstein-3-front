@@ -22,6 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import tagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -81,6 +82,7 @@ const TagList = observer(() => {
 
   const tagAdd = () => {
     setIsAddTagOpen(true);
+    tagStore.message = "";
   };
 
   return (
@@ -100,16 +102,14 @@ const TagList = observer(() => {
                 <TableBody>
                   {/* כותרות העמודות */}
                   <TableRow>
-                    <StyledTableCell align="right">שם</StyledTableCell>
-                    <StyledTableCell align="right">עריכה</StyledTableCell>
-                    <StyledTableCell align="right">מחיקה</StyledTableCell>
+                    <StyledTableCell>שם</StyledTableCell>
+                    <StyledTableCell>עריכה</StyledTableCell>
+                    <StyledTableCell>מחיקה</StyledTableCell>
                   </TableRow>
                   {/* תוכן הטבלה */}
                   {tagStore.tagList.map((row) => (
                     <TableRow key={row.id}>
-                      <StyledTableCell align="right">
-                        {row.name}
-                      </StyledTableCell>
+                      <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>
                         <Button
                           onClick={() => {
@@ -137,7 +137,8 @@ const TagList = observer(() => {
             </TableContainer>
             <Box textAlign="center" marginTop={3}>
               <Button variant="contained" color="primary" onClick={tagAdd}>
-                הוספת תג
+                <AddCircleOutlineIcon />
+                יצירת תג חדש
               </Button>
             </Box>
           </Box>
@@ -145,14 +146,19 @@ const TagList = observer(() => {
       </Grid>
 
       {/* dialog edit */}
-      <Dialog open={editOpen} style={{ direction: "rtl" }}>
+      <Dialog open={editOpen} maxWidth="sm" dir="rtl">
         <DialogTitle>{editItem && `עריכת #${editItem.id}`}</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <TextField
+            autoFocus
+            margin="dense"
+            id="name"
             label="שם"
+            type="text"
             value={editItem ? editItem.name : ""}
-            fullWidth
-            onChange={(e) => setEditItem({ ...editItem, name: e.target.value })}
+            onChange={(e) =>
+              editItem && setEditItem({ ...editItem, name: e.target.value })
+            }
             error={editItem && (!editItem.name || editItem.name.length < 2)}
             helperText={
               editItem && !editItem.name
@@ -176,7 +182,7 @@ const TagList = observer(() => {
       </Dialog>
 
       {/* dialog delete */}
-      <Dialog open={deleteOpen} style={{ direction: "rtl" }}>
+      <Dialog open={deleteOpen} maxWidth="xs" dir="rtl">
         <DialogTitle>אישור מחיקה</DialogTitle>
         <DialogContent>
           <Typography>האם אתה בטוח שברצונך למחוק את הפריט הזה?</Typography>
@@ -185,12 +191,9 @@ const TagList = observer(() => {
           <Button onClick={() => dialogClose("deleteOpen")} color="primary">
             ביטול
           </Button>
-          <Button onClick={tagDelete} color="secondary">
-            מחיקה
-          </Button>
+          <Button onClick={tagDelete}>מחיקה</Button>
         </DialogActions>
       </Dialog>
-
       {isAddTagOpen && <TagAdd onClose={() => setIsAddTagOpen(false)} />}
     </Grid>
   );
