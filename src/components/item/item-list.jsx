@@ -1,3 +1,226 @@
+// import { useState } from 'react';
+// import { observer } from 'mobx-react-lite';
+// import itemStore from '../../store/item-store';
+// import {
+//     Table,
+//     TableBody,
+//     TableCell,
+//     TableContainer,
+//     TableHead,
+//     TableRow,
+//     Paper,
+//     IconButton,
+//     Dialog,
+//     DialogActions,
+//     DialogContent,
+//     DialogTitle,
+//     Button,
+//     useMediaQuery,
+//     useTheme,
+//     Chip,
+//     Stack
+// } from '@mui/material';
+// // import { DataGrid } from '@mui/x-data-grid';
+// import AddIcon from '@mui/icons-material/Add';
+// import EditIcon from '@mui/icons-material/Edit';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import ItemEdit from './item-edit';
+// import tagStore from '../../store/tag-store';
+// // import { ItemAdd } from 'react-router-dom';
+// import ItemAdd from './item-add';
+// import Success from '../message/success';
+// import Failure from '../message/failure';
+
+
+// const ItemList = observer(() => {
+//     const [deleteItem, setDeleteItem] = useState(null);
+//     const [deleteTag, setDeleteTag] = useState(null);
+//     const [deleteOpen, setDeleteOpen] = useState(false);
+//     const [editedItem, setEditedItem] = useState(null);
+//     const [editOpen, setEditOpen] = useState(false);
+
+//     const theme = useTheme();
+//     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+//     const [send, setSend] = useState(false);
+
+
+//     const handleDelete = (item) => {
+//         setDeleteItem(item);
+//         setDeleteOpen(true);
+//     };
+
+//     const handleDeleteChip = (item, tag) =>{
+//         console.log("delete: ", tag.id);
+//         setDeleteOpen(true);
+//         setDeleteTag(tag);
+//         setDeleteItem(item)
+//         // setDeleteItem(item);
+//     }
+
+//     // const handleDeleteConfirm = async () => {
+//     //     handleClose;
+//     // }
+
+
+//     // const confirmDelete = async () => {
+//     //     if (deleteItem) {
+//     //         await itemStore.deleteMedia(deleteItem.id);
+//     //         setDeleteOpen(false);
+//     //     }
+//     // };
+
+//     const confirmDelete = async () => {
+
+//         // console.log("tag id: ", deleteTag.id);
+//         console.log("item id: ", deleteItem.id);
+//         if(deleteTag && deleteTag.id){
+//             await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+//             setSend(true);
+//             // setDeleteOpen(false);
+
+//         }
+//         // בדוק ש-deleteItem מוגדר ויש לו ID
+//         if (deleteItem && deleteItem.id) {
+//           try {
+//             await itemStore.deleteMedia(deleteItem.id);
+//             setDeleteOpen(false);
+//             console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
+//             setSend(true);
+//           } catch (error) {
+//             console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
+//           }
+//         } else {
+//             console.warn('No item selected or item ID is missing.');
+//         }
+//     };
+
+//     //   const handleDeleteTag = () => {
+//     //     // console.info('You clicked the delete icon.');
+//     //   };       
+
+//     const handleClickAdd = () => {
+//         console.log("beforeClick", itemStore.add);
+//         // itemStore.setAdd(true); // Use the setAdd action instead of modifying add directly
+//         itemStore.add = true;
+//         console.log("afterClick", itemStore.add);
+
+//     };
+
+//     const handleClickEdit = (item) => {
+//         setEditedItem(item);
+//         setEditOpen(true);
+//     };
+
+//     const handleClose = () => {
+//         setDeleteOpen(false);
+//         setDeleteItem(null);
+//         setDeleteTag(null);
+//         setEditOpen(false);
+//         setEditedItem(null);
+//     };
+
+//     return (
+//         <>
+//             <div style={{ width: "100%", height: "25%" }}>
+//                 <h2 style={{ textAlign: "center" }}>רשימת קבצים</h2>
+//                 <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
+//                     <Table>
+//                         <TableHead>
+//                             <TableRow >
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>כותרת</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תיאור</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>קטגוריה</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>מחבר</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>סטטוס</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>מדף/קובץ</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>פעולה</TableCell>
+//                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תגית</TableCell>
+//                                 <Button onClick={handleClickAdd}><AddIcon></AddIcon></Button>
+//                             </TableRow>
+//                         </TableHead>
+//                         <TableBody >
+//                             {itemStore.mediaList.map((item) => (
+//                                 <TableRow key={item.id}>
+//                                     <TableCell align="center">{item.title}</TableCell>
+//                                     <TableCell align="center">{item.description}</TableCell>
+//                                     <TableCell align="center">{item.category}</TableCell>
+//                                     <TableCell align="center">{item.author}</TableCell>
+//                                     {item.isApproved ? <TableCell align="center" style={{color: "green"}}>מאושר</TableCell> : <TableCell align="center" style={{color: "red"}}>ממתין לאישור</TableCell> }
+//                                     {/* <TableCell align="center">{item.filePath}</TableCell> */}
+//                                     <TableCell align="center">
+//                                         <a href={item.filePath} target="_blank" rel="noopener noreferrer">{item.filePath}</a>
+//                                     </TableCell>                                    <TableCell align='center'>
+//                                         <IconButton
+//                                             color="primary"
+//                                             onClick={() => handleClickEdit(item)}
+//                                         >
+//                                             <EditIcon />
+//                                         </IconButton>
+//                                         <IconButton
+//                                             color="secondary"
+//                                             onClick={() => handleDelete(item)}
+//                                             style={{ marginLeft: '10px' }}
+//                                         >
+//                                             <DeleteIcon />
+//                                         </IconButton>
+//                                     </TableCell>
+//                                     <TableCell>
+//                                         <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto', width: "200px" }}>
+//                                             {item.tags.map((tagId) => {
+//                                                 const tag = tagStore.tagList.find((tag) => tag.id === tagId);
+//                                                 if (tag) {
+//                                                     return (
+//                                                         <Chip
+//                                                             key={tag.id}
+//                                                             label={tag.name}
+//                                                             color="primary"
+//                                                             variant='outlined'
+//                                                             onDelete={() => handleDelete(tag.id)}
+//                                                         />
+//                                                     );
+//                                                 }
+//                                                 return null;
+//                                             })}
+//                                         </Stack>
+//                                     </TableCell>
+
+//                                 </TableRow>
+//                             ))}
+//                         </TableBody>
+//                     </Table>
+//                 </TableContainer>
+//                 <Dialog
+//                     open={deleteOpen}
+//                     onClose={handleClose}
+//                     fullScreen={fullScreen}
+//                     style={{ direction: "rtl" }}
+//                 >
+//                     <DialogTitle>אישור מחיקה</DialogTitle>
+//                     <DialogContent>
+//                         <p>האם אתה בטוח שברצונך למחוק את הפריט הזה?</p>
+//                     </DialogContent>
+//                     <DialogActions>
+//                         <Button onClick={handleClose} color="primary">
+//                             ביטול
+//                         </Button>
+//                         <Button onClick={confirmDelete} color="secondary" >
+//                             מחיקה
+//                         </Button>
+//                     </DialogActions>
+//                     {send && (itemStore.isDelete ? <Success /> : <Failure />)}
+//                 </Dialog>
+//                 {editedItem && (
+//                     <ItemEdit mediaItem={editedItem} onClose={handleClose} />
+//                 )}
+//                 {itemStore.add && <ItemAdd />}
+//             </div>
+//         </>
+//     );
+// });
+
+// export default ItemList;
+
+
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import itemStore from '../../store/item-store';
@@ -18,19 +241,17 @@ import {
     useMediaQuery,
     useTheme,
     Chip,
-    Stack
+    Stack,
+    Checkbox
 } from '@mui/material';
-// import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ItemEdit from './item-edit';
 import tagStore from '../../store/tag-store';
-// import { ItemAdd } from 'react-router-dom';
 import ItemAdd from './item-add';
 import Success from '../message/success';
 import Failure from '../message/failure';
-
 
 const ItemList = observer(() => {
     const [deleteItem, setDeleteItem] = useState(null);
@@ -38,72 +259,49 @@ const ItemList = observer(() => {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [editedItem, setEditedItem] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [send, setSend] = useState(false);
-
 
     const handleDelete = (item) => {
         setDeleteItem(item);
         setDeleteOpen(true);
     };
 
-    const handleDeleteChip = (item, tag) =>{
+    const handleDeleteChip = (item, tag) => {
         console.log("delete: ", tag.id);
         setDeleteOpen(true);
         setDeleteTag(tag);
-        setDeleteItem(item)
-        // setDeleteItem(item);
+        setDeleteItem(item);
     }
-    
-    // const handleDeleteConfirm = async () => {
-    //     handleClose;
-    // }
-    
-    
-    // const confirmDelete = async () => {
-    //     if (deleteItem) {
-    //         await itemStore.deleteMedia(deleteItem.id);
-    //         setDeleteOpen(false);
-    //     }
-    // };
 
     const confirmDelete = async () => {
-
-        console.log("tag id: ", deleteTag.id);
+        // console.log("tag id: ", deleteTag.id);
         console.log("item id: ", deleteItem.id);
-        if(deleteTag && deleteTag.id){
+        if (deleteTag && deleteTag.id) {
             await itemStore.deleteTag(deleteItem.id, deleteTag.id);
             setSend(true);
-            // setDeleteOpen(false);
-
         }
-        // בדוק ש-deleteItem מוגדר ויש לו ID
         if (deleteItem && deleteItem.id) {
-          try {
-            await itemStore.deleteMedia(deleteItem.id);
-            setDeleteOpen(false);
-            console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
-            setSend(true);
-          } catch (error) {
-            console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
-          }
+            try {
+                await itemStore.deleteMedia(deleteItem.id);
+                setDeleteOpen(false);
+                console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
+                setSend(true);
+            } catch (error) {
+                console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
+            }
         } else {
             console.warn('No item selected or item ID is missing.');
         }
     };
 
-    //   const handleDeleteTag = () => {
-    //     // console.info('You clicked the delete icon.');
-    //   };       
-
     const handleClickAdd = () => {
         console.log("beforeClick", itemStore.add);
-        // itemStore.setAdd(true); // Use the setAdd action instead of modifying add directly
         itemStore.add = true;
         console.log("afterClick", itemStore.add);
-
     };
 
     const handleClickEdit = (item) => {
@@ -119,6 +317,24 @@ const ItemList = observer(() => {
         setEditedItem(null);
     };
 
+    const handleSelectItem = (item) => {
+        setSelectedItems((prevSelectedItems) => {
+            if (prevSelectedItems.includes(item.id)) {
+                return prevSelectedItems.filter((id) => id !== item.id);
+            } else {
+                return [...prevSelectedItems, item.id];
+            }
+        });
+    };
+
+    const handleDeleteSelectedItems = async () => {
+        for (const itemId of selectedItems) {
+            await itemStore.deleteMedia(itemId);
+        }
+        setSelectedItems([]);
+        setSend(true);
+    };
+
     return (
         <>
             <div style={{ width: "100%", height: "25%" }}>
@@ -127,6 +343,20 @@ const ItemList = observer(() => {
                     <Table>
                         <TableHead>
                             <TableRow >
+                                <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>
+                                    <Checkbox
+                                        color="primary"
+                                        indeterminate={selectedItems.length > 0 && selectedItems.length < itemStore.mediaList.length}
+                                        checked={selectedItems.length === itemStore.mediaList.length}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedItems(itemStore.mediaList.map((item) => item.id));
+                                            } else {
+                                                setSelectedItems([]);
+                                            }
+                                        }}
+                                    />
+                                </TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>כותרת</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תיאור</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>קטגוריה</TableCell>
@@ -135,21 +365,30 @@ const ItemList = observer(() => {
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>מדף/קובץ</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>פעולה</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תגית</TableCell>
-                                <Button onClick={handleClickAdd}><AddIcon></AddIcon></Button>
+                                <Button onClick={selectedItems.length > 0 ? handleDeleteSelectedItems : handleClickAdd}>
+                                    {selectedItems.length > 0 ? <DeleteIcon /> : <AddIcon />}
+                                </Button>
                             </TableRow>
                         </TableHead>
                         <TableBody >
                             {itemStore.mediaList.map((item) => (
                                 <TableRow key={item.id}>
+                                    <TableCell align="center">
+                                        <Checkbox
+                                            color="primary"
+                                            checked={selectedItems.includes(item.id)}
+                                            onChange={() => handleSelectItem(item)}
+                                        />
+                                    </TableCell>
                                     <TableCell align="center">{item.title}</TableCell>
                                     <TableCell align="center">{item.description}</TableCell>
                                     <TableCell align="center">{item.category}</TableCell>
                                     <TableCell align="center">{item.author}</TableCell>
-                                    {item.isApproved ? <TableCell align="center" style={{color: "green"}}>מאושר</TableCell> : <TableCell align="center" style={{color: "red"}}>ממתין לאישור</TableCell> }
-                                    {/* <TableCell align="center">{item.filePath}</TableCell> */}
+                                    {item.isApproved ? <TableCell align="center" style={{ color: "green" }}>מאושר</TableCell> : <TableCell align="center" style={{ color: "red" }}>ממתין לאישור</TableCell>}
                                     <TableCell align="center">
                                         <a href={item.filePath} target="_blank" rel="noopener noreferrer">{item.filePath}</a>
-                                    </TableCell>                                    <TableCell align='center'>
+                                    </TableCell>
+                                    <TableCell align='center'>
                                         <IconButton
                                             color="primary"
                                             onClick={() => handleClickEdit(item)}
@@ -175,7 +414,7 @@ const ItemList = observer(() => {
                                                             label={tag.name}
                                                             color="primary"
                                                             variant='outlined'
-                                                            onDelete={() => handleDelete(tag.id)}
+                                                            onDelete={() => handleDeleteChip(item, tag)}
                                                         />
                                                     );
                                                 }
@@ -183,7 +422,6 @@ const ItemList = observer(() => {
                                             })}
                                         </Stack>
                                     </TableCell>
-
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -219,5 +457,3 @@ const ItemList = observer(() => {
 });
 
 export default ItemList;
-
-

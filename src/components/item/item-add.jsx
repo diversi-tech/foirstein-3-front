@@ -20,6 +20,8 @@ import {
     Chip,
     Box,
     OutlinedInput,
+    Checkbox,
+    ListItemText
 } from '@mui/material';
 import itemStore from '../../store/item-store'; // Import the merged store
 import Success from '../message/success';
@@ -44,19 +46,23 @@ const ItemDdd = observer(() => {
     const [openF, setOpenF] = useState(false);
     const [error, setError] = useState(false);
 
+    const [isApproved, setIsApproved] = useState();
+    const [isHandleUpload, setIsHndleUpload] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('')
+    useState
     const [formData, setFormData] = useState({
-        id: '',
+        // id: '',
         title: '',
         description: '',
         category: '',
         author: '',
-        isApproved: '',
+        // isApproved: '',
         tag: [],
         filePath: null,
-        file: null,
-        isHandleUpload: false,
-        selectedValue: '',
-        open: false
+        // file: null,
+        // isHandleUpload: false,
+        // selectedValue: '',
+        // open: false
     });
     const [isUpload, setIsUpload] = useState(false);
 
@@ -67,18 +73,21 @@ const ItemDdd = observer(() => {
         setOpen(false);
         itemStore.add = false;
         setFormData({
-            id: '',
+            // id: '',
             title: '',
             description: '',
             category: '',
             author: '',
-            isApproved: '',
+            // isApproved: '',
             tag: [],
             filePath: null,
             file: null,
-            isHandleUpload: false,
-            selectedValue: '',
+            // isHandleUpload: false,
+            // selectedValue: '',
         });
+        setIsHndleUpload(false);
+        setSelectedValue('');
+        setIsApproved('')
     };
 
     const handleRadioChange = (event) => {
@@ -86,85 +95,96 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            selectedValue: value,
+
             filePath: value === 'book' ? '' : prevData.filePath, // Reset filePath value if switching to file upload
         }));
+        setSelectedValue(value)
     };
 
+
     const handleChange = (e) => {
-        if (formData.selectedValue === 'book') {
-            const { name, value } = e.target;
+        const { name, value, type, files } = e.target;
+        if (type === 'file') {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: files[0],
+            }));
+        } else {
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: value,
             }));
-        } else {
-            const file = e.target.files[0];
-            setFormData((prevData) => ({
-                ...prevData,
-                file: file,
-                filePath: file ? file.name : null,
-            }));
         }
     };
 
-    const handleChangeChip = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setFormData((prevData) => ({
-            ...prevData,
-            tag:
-                // On autofill we get a stringified value.
-                typeof value === 'string' ? value.split(',') : value,
-        }));
+
+
+    const handleTagChange = (event) => {
+        const { value } = event.target;
+        setFormData((prevData) => {
+            const newTags = typeof value === 'string' ? value.split(',') : value;
+            return {
+                ...prevData, tag: newTags.map(tagName => {
+                    const tag = tagStore.tagList.find(t => t.name === tagName);
+                    return tag ? tag.id : tagName;
+                })
+            };
+        });
     };
 
-    const fileExtension = formData.file ? formData.file.name.split('.').pop().toLowerCase() : '';
+
+    const fileExtension = formData.filePath ? formData.filePath.name.split('.').pop().toLowerCase() : '';
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const { selectedValue, file, ...dataToSend } = formData;
-        const formDataToSend = selectedValue === 'book' ? { ...dataToSend } : { ...dataToSend, file };
+        const dataToSend = { ...formData };
+
+        const formDataToSend = new FormData();
+        for (const key in dataToSend) {
+            if (key === 'tag') {
+                const tagIds = dataToSend[key].map(tagName => {
+                    const tag = tagStore.tagList.find(t => t.name === tagName);
+                    return tag ? tag.id : tagName;
+                });
+                tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId)); // השתמש בשם המפתח 'tags[]' כדי לציין מערך
+            } else {
+                formDataToSend.append(key, dataToSend[key]);
+            }
+        }
 
         try {
-            if (selectedValue === 'book') {
-                // await itemStore.uploadMedia('book', formDataToSend);
-                console.log("add book");
-            } else {
-                // await itemStore.uploadMedia('file', formDataToSend);
-                console.log("add file");
-            }
+            await itemStore.uploadMedia(formDataToSend);
             setFormData({
-                id: '',
                 title: '',
                 description: '',
                 category: '',
                 author: '',
-                isApproved: '',
                 tag: [],
                 filePath: null,
-                file: null,
-                isHandleUpload: true,
-                selectedValue: selectedValue,
             });
+            setIsHndleUpload(true);
+            setSelectedValue('');
             setIsUpload(true);
             handleClose();
         } catch (error) {
             console.error('Failed to upload media:', error);
-            // Handle error state or alert the user
         }
     };
+
+
+
+
 
     return (
         <>
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
-                <DialogTitle>{formData.selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
+                <DialogTitle>{selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
                 <FormControl>
                     <RadioGroup
                         aria-label="upload-type"
                         name="upload-type"
-                        value={formData.selectedValue}
+                        value={selectedValue}
                         onChange={handleRadioChange}
                     >
                         <FormControlLabel value="book" control={<Radio />} label="ספר" />
@@ -185,8 +205,6 @@ const ItemDdd = observer(() => {
                                         value={formData.title}
                                         onChange={handleChange}
                                         required
-                                    // error={!formData.title}
-                                    // helperText={!formData.title && 'זהו שדה חובה'}
                                     />
                                     {formData.title && formData.title.length < 2 && (
                                         <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
@@ -203,8 +221,6 @@ const ItemDdd = observer(() => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         required
-                                    // error={!formData.description}
-                                    // helperText={!formData.description && 'זהו שדה חובה'}
                                     />
                                     {formData.description && formData.description.length < 5 && (
                                         <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
@@ -214,14 +230,12 @@ const ItemDdd = observer(() => {
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        id="descId"
+                                        id="categoryId"
                                         label="קטגוריה"
                                         variant="outlined"
                                         name="category"
                                         value={formData.category}
                                         onChange={handleChange}
-                                        // error={!formData.category}
-                                        // helperText={!formData.category && 'זהו שדה חובה'}
                                         required
                                     />
                                     {formData.category && formData.category.length < 5 && (
@@ -232,14 +246,12 @@ const ItemDdd = observer(() => {
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        id="descId"
+                                        id="authorId"
                                         label="מחבר"
                                         variant="outlined"
                                         name="author"
                                         value={formData.author}
                                         onChange={handleChange}
-                                        // error={!formData.author}
-                                        // helperText={!formData.author && 'זהו שדה חובה'}
                                         required
                                     />
                                     {formData.author && formData.author.length < 5 && (
@@ -249,36 +261,36 @@ const ItemDdd = observer(() => {
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
+                                    <InputLabel id="tag-label">תגית</InputLabel>
                                     <Select
-                                        labelId="demo-multiple-chip-label"
-                                        id="demo-multiple-chip"
-                                        name='tag'
+                                        labelId="tag-label"
+                                        id="tag-select"
                                         multiple
                                         value={formData.tag}
-                                        onChange={handleChangeChip}
+                                        onChange={handleTagChange}
                                         input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
                                         renderValue={(selected) => (
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                {selected.map((value) => (
-                                                    <Chip key={value} label={value} />
-                                                ))}
+                                                {selected.map((value) => {
+                                                    const tag = tagStore.tagList.find(tag => tag.id === value);
+                                                    return <Chip key={value} label={tag ? tag.name : value} />;
+                                                })}
                                             </Box>
                                         )}
                                         MenuProps={MenuProps}
                                     >
-                                        {tagStore.tagList.map((name) => (
-                                            <MenuItem
-                                                key={name.id}
-                                                value={name.name}
-                                            >
-                                                {name.name}
+                                        {tagStore.tagList.map((tag) => (
+                                            <MenuItem key={tag.id} value={tag.id}>
+                                                <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
+                                                <ListItemText primary={tag.name} />
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
+
+
                             </Grid>
-                            {formData.selectedValue === 'book' && (
+                            {selectedValue === 'book' && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
@@ -288,34 +300,31 @@ const ItemDdd = observer(() => {
                                             name="filePath"
                                             value={formData.filePath}
                                             onChange={handleChange}
-                                            // error={!formData.filePath}
-                                            // helperText={!formData.filePath && 'זהו שדה חובה'}
                                             required
                                         />
                                     </FormControl>
                                 </Grid>
                             )}
-                            {formData.selectedValue === 'file' && (
+                            {selectedValue === 'file' && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
                                             id="fileId"
                                             type="file"
                                             label="מיקום"
+                                            name="filePath"
                                             onChange={handleChange}
-                                            // error={!formData.file}
-                                            // helperText={!formData.file && 'זהו שדה חובה'}
                                             required
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
                                         />
-                                        {formData.file && !allowedExtensions.includes(fileExtension) && (
-                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG,docx, ZIP, mp3, או MP4 file.</Typography>
+                                        {formData.filePath && !allowedExtensions.includes(fileExtension) && (
+                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx, ZIP, mp3, או MP4 file.</Typography>
                                         )}
-                                        {formData.file && formData.file.size > maxSize && (
-                                            <Typography color="error">הקובץ גדול מדי. אנא בחר/י קובץ קטן יותר מ-5 מגה-בייט.</Typography>
-                                        )}
+                                        {/* {formData.filePath && formData.file.size > maxSize && (
+                                        <Typography color="error">הקובץ גדול מדי. אנא בחר/י קובץ קטן יותר מ-5 מגה-בייט.</Typography>
+                                    )} */}
                                     </FormControl>
                                 </Grid>
                             )}
@@ -332,8 +341,8 @@ const ItemDdd = observer(() => {
                     </>
                 )}
             </Dialog>
-
         </>
     );
 });
+
 export default ItemDdd;
