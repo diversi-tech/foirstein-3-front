@@ -57,6 +57,7 @@ function Header() {
     navigate('/another-page');
   };
 
+
   return (
     <AppBar position="fixed" sx={{ backgroundColor: 'white', height: '15%' }}>
       <Container maxWidth="xl">
