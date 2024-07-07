@@ -33,6 +33,7 @@ import Failure from '../message/failure';
 
 const ItemList = observer(() => {
     const [deleteItem, setDeleteItem] = useState(null);
+    const [deleteTag, setDeleteTag] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [editedItem, setEditedItem] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
@@ -47,6 +48,19 @@ const ItemList = observer(() => {
         setDeleteOpen(true);
     };
 
+    const handleDeleteChip = (item, tag) =>{
+        console.log("delete: ", tag.id);
+        setDeleteOpen(true);
+        setDeleteTag(tag);
+        setDeleteItem(item)
+        // setDeleteItem(item);
+    }
+    
+    // const handleDeleteConfirm = async () => {
+    //     handleClose;
+    // }
+    
+    
     // const confirmDelete = async () => {
     //     if (deleteItem) {
     //         await itemStore.deleteMedia(deleteItem.id);
@@ -55,11 +69,20 @@ const ItemList = observer(() => {
     // };
 
     const confirmDelete = async () => {
+
+        console.log("tag id: ", deleteTag.id);
+        console.log("item id: ", deleteItem.id);
+        if(deleteTag && deleteTag.id){
+            await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+            setSend(true);
+            // setDeleteOpen(false);
+
+        }
         // בדוק ש-deleteItem מוגדר ויש לו ID
-        if (deleteItem && deleteItem.id) {
+       else if (deleteItem && deleteItem.id) {
           try {
             await itemStore.deleteMedia(deleteItem.id);
-            setDeleteOpen(false);
+            // setDeleteOpen(false);
             console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
             setSend(true);
           } catch (error) {
@@ -90,6 +113,7 @@ const ItemList = observer(() => {
     const handleClose = () => {
         setDeleteOpen(false);
         setDeleteItem(null);
+        setDeleteTag(null);
         setEditOpen(false);
         setEditedItem(null);
     };
@@ -101,7 +125,7 @@ const ItemList = observer(() => {
                 <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow >
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>כותרת</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>תיאור</TableCell>
                                 <TableCell align="center" style={{ fontWeight: 'bold', fontSize: '1.2em', padding: '12px' }}>קטגוריה</TableCell>
@@ -113,15 +137,18 @@ const ItemList = observer(() => {
                                 <Button onClick={handleClickAdd}><AddIcon></AddIcon></Button>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        <TableBody >
                             {itemStore.mediaList.map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell align="center">{item.title}</TableCell>
                                     <TableCell align="center">{item.description}</TableCell>
                                     <TableCell align="center">{item.category}</TableCell>
                                     <TableCell align="center">{item.author}</TableCell>
-                                    {item.isApproved ? <TableCell align="center">מאושר</TableCell> : <TableCell align="center" >ממתין לאישור</TableCell> }
-                                    <TableCell align="center">{item.filePath}</TableCell>
+                                    {item.isApproved ? <TableCell align="center" style={{color: "green"}}>מאושר</TableCell> : <TableCell align="center" style={{color: "red"}}>ממתין לאישור</TableCell> }
+                                    {/* <TableCell align="center">{item.filePath}</TableCell> */}
+                                    <TableCell align="center">
+                                        <a href={item.filePath} target="_blank" rel="noopener noreferrer">{item.filePath}</a>
+                                    </TableCell>
                                     <TableCell align='center'>
                                         <IconButton
                                             color="primary"
@@ -140,7 +167,7 @@ const ItemList = observer(() => {
                                     <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
                                         <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto' , width:"200px"}}>
                                             {tagStore.tagList.map((tag) => (
-                                                <Chip onDelete={handleDelete} key={tag.id} label={tag.name} color="primary" variant="outlined"/>
+                                                <Chip  onDelete={() =>handleDeleteChip(item, tag)} key={tag.id} label={tag.name} color="primary" variant="outlined"/>
                                             ))}
                                         </Stack>
                                     </TableCell>
@@ -179,3 +206,5 @@ const ItemList = observer(() => {
 });
 
 export default ItemList;
+
+
