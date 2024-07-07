@@ -29,7 +29,7 @@ class StudentsRequestStore {
   async fetchRequest() {
     try {
       const res = await fetch(baseUrl + "BorrowRequest");
-      const data = await res.json();
+      let data = await res.json();
 
       runInAction(() => {
         this.requestList = this.extractRawData(data);
@@ -63,7 +63,7 @@ class StudentsRequestStore {
       if (res.status === 200) {
         Swal.fire({
           title: "Success!",
-          text: "You clicked the button!",
+          text: "! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
         runInAction(() => {
@@ -72,7 +72,7 @@ class StudentsRequestStore {
       } else {
         Swal.fire({
           title: "Error!",
-          text: "Do you want to continue",
+          text: "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });
@@ -93,7 +93,7 @@ class StudentsRequestStore {
       if (res.status === 200) {
         Swal.fire({
           title: "Success!",
-          text: "You clicked the button!",
+          text: "! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
         runInAction(() => {
@@ -102,7 +102,7 @@ class StudentsRequestStore {
       } else {
         Swal.fire({
           title: "Error!",
-          text: "Do you want to continue",
+          text: "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });
@@ -123,13 +123,13 @@ class StudentsRequestStore {
       if (res.status === 200) {
         Swal.fire({
           title: "Success!",
-          text: "You clicked the button!",
+          text: "! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
       } else {
         Swal.fire({
           title: "Error!",
-          text: "Do you want to continue",
+          text: "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });

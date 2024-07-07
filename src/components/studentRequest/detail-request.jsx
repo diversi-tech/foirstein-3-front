@@ -1,95 +1,59 @@
-import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Typography, Box } from "@mui/material";
-function DetailRequest({ userId }) {
-  const baseUrl = "https://localhost:7297/api/";
-  const [request, setRequest] = useState(null);
-  const [numOfRequest, setNumOfRequest] = useState(null);
-  const [error, setError] = React.useState();
-  //פונקציה שמטרתה לחלץ מהפרוקסי
-  function extractRawData(proxyObject) {
-    if (proxyObject != undefined && proxyObject.data != null) {
-      console.log("Extracting data from proxy object:", proxyObject.data);
-      return proxyObject.data;
-    } else {
-      console.log(
-        "Returning original object as it's not a proxy:",
-        proxyObject
-      );
-      return proxyObject;
-    }
+function DetailRequest({ detailRequest }) {
+  function formatDate(dateString) {
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate().toString().padStart(2, "0");
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+    const year = dateObj.getFullYear();
+    const hours = dateObj.getHours().toString().padStart(2, "0");
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+    const seconds = dateObj.getSeconds().toString().padStart(2, "0");
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
-  //קורא פעם אחת מיד כשהמחלקה עולה
-  useEffect(() => {
-    const fetchRequest = async () => {
-      try {
-        const res = await fetch(
-          `${baseUrl}BorrowApprovalRequest/user/${userId}`
-        );
-        const data = await res.json();
-        setRequest(data);
-        const res2 = await fetch(
-          `https://localhost:7297/api/BorrowApprovalRequest/user/numRequests/${userId}`
-        );
-        const data2 = await res2.json();
-        const d=extractRawData(data2);
-        setNumOfRequest(d);
-      } catch (error) {
-        setError(error);
-        console.error("Failed to fetch request:", error);
-      }
-    };
-    fetchRequest();
-  }, []);
-
-  if (error) {
-    return <Typography variant="subtitle1">נכשל בשל הורדת הבקשה</Typography>;
-  }
-
-  if (!request) {
-    return <Typography variant="subtitle1">טוען...</Typography>;
-  }
-
   return (
     <div style={{ textAlign: "right" }}>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.tz}
+          {detailRequest.userName}
         </Typography>
-        <Typography variant="subtitle1">:מספר זיהוי</Typography>
+        <Typography variant="subtitle1">:שם תלמיד</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.userName}
+          {detailRequest.tz}
         </Typography>
-        <Typography variant="subtitle1">:שם משתמש</Typography>
+        <Typography variant="subtitle1">:תעודת זהות</Typography>
       </Box>
+      
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.passwordHash}
-        </Typography>
-        <Typography variant="subtitle1">:סיסמא</Typography>
-      </Box>
-      <Box display="flex" justifyContent="flex-end">
-        <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.createdAt}
+          {formatDate(detailRequest.requestDate)}
         </Typography>
         <Typography variant="subtitle1">:תאריך בקשה</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.updatedAt}
+          {detailRequest.itemName}
         </Typography>
-        <Typography variant="subtitle1">:תאריך אישור</Typography>
+        <Typography variant="subtitle1">:שם הפריט</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
-          {request.data.phoneNumber}
+          {detailRequest.email}
+        </Typography>
+        <Typography variant="subtitle1">:מייל</Typography>
+      </Box>
+      <Box display="flex" justifyContent="flex-end">
+        <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
+          {detailRequest.phoneNumber}
         </Typography>
         <Typography variant="subtitle1">:פלאפון</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
-        <Typography variant="subtitle1" style={{ marginRight: '10px' }}>{numOfRequest}</Typography>
+        <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
+          {detailRequest.numUserRequests}
+        </Typography>
         <Typography variant="subtitle1">:כמות בקשות</Typography>
       </Box>
     </div>
@@ -97,7 +61,14 @@ function DetailRequest({ userId }) {
 }
 
 DetailRequest.propTypes = {
-  userId: PropTypes.number.isRequired,
+  detailRequest: PropTypes.shape({
+    tz: PropTypes.string.isRequired,
+    phoneNumber: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    userName: PropTypes.string.isRequired,
+    itemName: PropTypes.string.isRequired,
+    requestDate: PropTypes.string.isRequired,
+    numUserRequests: PropTypes.number.isRequired,
+  }).isRequired,
 };
-
 export default DetailRequest;

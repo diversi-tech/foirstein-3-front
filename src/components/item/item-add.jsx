@@ -45,10 +45,14 @@ const ItemDdd = observer(() => {
     const [error, setError] = useState(false);
 
     const [formData, setFormData] = useState({
+        id:'',
         title: '',
         description: '',
+        category: '',
+        author: '',
+        isApproved: '',
         tag: [],
-        shelf: '',
+        filePath: null,
         file: null,
         isHandleUpload: false,
         selectedValue: '',
@@ -56,17 +60,21 @@ const ItemDdd = observer(() => {
     });
     const [isUpload, setIsUpload] = useState(false);
 
-    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4'];
+    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     const handleClose = () => {
         setOpen(false);
         itemStore.add = false;
         setFormData({
+            id: '',
             title: '',
             description: '',
+            category: '',
+            author: '',
+            isApproved: '',
             tag: [],
-            shelf: '',
+            filePath: null,
             file: null,
             isHandleUpload: false,
             selectedValue: '',
@@ -79,24 +87,25 @@ const ItemDdd = observer(() => {
         setFormData((prevData) => ({
             ...prevData,
             selectedValue: value,
-            shelf: value === 'book' ? '' : prevData.shelf, // Reset shelf value if switching to file upload
+            filePath: value === 'book' ? '' : prevData.filePath, // Reset filePath value if switching to file upload
         }));
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFormData((prevData) => ({
-            ...prevData,
-            file: file,
-        }));
+        if (formData.selectedValue === 'book') {
+            const { name, value } = e.target;
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        } else {
+            const file = e.target.files[0];
+            setFormData((prevData) => ({
+                ...prevData,
+                file: file,
+                filePath: file ? file.name : null,
+            }));
+        }
     };
 
     const handleChangeChip = (event) => {
@@ -127,10 +136,14 @@ const ItemDdd = observer(() => {
                 console.log("add file");
             }
             setFormData({
+                id: '',
                 title: '',
                 description: '',
+                category: '',
+                author: '',
+                isApproved: '',
                 tag: [],
-                shelf: '',
+                filePath: null,
                 file: null,
                 isHandleUpload: true,
                 selectedValue: selectedValue,
@@ -145,9 +158,6 @@ const ItemDdd = observer(() => {
 
     return (
         <>
-            {/* <MediaTable /> */}
-            {console.log(itemStore.add)}
-
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
                 <DialogTitle>{formData.selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
                 <FormControl>
@@ -174,8 +184,9 @@ const ItemDdd = observer(() => {
                                         name="title"
                                         value={formData.title}
                                         onChange={handleChange}
-                                        error={!formData.title}
-                                        helperText={!formData.title && 'זהו שדה חובה'}
+                                        required
+                                        // error={!formData.title}
+                                        // helperText={!formData.title && 'זהו שדה חובה'}
                                     />
                                     {formData.title && formData.title.length < 2 && (
                                         <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
@@ -191,12 +202,48 @@ const ItemDdd = observer(() => {
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
-                                        error={!formData.description}
-                                        helperText={!formData.description && 'זהו שדה חובה'}
+                                        required
+                                        // error={!formData.description}
+                                        // helperText={!formData.description && 'זהו שדה חובה'}
                                     />
                                     {formData.description && formData.description.length < 5 && (
-                                        // setError(true)&&
                                         <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="descId"
+                                        label="קטגוריה"
+                                        variant="outlined"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        // error={!formData.category}
+                                        // helperText={!formData.category && 'זהו שדה חובה'}
+                                        required
+                                    />
+                                    {formData.category && formData.category.length < 5 && (
+                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 5 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="descId"
+                                        label="מחבר"
+                                        variant="outlined"
+                                        name="author"
+                                        value={formData.author}
+                                        onChange={handleChange}
+                                        // error={!formData.author}
+                                        // helperText={!formData.author && 'זהו שדה חובה'}
+                                        required
+                                    />
+                                    {formData.author && formData.author.length < 5 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 5 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -235,14 +282,15 @@ const ItemDdd = observer(() => {
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
-                                            id="shelfId"
-                                            label="מדף"
+                                            id="filePathId"
+                                            label="מיקום"
                                             variant="outlined"
-                                            name="shelf"
-                                            value={formData.shelf}
+                                            name="filePath"
+                                            value={formData.filePath}
                                             onChange={handleChange}
-                                            error={!formData.shelf}
-                                            helperText={!formData.shelf && 'זהו שדה חובה'}
+                                            // error={!formData.filePath}
+                                            // helperText={!formData.filePath && 'זהו שדה חובה'}
+                                            required
                                         />
                                     </FormControl>
                                 </Grid>
@@ -253,16 +301,17 @@ const ItemDdd = observer(() => {
                                         <TextField
                                             id="fileId"
                                             type="file"
-                                            onChange={handleFileChange}
-                                            error={!formData.file}
-                                            helperText={!formData.file && 'זהו שדה חובה'}
+                                            label="מיקום"
+                                            onChange={handleChange}
+                                            // error={!formData.file}
+                                            // helperText={!formData.file && 'זהו שדה חובה'}
+                                            required
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
                                         />
                                         {formData.file && !allowedExtensions.includes(fileExtension) && (
-                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, ZIP, או MP4 file.</Typography>
-
+                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG,docx, ZIP, mp3, או MP4 file.</Typography>
                                         )}
                                         {formData.file && formData.file.size > maxSize && (
                                             <Typography color="error">הקובץ גדול מדי. אנא בחר/י קובץ קטן יותר מ-5 מגה-בייט.</Typography>
