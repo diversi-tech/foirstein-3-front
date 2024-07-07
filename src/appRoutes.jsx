@@ -13,6 +13,7 @@ import Footer from "./components/footer";
 import PendingItems from "./components/pendingItemsList/pendingItems";
 import { RiH1 } from "react-icons/ri";
 import StudentRequest from "./components/studentRequest/student-request";
+import About from "./components/About";
 
 export default function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
           <Route path="/tag-list" element={<TagList />} />
           <Route path="/tags/add" element={<TagAdd />} />
           <Route path="/studentRequest" element={<StudentRequest/>} />
+          <Route path="/about" element={<About/>} />
           <Route path="/afterHanddle" element={<h1 style={{marginTop:"50px"}}>לאחר טיפול</h1>} />
           {/* <Route path="/studentsRequest" element={<studentsRequest />}/> */}
 
