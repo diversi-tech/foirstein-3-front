@@ -76,21 +76,10 @@ const ImageHomePage = () => {
                   backgroundColor: '#FFC0CB' // צבע ריחוף (ורוד בהיר)
                 }
               }}
-            >
-              {"ניהול בקשות"}
+              onClick={() => handleClickBorrowRequests('/studentRequest')}>      
+              {" בקשות שממתינות לאישור"}
+
             </Button>
-            <Menu
-              anchorEl={anchorElBorrowRequest}
-              open={Boolean(anchorElBorrowRequest)}
-              onClose={handleMouseLeaveBorrowRequest}
-              MenuListProps={{ onMouseLeave: handleMouseLeaveBorrowRequest }}
-              autoFocus={false}
-            >
-              <div dir="rtl">
-                <MenuItem onClick={() => handleClickBorrowRequests('/studentRequest')}>{"בקשות שממתינות לאישור"}</MenuItem>
-                <MenuItem onClick={() => handleClickBorrowRequests('/afterHandle')}>{"בקשות לאחר טיפול"}</MenuItem>
-              </div>
-            </Menu>
           </div>
           <Button
             variant="contained"
