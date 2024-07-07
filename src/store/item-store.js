@@ -34,6 +34,27 @@ class ItemStore {
        this.fetchPendingItems(); 
        this.fetchMedia();
     }
+
+    async deleteTag(itemId, tagId){
+        try {
+            const res = await fetch(`https://localhost:7297/api/Item/${itemId}/${tagId}`, {
+                method: 'DELETE'
+            });
+            console.log("delete tag:");
+            if (res.status === 200) {
+                this.isDelete = true;
+                this.message = " נמחק בהצלחה! ✅"
+
+            }
+            else{
+                this.isDelete = false;
+                this.message = "מחיקה נכשלה"
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+    }
      
     get getPendingList() {
         return this.pendingItemsList;

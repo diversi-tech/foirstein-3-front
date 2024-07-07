@@ -87,10 +87,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     if (formData.file) {
       formDataToSend.append('file', formData.file);
     }
-    
-
     console.log("Submitting form data:", formDataToSend);
-
     try {
         const response = await itemStore.updateMedia(formData.id, formDataToSend);
         if (response && response.ok) {
@@ -102,42 +99,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
         console.error('Error updating media:', error);
     }
 };
-
-
-// const handleSubmit = async (event) => {
-//   event.preventDefault();
-
-//   const formDataToSend = new FormData();
-//   formDataToSend.append('id', formData.id);
-//   formDataToSend.append('title', formData.title);
-//   formDataToSend.append('description', formData.description);
-//   formDataToSend.append('category', formData.category);
-//   formDataToSend.append('author', formData.author);
-//   formDataToSend.append('isApproved', formData.isApproved);
-  
-//   // Send tag IDs individually, not as an array in JSON format
-//   formData.tag.forEach(tagId => {
-//     formDataToSend.append('tag', tagId);
-//   });
-
-//   formDataToSend.append('filePath', formData.filePath);
-//   if (formData.file) {
-//     formDataToSend.append('file', formData.file);
-//   }
-
-//   console.log("Submitting form data:", formDataToSend);
-
-//   try {
-//     const response = await itemStore.updateMedia(formData.id, formDataToSend);
-//     if (response && response.ok) {
-//       onClose();
-//     } else {
-//       console.error('Error updating media:', response ? response.statusText : 'No response from server');
-//     }
-//   } catch (error) {
-//     console.error('Error updating media:', error);
-//   }
-// };
 
   const checkLink = () => {
     const filePath = formData.filePath;
@@ -267,7 +228,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} color="primary">
             ביטול
           </Button>
-          <Button type="submit" color="primary" onClick={() => { setSend(true) }}>
+          <Button type="submit" color="primary" onClick={() => { setSend(true) }} >
             שמירה
           </Button>
           {send && (itemStore.isUpdate ? <Success /> : <Failure />)}

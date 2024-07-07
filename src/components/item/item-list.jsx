@@ -33,6 +33,7 @@ import Failure from '../message/failure';
 
 const ItemList = observer(() => {
     const [deleteItem, setDeleteItem] = useState(null);
+    const [deleteTag, setDeleteTag] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [editedItem, setEditedItem] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
@@ -47,6 +48,19 @@ const ItemList = observer(() => {
         setDeleteOpen(true);
     };
 
+    const handleDeleteChip = (item, tag) =>{
+        console.log("delete: ", tag.id);
+        setDeleteOpen(true);
+        setDeleteTag(tag);
+        setDeleteItem(item)
+        // setDeleteItem(item);
+    }
+    
+    // const handleDeleteConfirm = async () => {
+    //     handleClose;
+    // }
+    
+    
     // const confirmDelete = async () => {
     //     if (deleteItem) {
     //         await itemStore.deleteMedia(deleteItem.id);
@@ -55,11 +69,20 @@ const ItemList = observer(() => {
     // };
 
     const confirmDelete = async () => {
+
+        console.log("tag id: ", deleteTag.id);
+        console.log("item id: ", deleteItem.id);
+        if(deleteTag && deleteTag.id){
+            await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+            setSend(true);
+            // setDeleteOpen(false);
+
+        }
         // בדוק ש-deleteItem מוגדר ויש לו ID
-        if (deleteItem && deleteItem.id) {
+       else if (deleteItem && deleteItem.id) {
           try {
             await itemStore.deleteMedia(deleteItem.id);
-            setDeleteOpen(false);
+            // setDeleteOpen(false);
             console.log(`Item with ID ${deleteItem.id} deleted successfully.`);
             setSend(true);
           } catch (error) {
@@ -90,13 +113,14 @@ const ItemList = observer(() => {
     const handleClose = () => {
         setDeleteOpen(false);
         setDeleteItem(null);
+        setDeleteTag(null);
         setEditOpen(false);
         setEditedItem(null);
     };
 
     return (
         <>
-            <div style={{ width: "100%", height: "25%", marginTop: "15%" }}>
+            <div style={{ width: "100%", height: "25%", marginTop: "10%" }}>
                 <h2 style={{ textAlign: "center" }}>רשימת קבצים</h2>
                 <TableContainer component={Paper} style={{ marginTop: "0%", direction: 'rtl', width: "100vw" }}>
                     <Table>
@@ -143,7 +167,7 @@ const ItemList = observer(() => {
                                     <TableCell style={{ minWidth: '200px', overflowX: 'auto' }}>
                                         <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto' , width:"200px"}}>
                                             {tagStore.tagList.map((tag) => (
-                                                <Chip key={tag.id} label={tag.name} color="primary" variant="outlined" onDelete={handleDelete}/>
+                                                <Chip  onDelete={() =>handleDeleteChip(item, tag)} key={tag.id} label={tag.name} color="primary" variant="outlined"/>
                                             ))}
                                         </Stack>
                                     </TableCell>
