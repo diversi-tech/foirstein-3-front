@@ -55,7 +55,6 @@ function Row(props) {
   }, [row.requestId]); // Dependency array should include row.requestId
 
   return (
-    <Box marginTop="10vh">
         <React.Fragment>
           <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
             <TableCell>
@@ -101,7 +100,6 @@ function Row(props) {
             </TableCell>
           </TableRow>
         </React.Fragment>
-    </Box>
   );
 }
 
