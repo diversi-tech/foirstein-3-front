@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
@@ -21,25 +22,46 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [id, setId] = useState(mediaItem.id);
   const [isApproved, setIsApproved] = useState(mediaItem.isApproved)
   const [formData, setFormData] = useState({
-
-    // id: mediaItem.id,
     title: mediaItem.title,
     description: mediaItem.description,
     category: mediaItem.category,
     author: mediaItem.author,
-    // isApproved: mediaItem.isApproved,
     tag: initialTagNames, // Initialize with tag names instead of tag ids
     filePath: mediaItem.filePath || '',
-    // file: mediaItem.file || ''
   });
 
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
+  const [isFormValid, setIsFormValid] = useState(true);
+
+  // useEffect(() => {
+  //   checkLink();
+
+  //   const isValid =
+  //     formData.title.length >= 2 &&
+  //     formData.description.length >= 5 &&
+  //     formData.category.length >= 5 &&
+  //     formData.author.length >= 5 &&
+  //     formData.tag.length > 0;
+
+  //   setIsFormValid(isValid);
+  // }, [formData.filePath]);
+
   useEffect(() => {
     checkLink();
-  }, [formData.filePath]);
+
+    const isValid =
+      formData.title.length >= 2 &&
+      formData.description.length >= 5 &&
+      formData.category.length >= 2 &&
+      formData.author.length >= 2 &&
+      formData.tag.length > 0 &&
+      (link || formData.filePath);
+
+    setIsFormValid(isValid);
+  }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -57,6 +79,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'category' || name === 'author') {
+      const lettersRegex = /^[א-תA-Za-z\s]*$/;
+      if (!lettersRegex.test(value)) {
+        return; // If the value doesn't match, do nothing
+      }
+    }
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
@@ -74,18 +102,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
-    // formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
-    // formDataToSend.append('isApproved', formData.isApproved);
     formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
     formDataToSend.append('filePath', formData.filePath);
-    // if (formData.file) {
-    //   formDataToSend.append('file', formData.file);
-    // }
-    console.log("Submitting form data:", formDataToSend);
+
     try {
       const response = await itemStore.updateMedia(formData.id, formDataToSend);
       if (response && response.ok) {
@@ -180,7 +203,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
               name='tag'
-
               multiple
               value={formData.tag}
               onChange={handleChangeChip}
@@ -188,8 +210,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((tagName) => (
-                    <Chip key={tagName} label={tagName} style={{ color: 'dark' }}
-                      variant='outlined' />
+                    <Chip key={tagName} label={tagName} style={{ color: 'dark' }} variant='outlined' />
                   ))}
                 </Box>
               )}
@@ -229,7 +250,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} >
+          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
             שמירה
           </Button>
           {send && (updateSuccess === true ? <Success /> : updateSuccess === false ? <Failure /> : null)}

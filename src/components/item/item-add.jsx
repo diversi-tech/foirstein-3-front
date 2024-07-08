@@ -58,7 +58,7 @@ const ItemDdd = observer(() => {
         category: '',
         author: '',
         tag: [],
-        filePath: null,
+        filePath: '',
     });
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
@@ -73,7 +73,7 @@ const ItemDdd = observer(() => {
             category: '',
             author: '',
             tag: [],
-            filePath: null,
+            filePath: '',
         });
         setIsHndleUpload(false);
         setSelectedValue('');
@@ -86,7 +86,7 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            filePath: value === 'book' ? '' : prevData.filePath,
+            filePath: value === 'book' ? '' : null,
         }));
         setSelectedValue(value);
     };
@@ -100,7 +100,6 @@ const ItemDdd = observer(() => {
                 [name]: files[0],
             }));
         } else {
-            // Validate that 'category' and 'author' fields only contain letters (Hebrew or English) and spaces
             if (name === 'category' || name === 'author') {
                 const lettersRegex = /^[א-תA-Za-z\s]*$/;
                 if (!lettersRegex.test(value)) {
@@ -129,7 +128,9 @@ const ItemDdd = observer(() => {
         });
     };
 
-    const fileExtension = formData.filePath ? formData.filePath.name.split('.').pop().toLowerCase() : '';
+    const fileExtension = formData.filePath && typeof formData.filePath.name === 'string'
+        ? formData.filePath.name.split('.').pop().toLowerCase()
+        : '';
 
     useEffect(() => {
         const isValid =
@@ -141,8 +142,9 @@ const ItemDdd = observer(() => {
             (selectedValue === 'book' ||
                 (selectedValue === 'file' &&
                     formData.filePath &&
-                    allowedExtensions.includes(fileExtension) &&
-                    formData.filePath.size <= maxSize)
+                    allowedExtensions.includes(fileExtension)
+                    //formData.filePath.size <= maxSize
+                )
             );
         setIsFormValid(isValid);
     }, [formData, selectedValue, fileExtension]);
@@ -165,14 +167,18 @@ const ItemDdd = observer(() => {
         }
 
         try {
-            await itemStore.uploadMedia(formDataToSend);
+            if (selectedValue === 'file') {
+                await itemStore.uploadMediaFile(formDataToSend);
+            }
+            else { await itemStore.uploadMediaBook(formDataToSend); }
+
             setFormData({
                 title: '',
                 description: '',
                 category: '',
                 author: '',
                 tag: [],
-                filePath: null,
+                filePath: '',
             });
             setIsHndleUpload(true);
             setSelectedValue('');
@@ -325,6 +331,7 @@ const ItemDdd = observer(() => {
                                             onChange={handleChange}
                                             required
                                             onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
+                                            type='text'
                                         />
                                         {touchedFields.filePath && !formData.filePath && (
                                             <Typography color="error">שדה חובה</Typography>

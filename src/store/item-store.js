@@ -126,9 +126,29 @@ class ItemStore {
         }
     }
 
-    async uploadMedia(mediaData) {
+    async uploadMediaFile(mediaData) {
         try {
-            const res = await fetch('https://localhost:7297/api/Item', {
+            const res = await fetch('https://localhost:7297/api/Item/file', {
+                method: 'POST',
+                body: mediaData,
+            });
+            if (res.status === 200) {
+                this.isError = false;
+                this.message = "הועלה בהצלחה! ✅"
+            } else {
+                this.isError = true;
+                this.message = "העלאה נכשלה"
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to upload media:', error);
+            this.isError = true;
+        }
+    }
+
+    async uploadMediaBook(mediaData) {
+        try {
+            const res = await fetch('https://localhost:7297/api/Item/book', {
                 method: 'POST',
                 body: mediaData,
             });
