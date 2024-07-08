@@ -55,51 +55,51 @@ function Row(props) {
   }, [row.requestId]); // Dependency array should include row.requestId
 
   return (
-        <React.Fragment>
-          <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-            <TableCell>
-              <IconButton
-                aria-label="expand row"
-                size="small"
-                onClick={() => setOpen(!open)}
-              >
-                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-              </IconButton>
-            </TableCell>
-            <StyledTableCell>
-              <Box display="flex" justifyContent="center">
-                <AlertDialog option="דחיה" requestId={row.requestId} />
-                <AlertDialog option="אישור" requestId={row.requestId} />
-              </Box>
-            </StyledTableCell>
-            <StyledTableCell align="right">
-              {formatDate(row.approvalDate)}
-            </StyledTableCell>
-            <StyledTableCell align="right">
-              {formatDate(row.requestDate)}
-            </StyledTableCell>
-            <StyledTableCell align="right">
-              {detailRequest && detailRequest.userName
-                ? detailRequest.userName
-                : "טוען..."}
-            </StyledTableCell>
-            <StyledTableCell align="right">
-              {detailRequest && detailRequest.itemName
-                ? detailRequest.itemName
-                : "טוען..."}
-            </StyledTableCell>
-            <StyledTableCell align="right">{row.requestId}</StyledTableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-              <Collapse in={open} timeout="auto" unmountOnExit>
-                <Box margin={1}>
-                  <DetailRequest detailRequest={detailRequest} />
-                </Box>
-              </Collapse>
-            </TableCell>
-          </TableRow>
-        </React.Fragment>
+    <React.Fragment>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <StyledTableCell>
+          <Box display="flex" justifyContent="center">
+            <AlertDialog option="דחיה" requestId={row.requestId} />
+            <AlertDialog option="אישור" requestId={row.requestId} />
+          </Box>
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.approvalDate)}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {formatDate(row.requestDate)}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {detailRequest && detailRequest.userName
+            ? detailRequest.userName
+            : "טוען..."}
+        </StyledTableCell>
+        <StyledTableCell align="right">
+          {detailRequest && detailRequest.itemName
+            ? detailRequest.itemName
+            : "טוען..."}
+        </StyledTableCell>
+        <StyledTableCell align="right">{row.requestId}</StyledTableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <DetailRequest detailRequest={detailRequest} />
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
   );
 }
 
@@ -231,10 +231,13 @@ function AlertDialog({ option, requestId }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>ביטול</Button>
-          <Button onClick={handleSumbit} autoFocus>
-            אישור
-          </Button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end',direction:'rtl' }}>
+            <Button onClick={handleClose}>ביטול</Button>
+            <Button onClick={handleSumbit} autoFocus variant="contained">
+              אישור
+            </Button>
+          </div>
+
         </DialogActions>
       </Dialog>
     </React.Fragment>

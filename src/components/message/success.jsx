@@ -8,7 +8,7 @@ export default function Success() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpen(false);
-    }, 4000);
+    }, 3000);
 
     // Clean up the timer if the component unmounts before the timer completes
     return () => clearTimeout(timer);
@@ -25,6 +25,7 @@ export default function Success() {
       <DialogContent>
         <DialogContentText>
           {itemStore.message}
+          {itemStore.isDelete = false}
           {console.log(itemStore.message)}
         </DialogContentText>
       </DialogContent>
