@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
@@ -93,9 +92,20 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const handleChangeChip = (event) => {
     const { target: { value } } = event;
+
+    // const updatedTagIds = typeof value === 'string' ? value.split(',').map(tagName => tagMap[tagName]) : value;
     setFormData((prevData) => ({
       ...prevData,
       tag: value, // Store tag names directly
+    }));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      filePath: file ? URL.createObjectURL(file) : prevData.filePath,
+      file: file || prevData.file
     }));
   };
 
@@ -120,6 +130,30 @@ export default function ItemEdit({ mediaItem, onClose }) {
       }
     } catch (error) {
       setUpdateSuccess(false);
+
+    // formDataToSend.append('isApproved', formData.isApproved);
+    // // formDataToSend.append('tags', Array(formData.tag));
+    // formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
+    // formDataToSend.append('filePath', formData.filePath);
+
+    // // if (formData.file) {
+    // //   formDataToSend.append('file', formData.file);
+    // // }
+
+    // try {
+    //   let response;
+    //   if (link) {
+    //     response = await itemStore.updateMediaFile(formData.id, formDataToSend);
+    //   } else {
+    //     response = await itemStore.updateMediaBook(formData.id, formDataToSend);
+    //   }
+
+    //   if (response && response.ok) {
+    //     onClose();
+    //   } else {
+    //     console.error('Error updating media:', response ? response.statusText : 'No response from server');
+    //   }
+    // } catch (error) {
       console.error('Error updating media:', error);
     }
   };
@@ -224,27 +258,22 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
-          {!link && (
-            <TextField
-              margin="dense"
-              label="מדף"
-              type="text"
-              fullWidth
-              name="filePath"
-              value={formData.filePath}
-              onChange={handleChange}
-              required
-            />
-          )}
-          {link && (
-            <TextField
-              margin="dense"
-              type="file"
-              fullWidth
-              name="filePath"
-              onChange={(e) => setFormData({ ...formData, filePath: e.target.files[0] })}
-            />
-          )}
+          <TextField
+            margin="dense"
+            label="מיקום"
+            type="text"
+            fullWidth
+            name="filePath"
+            value={formData.filePath}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="file"
+            name="filePath"
+            onChange={handleFileChange}
+            style={{ marginTop: '1rem' }}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} style={{ color: '#468585' }}>
