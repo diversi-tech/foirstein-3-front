@@ -129,15 +129,22 @@ const ItemList = observer(() => {
     };
 
     const handleConfirmBulkDelete = async () => {
-        try {
-            await Promise.all(selectedItems.map(async (itemId) => {
-                await itemStore.deleteMedia(itemId);
-            }));
-            setSend(true);
-            setSelectedItems([]);
-            setDeleteOpen(false);
-        } catch (error) {
-            console.error('Error deleting selected items:', error);
+        if (selectedItems.length > 1) {
+
+            try {
+                await Promise.all(selectedItems.map(async (itemId) => {
+                    await itemStore.deleteMedia(itemId);
+                }));
+                setSend(true);
+                setSelectedItems([]);
+                setDeleteOpen(false);
+            } catch (error) {
+                console.error('Error deleting selected items:', error);
+            }
+
+        }
+        else {
+            deletee();
         }
     };
 
@@ -230,7 +237,7 @@ const ItemList = observer(() => {
                                             <IconButton onClick={() => handleClickEdit(item)}>
                                                 <EditIcon style={{ color: '#468585' }} />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDelete(item)} style={{ marginLeft: '10px' }}>
+                                            <IconButton onClick={() => handleDelete(item)}>
                                                 <DeleteIcon style={{ color: '#50B498' }} />
                                             </IconButton>
                                         </TableCell>
