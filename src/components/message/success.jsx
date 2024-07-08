@@ -25,6 +25,7 @@ export default function Success() {
       <DialogContent>
         <DialogContentText>
           {itemStore.message}
+          {itemStore.isDelete = false}
           {console.log(itemStore.message)}
         </DialogContentText>
       </DialogContent>

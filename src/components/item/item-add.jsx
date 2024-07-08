@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Button,
     Radio,
@@ -23,7 +23,7 @@ import {
     Checkbox,
     ListItemText
 } from '@mui/material';
-import itemStore from '../../store/item-store'; // Import the merged store
+import itemStore from '../../store/item-store';
 import Success from '../message/success';
 import Failure from '../message/failure';
 import tagStore from '../../store/tag-store';
@@ -45,26 +45,21 @@ const ItemDdd = observer(() => {
     const [open, setOpen] = useState(true);
     const [openF, setOpenF] = useState(false);
     const [error, setError] = useState(false);
-
     const [isApproved, setIsApproved] = useState();
     const [isHandleUpload, setIsHndleUpload] = useState(false);
-    const [selectedValue, setSelectedValue] = useState('')
-    useState
+    const [selectedValue, setSelectedValue] = useState('');
+    const [isUpload, setIsUpload] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [touchedFields, setTouchedFields] = useState({});
+
     const [formData, setFormData] = useState({
-        // id: '',
         title: '',
         description: '',
         category: '',
         author: '',
-        // isApproved: '',
         tag: [],
         filePath: null,
-        // file: null,
-        // isHandleUpload: false,
-        // selectedValue: '',
-        // open: false
     });
-    const [isUpload, setIsUpload] = useState(false);
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -73,21 +68,17 @@ const ItemDdd = observer(() => {
         setOpen(false);
         itemStore.add = false;
         setFormData({
-            // id: '',
             title: '',
             description: '',
             category: '',
             author: '',
-            // isApproved: '',
             tag: [],
             filePath: null,
-            file: null,
-            // isHandleUpload: false,
-            // selectedValue: '',
         });
         setIsHndleUpload(false);
         setSelectedValue('');
-        setIsApproved('')
+        setIsApproved('');
+        setTouchedFields({});
     };
 
     const handleRadioChange = (event) => {
@@ -95,21 +86,28 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-
-            filePath: value === 'book' ? '' : prevData.filePath, // Reset filePath value if switching to file upload
+            filePath: value === 'book' ? '' : prevData.filePath,
         }));
-        setSelectedValue(value)
+        setSelectedValue(value);
     };
-
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
+        setTouchedFields((prev) => ({ ...prev, [name]: true }));
         if (type === 'file') {
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: files[0],
             }));
         } else {
+            // Validate that 'category' and 'author' fields only contain letters (Hebrew or English) and spaces
+            if (name === 'category' || name === 'author') {
+                const lettersRegex = /^[א-תA-Za-z\s]*$/;
+                if (!lettersRegex.test(value)) {
+                    return; // If the value doesn't match, do nothing
+                }
+            }
+
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: value,
@@ -117,10 +115,9 @@ const ItemDdd = observer(() => {
         }
     };
 
-
-
     const handleTagChange = (event) => {
         const { value } = event.target;
+        setTouchedFields((prev) => ({ ...prev, tag: true }));
         setFormData((prevData) => {
             const newTags = typeof value === 'string' ? value.split(',') : value;
             return {
@@ -132,9 +129,23 @@ const ItemDdd = observer(() => {
         });
     };
 
-
     const fileExtension = formData.filePath ? formData.filePath.name.split('.').pop().toLowerCase() : '';
 
+    useEffect(() => {
+        const isValid =
+            formData.title.length >= 2 &&
+            formData.description.length >= 5 &&
+            formData.category.length >= 5 &&
+            formData.author.length >= 5 &&
+            formData.tag.length > 0 &&
+            (selectedValue === 'book' ||
+                (selectedValue === 'file' &&
+                    formData.filePath &&
+                    allowedExtensions.includes(fileExtension) &&
+                    formData.filePath.size <= maxSize)
+            );
+        setIsFormValid(isValid);
+    }, [formData, selectedValue, fileExtension]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -147,7 +158,7 @@ const ItemDdd = observer(() => {
                     const tag = tagStore.tagList.find(t => t.name === tagName);
                     return tag ? tag.id : tagName;
                 });
-                tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId)); // השתמש בשם המפתח 'tags[]' כדי לציין מערך
+                tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId));
             } else {
                 formDataToSend.append(key, dataToSend[key]);
             }
@@ -172,10 +183,6 @@ const ItemDdd = observer(() => {
         }
     };
 
-
-
-
-
     return (
         <>
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
@@ -187,8 +194,8 @@ const ItemDdd = observer(() => {
                         value={selectedValue}
                         onChange={handleRadioChange}
                     >
-                        <FormControlLabel value="book" control={<Radio />} label="ספר" />
-                        <FormControlLabel value="file" control={<Radio />} label="קובץ דיגיטלי" />
+                        <FormControlLabel value="book" control={<Radio style={{ color: '#DEF9C4' }} />} label="ספר" />
+                        <FormControlLabel value="file" control={<Radio style={{ color: '#DEF9C4' }} />} label="קובץ דיגיטלי" />
                     </RadioGroup>
                 </FormControl>
 
@@ -205,7 +212,11 @@ const ItemDdd = observer(() => {
                                         value={formData.title}
                                         onChange={handleChange}
                                         required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, title: true }))}
                                     />
+                                    {touchedFields.title && !formData.title && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
                                     {formData.title && formData.title.length < 2 && (
                                         <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
                                     )}
@@ -221,7 +232,11 @@ const ItemDdd = observer(() => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, description: true }))}
                                     />
+                                    {touchedFields.description && !formData.description && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
                                     {formData.description && formData.description.length < 5 && (
                                         <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
                                     )}
@@ -237,7 +252,11 @@ const ItemDdd = observer(() => {
                                         value={formData.category}
                                         onChange={handleChange}
                                         required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, category: true }))}
                                     />
+                                    {touchedFields.category && !formData.category && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
                                     {formData.category && formData.category.length < 5 && (
                                         <Typography color="error">הקטגוריה חייבת להכיל לפחות 5 תווים</Typography>
                                     )}
@@ -253,7 +272,11 @@ const ItemDdd = observer(() => {
                                         value={formData.author}
                                         onChange={handleChange}
                                         required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, author: true }))}
                                     />
+                                    {touchedFields.author && !formData.author && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
                                     {formData.author && formData.author.length < 5 && (
                                         <Typography color="error">המחבר חייב להכיל לפחות 5 תווים</Typography>
                                     )}
@@ -261,34 +284,34 @@ const ItemDdd = observer(() => {
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="tag-label">תגית</InputLabel>
+                                    <InputLabel id="tagId">תגיות</InputLabel>
                                     <Select
-                                        labelId="tag-label"
-                                        id="tag-select"
+                                        labelId="tagId"
+                                        id="tagId"
                                         multiple
                                         value={formData.tag}
                                         onChange={handleTagChange}
-                                        input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
+                                        input={<OutlinedInput id="select-multiple-chip" label="תגיות" />}
                                         renderValue={(selected) => (
                                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                {selected.map((value) => {
-                                                    const tag = tagStore.tagList.find(tag => tag.id === value);
-                                                    return <Chip key={value} label={tag ? tag.name : value} />;
-                                                })}
+                                                {selected.map((value) => (
+                                                    <Chip key={value} label={tagStore.tagList.find(tag => tag.id === value)?.name || value} />
+                                                ))}
                                             </Box>
                                         )}
                                         MenuProps={MenuProps}
                                     >
                                         {tagStore.tagList.map((tag) => (
-                                            <MenuItem key={tag.id} value={tag.id}>
-                                                <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
-                                                <ListItemText primary={tag.name} />
+                                            <MenuItem key={tag.id} value={tag.name} style={{
+                                                fontWeight: formData.tag.includes(tag.name)
+                                                    ? theme.typography.fontWeightMedium
+                                                    : theme.typography.fontWeightRegular,
+                                            }}>
+                                                {tag.name}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-
-
                             </Grid>
                             {selectedValue === 'book' && (
                                 <Grid item xs={12}>
@@ -301,7 +324,11 @@ const ItemDdd = observer(() => {
                                             value={formData.filePath}
                                             onChange={handleChange}
                                             required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
                                         />
+                                        {touchedFields.filePath && !formData.filePath && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
                                     </FormControl>
                                 </Grid>
                             )}
@@ -318,13 +345,14 @@ const ItemDdd = observer(() => {
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
                                         />
+                                        {touchedFields.filePath && !formData.filePath && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
                                         {formData.filePath && !allowedExtensions.includes(fileExtension) && (
                                             <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx, ZIP, mp3, או MP4 file.</Typography>
                                         )}
-                                        {/* {formData.filePath && formData.file.size > maxSize && (
-                                        <Typography color="error">הקובץ גדול מדי. אנא בחר/י קובץ קטן יותר מ-5 מגה-בייט.</Typography>
-                                    )} */}
                                     </FormControl>
                                 </Grid>
                             )}
@@ -332,8 +360,8 @@ const ItemDdd = observer(() => {
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit}>העלאה</Button>
-                    <Button onClick={handleClose}>ביטול</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} disabled={!isFormValid}>העלאה</Button>
+                    <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
                 {isUpload && (
                     <>

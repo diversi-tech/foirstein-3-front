@@ -60,7 +60,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
-    }));   
+    }));
   };
 
   const handleChangeChip = (event) => {
@@ -180,6 +180,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
               name='tag'
+
               multiple
               value={formData.tag}
               onChange={handleChangeChip}
@@ -187,7 +188,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {selected.map((tagName) => (
-                    <Chip key={tagName} label={tagName} />
+                    <Chip key={tagName} label={tagName} style={{ color: 'dark' }}
+                      variant='outlined' />
                   ))}
                 </Box>
               )}
@@ -224,10 +226,10 @@ export default function ItemEdit({ mediaItem, onClose }) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" color="primary" onClick={() => { setSend(true) }} >
+          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} >
             שמירה
           </Button>
           {send && (updateSuccess === true ? <Success /> : updateSuccess === false ? <Failure /> : null)}

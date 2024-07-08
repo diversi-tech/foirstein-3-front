@@ -36,6 +36,7 @@ class ItemStore {
     }
 
     async deleteTag(itemId, tagId) {
+        console.log("hiiDeleteTag");
         try {
             const res = await fetch(`https://localhost:7297/api/Item/${itemId}/${tagId}`, {
                 method: 'DELETE'
@@ -147,6 +148,7 @@ class ItemStore {
 
 
     async deleteMedia(mediaId) {
+        console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
                 method: 'DELETE'
