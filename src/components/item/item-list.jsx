@@ -30,10 +30,10 @@ import tagStore from '../../store/tag-store';
 import ItemAdd from './item-add';
 import Success from '../message/success';
 import Failure from '../message/failure';
-import { makeStyles } from '@mui/styles'; // הוסף את makeStyles
+import { styled } from '@mui/material/styles';
 import './item.css';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled((theme) => ({
     title: {
         backgroundColor: '#468585', // צבע רקע שחור לכותרת
         color: 'white', // צבע טקסט לכותרת
