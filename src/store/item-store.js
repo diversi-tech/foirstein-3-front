@@ -8,7 +8,7 @@ class ItemStore {
     isUpdate = false;
     isDelete = false;
     isError = true;
-    message = "הקובץ  עודכן בהצלחה! ✅";
+    message = "";
     isApprov = false;
     isDeind = false;
 
