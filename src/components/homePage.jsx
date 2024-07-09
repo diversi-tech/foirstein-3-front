@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import books from '../assets/books.png';
-import books1 from '../assets/books1.jpg';
-import books2 from '../assets/books2.jpg';
+// import books1 from '../assets/books1.jpg';
+// import books2 from '../assets/books2.jpg';
 import { Button, Menu, MenuItem, Box, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Carousel from 'react-material-ui-carousel'; // Import the Carousel component

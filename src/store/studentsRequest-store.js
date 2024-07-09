@@ -62,8 +62,7 @@ class StudentsRequestStore {
       console.log(res);
       if (res.status === 200) {
         Swal.fire({
-          title: "Success!",
-          text: "! הבקשה עודכנה בהצלחה ",
+          title:"! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
         runInAction(() => {
@@ -71,8 +70,7 @@ class StudentsRequestStore {
         });
       } else {
         Swal.fire({
-          title: "Error!",
-          text: "... העדכון נכשל",
+          title:  "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });
@@ -92,8 +90,7 @@ class StudentsRequestStore {
       );
       if (res.status === 200) {
         Swal.fire({
-          title: "Success!",
-          text: "! הבקשה עודכנה בהצלחה ",
+          title:"! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
         runInAction(() => {
@@ -101,8 +98,7 @@ class StudentsRequestStore {
         });
       } else {
         Swal.fire({
-          title: "Error!",
-          text: "... העדכון נכשל",
+          title:  "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });
@@ -122,14 +118,12 @@ class StudentsRequestStore {
       );
       if (res.status === 200) {
         Swal.fire({
-          title: "Success!",
-          text: "! הבקשה עודכנה בהצלחה ",
+          title:"! הבקשה עודכנה בהצלחה ",
           icon: "success",
         });
       } else {
         Swal.fire({
-          title: "Error!",
-          text: "... העדכון נכשל",
+          title:  "... העדכון נכשל",
           icon: "error",
           confirmButtonText: "Cool",
         });
