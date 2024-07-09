@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,19 +10,28 @@ import Badge from '@mui/material/Badge';
 import RoofingOutlinedIcon from '@mui/icons-material/RoofingOutlined';
 import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
 import { useNavigate } from 'react-router-dom';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Grid from '@mui/system/Unstable_Grid/Grid';
+import Tooltip from '@mui/material/Tooltip';
 
 function Header() {
   const baseUrl = "https://localhost:7297/api/";
-  const [count, setCount] = React.useState(0);
+  const [requestsCount, setRequestsCount] = React.useState(0);
+  const [itemsCount,setItemsCount]=React.useState(0)
 
   React.useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const res = await fetch(baseUrl + `BorrowRequest`);
-        const data = await res.json();
-        const rows = extractRawData(data);
-        setCount(rows.length);
-        console.log(rows, "useEffect");
+        const requests = await fetch(baseUrl + `BorrowRequest`);
+        const jsonRequests=await requests.json();
+        const dataRequests = extractRawData(jsonRequests);
+        setRequestsCount(dataRequests.length);
+        debugger
+        const items = await fetch(baseUrl + `Item`);
+        const jsonItems=await items.json()
+        const dataItems = extractRawData(jsonItems);
+        setItemsCount(dataItems.length);
+        debugger
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -56,12 +64,35 @@ function Header() {
     <AppBar position="fixed" sx={{ backgroundImage: 'linear-gradient(to left, lightgrey, grey)', height: '15%' }}>
       <Container maxWidth="xl">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <IconButton size="large" aria-label="show 4 new mails" color="inherit" onClick={() => navigate('/studentRequest')}>
-            <Badge badgeContent={count} color="error">
-              <MailIcon sx={{ color: 'black' }} />
-            </Badge>
-          </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Tooltip title="בקשות שמחכות לאישור" arrow>
+                <IconButton size="large"
+                  aria-label="show 4 new mails"
+                  color="inherit"
+                  onClick={() => navigate('/studentRequest')}>
+                  <Badge badgeContent={requestsCount} color="primary">
+                    <MailIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={6}>
+              <Tooltip title="פריטים שמחכים לאישור" arrow>
+                <IconButton
+                  size="large"
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                  onClick={() => navigate('/itemsPendingApproval')}
+                >
+                  <Badge badgeContent={itemsCount} color="warning">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap',marginTop:'1%'}}>
             <Typography
               variant="h6"
               noWrap
@@ -83,7 +114,7 @@ function Header() {
               }}
             >
               {"אודות"}
-              <StickyNote2OutlinedIcon style={{ height: '1.3em', ml: '5px' }} />
+              <StickyNote2OutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
             <Typography
               variant="h6"
@@ -106,7 +137,7 @@ function Header() {
               }}
             >
               {"בית"}
-              <RoofingOutlinedIcon style={{ height: '1.3em', ml: '5px' }} />
+              <RoofingOutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
           </Box>
         </Toolbar>
