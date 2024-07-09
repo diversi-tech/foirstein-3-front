@@ -1,20 +1,21 @@
+
 import React, { useState } from 'react';
-import books from '../assets/books.png'
-import { Button, Menu, MenuItem } from '@mui/material';
-import Box from '@mui/material/Box';
+import books from '../assets/books.png';
+// import books1 from '../assets/books1.jpg';
+// import books2 from '../assets/books2.jpg';
+import { Button, Menu, MenuItem, Box, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'; // Import the arrow icon
-import Typography from '@mui/material/Typography';
+import Carousel from 'react-material-ui-carousel'; // Import the Carousel component
 import { FaHandPointDown } from "react-icons/fa";
 
 const peachPink = '#FFD1DC';
 const textColor = '#000000';
 
-const ImageHomePage = () => { 
-
+const ImageHomePage = () => {
   const navigate = useNavigate();
   const [anchorElBorrowRequest, setAnchorElBorrowRequest] = useState(null);
   const [anchorElItemRequest, setAnchorElItemRequest] = useState(null);
+
   const handleMouseEnterBorrowRequest = (event) => {
     setAnchorElBorrowRequest(event.currentTarget);
   }
@@ -22,6 +23,7 @@ const ImageHomePage = () => {
   const handleMouseLeaveBorrowRequest = () => {
     setAnchorElBorrowRequest(null);
   }
+
   const handleMouseEnterItemRequest = (event) => {
     setAnchorElItemRequest(event.currentTarget);
   }
@@ -29,29 +31,46 @@ const ImageHomePage = () => {
   const handleMouseLeaveItemRequest = () => {
     setAnchorElItemRequest(null);
   }
+
   const handleClickBorrowRequests = (route) => {
-    navigate(`${route}`)
+    navigate(`${route}`);
     setAnchorElBorrowRequest(null);
   }
+
   const handleClickItemsRequests = (route) => {
-    navigate(`${route}`)
+    navigate(`${route}`);
     setAnchorElItemRequest(null);
   }
- 
+
+  const carouselImages = [
+    { url: books, caption: 'ספרים' },
+    { url: books, caption: 'ספרים 1' },
+    { url: books, caption: 'ספרים 2' },
+  ];
+
   return (
-    <div style={{ marginTop: '7%' }}>
-      <img
-        src={books}
-        alt="Local"
-        style={{ width: '100%', height: 'auto' }}
-      />
+    <div style={{ marginTop: '7%', textAlign: 'center' }}>
+      <Carousel
+        autoPlay={true}
+        animation="slide"
+        navButtonsAlwaysVisible={true}
+        indicators={false}
+        timeout={500} // Adjust timeout as needed
+        swipe={true} // Enable swiping on mobile devices
+      >
+        {carouselImages.map((image, index) => (
+          <Paper key={index}>
+            <img src={image.url} alt={image.caption} style={{ width: '100%', height: 'auto' }} />
+          </Paper>
+        ))}
+      </Carousel>
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
         flexDirection="column"
-        mt={2} // מרווח עליון
-        mb={2} // מרווח תחתון
+        mt={2}
+        mb={2}
       >
         <Typography variant="h6" component="p" sx={{ display: 'flex', alignItems: 'center' }}>
           בחרי את הניתוב שלך
@@ -61,9 +80,9 @@ const ImageHomePage = () => {
           display="flex"
           justifyContent="space-around"
           alignItems="center"
-          width="100%" // Adjust this width as necessary
-          mt={4} // מרווח עליון
-          mb={2} // מרווח תחתון
+          width="100%"
+          mt={4}
+          mb={2}
         >
           <div onMouseLeave={handleMouseLeaveBorrowRequest}>
             <Button
@@ -73,12 +92,11 @@ const ImageHomePage = () => {
                 backgroundColor: peachPink,
                 color: textColor,
                 '&:hover': {
-                  backgroundColor: '#FFC0CB' // צבע ריחוף (ורוד בהיר)
+                  backgroundColor: '#FFC0CB'
                 }
               }}
-              onClick={() => handleClickBorrowRequests('/studentRequest')}>      
-              {" בקשות שממתינות לאישור"}
-
+              onClick={() => handleClickBorrowRequests('/studentRequest')}>
+              בקשות שממתינות לאישור
             </Button>
           </div>
           <Button
@@ -87,7 +105,7 @@ const ImageHomePage = () => {
               backgroundColor: peachPink,
               color: textColor,
               '&:hover': {
-                backgroundColor: '#FFC0CB' // צבע ריחוף (ורוד בהיר)
+                backgroundColor: '#FFC0CB'
               }
             }}
             onClick={() => navigate('/tag-list')}>
@@ -101,11 +119,11 @@ const ImageHomePage = () => {
                 backgroundColor: peachPink,
                 color: textColor,
                 '&:hover': {
-                  backgroundColor: '#FFC0CB' // צבע ריחוף (ורוד בהיר)
+                  backgroundColor: '#FFC0CB'
                 }
               }}
             >
-              {"ניהול פריטים"}
+              ניהול פריטים
             </Button>
             <Menu
               anchorEl={anchorElItemRequest}
@@ -115,8 +133,12 @@ const ImageHomePage = () => {
               autoFocus={false}
             >
               <div dir="rtl">
-                <MenuItem onClick={() => handleClickItemsRequests('/items')}>{"כל הפריטים"}</MenuItem>
-                <MenuItem onClick={() => handleClickItemsRequests('/itemsPendingApproval')}>{"פריטים שממתינים לאישור"}</MenuItem>
+                <MenuItem onClick={() => handleClickItemsRequests('/items')}>
+                  כל הפריטים
+                </MenuItem>
+                <MenuItem onClick={() => handleClickItemsRequests('/itemsPendingApproval')}>
+                  פריטים שממתינים לאישור
+                </MenuItem>
               </div>
             </Menu>
           </div>

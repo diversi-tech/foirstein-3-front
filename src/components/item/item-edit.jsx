@@ -5,22 +5,17 @@ import Success from '../message/success';
 import Failure from '../message/failure';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent,
-  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText
 } from '@mui/material';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
-    map[tag.name] = tag.id;
-    return map;
-  }, {});
-
-  const idToNameMap = tagStore.tagList.reduce((map, tag) => {
     map[tag.id] = tag.name;
     return map;
   }, {});
 
-  const initialTagIds = Array.isArray(mediaItem.tag)
-    ? mediaItem.tag.map((tagName) => tagMap[tagName])
+  const initialTagIds = Array.isArray(mediaItem.tags)
+    ? mediaItem.tags.map((tagId) => tagId)
     : [];
 
   const [formData, setFormData] = useState({
@@ -30,17 +25,43 @@ export default function ItemEdit({ mediaItem, onClose }) {
     category: mediaItem.category,
     author: mediaItem.author,
     isApproved: mediaItem.isApproved,
-    tag: initialTagIds,
+    tags: initialTagIds,
     filePath: mediaItem.filePath || '',
-    file: mediaItem.file || ''
   });
 
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
+
+  const [isFormValid, setIsFormValid] = useState(true);
+
+  // useEffect(() => {
+  //   checkLink();
+
+  //   const isValid =
+  //     formData.title.length >= 2 &&
+  //     formData.description.length >= 5 &&
+  //     formData.category.length >= 5 &&
+  //     formData.author.length >= 5 &&
+  //     formData.tag.length > 0;
+
+  //   setIsFormValid(isValid);
+  // }, [formData.filePath]);
 
   useEffect(() => {
     checkLink();
-  }, [formData.filePath]); 
+
+    // const isValid =
+    //   formData.title.length >= 2 &&
+    //   formData.description.length >= 5 &&
+    //   formData.category.length >= 2 &&
+    //   formData.author.length >= 2 &&
+    //   formData.tag.length > 0 &&
+    //   (link || formData.filePath);
+
+    // setIsFormValid(isValid);
+  // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
+  }, [formData.filePath]);
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -53,11 +74,17 @@ export default function ItemEdit({ mediaItem, onClose }) {
     },
   };
 
-  const theme = useTheme(); 
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm')); 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'category' || name === 'author') {
+      const lettersRegex = /^[א-תA-Za-z\s]*$/;
+      if (!lettersRegex.test(value)) {
+        return; // If the value doesn't match, do nothing
+      }
+    }
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
@@ -66,10 +93,18 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const handleChangeChip = (event) => {
     const { target: { value } } = event;
-    const updatedTagIds = typeof value === 'string' ? value.split(',').map(tag => tagMap(tag)) : value;
     setFormData((prevData) => ({
       ...prevData,
-      tag: updatedTagIds,
+      tags: typeof value === 'string' ? value.split(',') : value,
+    }));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      filePath: file ? URL.createObjectURL(file) : prevData.filePath,
+      file: file || prevData.file
     }));
   };
 
@@ -82,23 +117,37 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
     formDataToSend.append('isApproved', formData.isApproved);
-    formDataToSend.append('tags', Array(formData.tag)); 
-    formDataToSend.append('filePath', formData.filePath);
+    formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
+
     if (formData.file) {
       formDataToSend.append('file', formData.file);
+    } else {
+      formDataToSend.append('filePath', formData.filePath);
     }
-    console.log("Submitting form data:", formDataToSend);
+    // formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
+    // formDataToSend.append('filePath', formData.filePath);
+
     try {
-        const response = await itemStore.updateMedia(formData.id, formDataToSend);
-        if (response && response.ok) {
-            onClose();
-        } else {
-            console.error('Error updating media:', response ? response.statusText : 'No response from server');
-        }
+      let response;
+      if (mediaItem.type === 'file') {
+        response = await itemStore.updateMediaFile(formData.id, formDataToSend);
+      } else if (mediaItem.type != 'file') {
+        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
+      } else {
+        response = await itemStore.updateMedia(formData.id, formDataToSend);
+      }
+      if (response && response.ok) {
+        setUpdateSuccess(true);
+        onClose();
+      } else {
+        setUpdateSuccess(false);
+        console.error('Error updating media:', response ? response.statusText : 'No response from server');
+      }
     } catch (error) {
-        console.error('Error updating media:', error);
+      setUpdateSuccess(false);
+      console.error('Error updating media:', error);
     }
-};
+  };
 
   const checkLink = () => {
     const filePath = formData.filePath;
@@ -178,60 +227,67 @@ export default function ItemEdit({ mediaItem, onClose }) {
             <Select
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
-              name='tag'
+                            name='tag'
               multiple
-              value={formData.tag}
+              value={formData.tags}
               onChange={handleChangeChip}
               input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+
                   {selected.map((tagId) => (
-                    <Chip key={tagId} label={idToNameMap[tagId]} />
+                    <Chip key={tagId} label={tagMap[tagId]} style={{ color: 'dark' }} variant='outlined' />
+
                   ))}
                 </Box>
               )}
               MenuProps={MenuProps}
             >
               {tagStore.tagList.map((tag) => (
-                <MenuItem
-                  key={tag.id}
-                  value={tag.id}
-                >
-                  {tag.name}
+                <MenuItem key={tag.id} value={tag.id}>
+                  <Checkbox checked={formData.tags.indexOf(tag.id) > -1} />
+                  <ListItemText primary={tag.name} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          {!link && (
+{/*           
             <TextField
               margin="dense"
-              label="מדף"
+              label="קישור"
               type="text"
               fullWidth
               name="filePath"
               value={formData.filePath}
               onChange={handleChange}
-              required
-            />
-          )}
-          {link && (
+            /> */}
+        
             <TextField
               margin="dense"
-              type="file"
+              label="מיקום"
+              type="text"
               fullWidth
               name="filePath"
-              onChange={(e) => setFormData({ ...formData, filePath: e.target.files[0] })}
+              value={formData.filePath}
+              onChange={handleChange}
+            />
+          {mediaItem.type === 'file' && (
+            <input
+              type="file"
+              name="filePath"
+              onChange={handleFileChange}
+              style={{ marginTop: '1rem' }}
             />
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" color="primary" onClick={() => { setSend(true) }} >
+          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
             שמירה
           </Button>
-          {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
+          {send && (itemStore.isUpdate ?<Success /> : <Failure /> )}
         </DialogActions>
       </form>
     </Dialog>

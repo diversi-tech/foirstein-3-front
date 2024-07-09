@@ -26,19 +26,19 @@ import itemStore from '../../store/item-store';
 import { toJS } from 'mobx'
 import { observer } from 'mobx-react-lite';
 import './PendingItems.css';
-function createData(itemId,title, author, category, createdAt, description, fileP) {
+function createData(itemId, title, author, category, createdAt, description, fileP) {
   return {
     itemId,
     title,
     author,
     category,
-    createdAt:createdAt.replace(/T/g, ' '),
+    createdAt: createdAt.replace(/T/g, ' '),
     moreDetails: [
       {
         desc: description,
         filePath: fileP,
-        link:title,
-        isBook:fileP.includes('http'),
+        link: title,
+        isBook: fileP.includes('http'),
       },
     ],
   };
@@ -65,50 +65,50 @@ function Row(props) {
         <TableCell className="table-cell" align="right">{row.author}</TableCell>
         <TableCell className="table-cell" align="right">{row.category}</TableCell>
         <TableCell className="table-cell" align="right">{row.createdAt}</TableCell>
-        <IconButton  className="icon-button"  aria-label="Verified" variant="contained" color="primary" onClick={() => approval(row.itemId)} >
-         <VerifiedIcon />
-        </IconButton>  
-        <IconButton  className="icon-button" aria-label="DisabledByDefaultRounded" variant="contained" color="secondary" onClick={() => deny(row.itemId)}>
-         <DisabledByDefaultRoundedIcon />
-        </IconButton> 
+        <IconButton className="icon-button" aria-label="Verified" variant="contained" color="primary" onClick={() => approval(row.itemId)} >
+          <VerifiedIcon />
+        </IconButton>
+        <IconButton className="icon-button" aria-label="DisabledByDefaultRounded" variant="contained" color="secondary" onClick={() => deny(row.itemId)}>
+          <DisabledByDefaultRoundedIcon />
+        </IconButton>
       </TableRow>
       <TableRow dir='rtl'>
-  <TableCell dir='rtl' style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
- 
-    <Collapse dir='rtl' in={open} timeout="auto" unmountOnExit>
+        <TableCell dir='rtl' style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
 
-      {row.moreDetails.map((moreDetail) => (
-        
-        <div dir='rtl' key={moreDetail.id} style={{paddingRight:"11%"}} >
-          <Box display="flex" dir='rtl' >
-          <Typography variant="subtitle1" dir='rtl'> <b>תאור: </b></Typography>
-            <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
-              {moreDetail.desc}
-            </Typography>
-            
-          </Box>
-          {moreDetail.isBook ? (
-            <Box display="flex"  dir='rtl'> 
-        <Typography variant="subtitle1" dir='rtl'><b>קובץ: </b></Typography>
-        <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
-          <Link href={moreDetail.filePath} underline="hover"  target="_blank" rel="noopener noreferrer" >
-            {moreDetail.link}
-          </Link>
-        </Typography>
-        </Box>
-      ) : (
-        <Box display="flex"  dir='rtl'> 
-        <Typography variant="subtitle1" dir='rtl'><b>מספר מדף: </b></Typography>
-        <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
-          {moreDetail.filePath}
-        </Typography>
-        </Box>
-      )}
-        </div>
-      ))}
-    </Collapse>
-  </TableCell>
-</TableRow>
+          <Collapse dir='rtl' in={open} timeout="auto" unmountOnExit>
+
+            {row.moreDetails.map((moreDetail) => (
+
+              <div dir='rtl' key={moreDetail.id} style={{ paddingRight: "11%" }} >
+                <Box display="flex" dir='rtl' >
+                  <Typography variant="subtitle1" dir='rtl'> <b>תאור: </b></Typography>
+                  <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                    {moreDetail.desc}
+                  </Typography>
+
+                </Box>
+                {moreDetail.isBook ? (
+                  <Box display="flex" dir='rtl'>
+                    <Typography variant="subtitle1" dir='rtl'><b>קובץ: </b></Typography>
+                    <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
+                      <Link href={moreDetail.filePath} underline="hover" target="_blank" rel="noopener noreferrer" >
+                        {moreDetail.link}
+                      </Link>
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box display="flex" dir='rtl'>
+                    <Typography variant="subtitle1" dir='rtl'><b>מספר מדף: </b></Typography>
+                    <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
+                      {moreDetail.filePath}
+                    </Typography>
+                  </Box>
+                )}
+              </div>
+            ))}
+          </Collapse>
+        </TableCell>
+      </TableRow>
     </React.Fragment>
   );
 }
@@ -128,105 +128,103 @@ Row.propTypes = {
   }).isRequired,
 };
 
-async function approval(itemId)
-{
-    Swal.fire({
-      title: "?האם לאשר את הפריט",
-      text:"פריט מאושר ייכנס למאגר",
-      showDenyButton: true,
-      //showCancelButton: true,
-      confirmButtonText: "לאשר",
-      denyButtonText: `ביטול`
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+async function approval(itemId) {
+  Swal.fire({
+    title: "?האם לאשר את הפריט",
+    text: "פריט מאושר ייכנס למאגר",
+    showDenyButton: true,
+    //showCancelButton: true,
+    confirmButtonText: "לאשר",
+    denyButtonText: `ביטול`
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       await itemStore.approvalItem(itemId);
-       if(itemStore.isApprov)
+      if (itemStore.isApprov)
         Swal.fire({
           icon: "success",
           title: "הפריט אושר",
           showConfirmButton: false,
           timer: 1500
         });
-     
+
       else
-      Swal.fire({
-        icon: "error",
-        title: "אופס... תקלה בעת שמירת הנתונים",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      } 
-      else if (result.isDenied) {
         Swal.fire({
-          icon: "info",
-          title: "לא נשמרו שינויים",
+          icon: "error",
+          title: "אופס... תקלה בעת שמירת הנתונים",
           showConfirmButton: false,
           timer: 1500
         });
-      }
-    });
+    }
+    else if (result.isDenied) {
+      Swal.fire({
+        icon: "info",
+        title: "לא נשמרו שינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  });
 }
-async function deny(itemId)
-{
-    Swal.fire({
-      title: "?האם לא לאשר את הפריט",
-      text:"פריט לא מאושר יימחק מהמאגר",
-      showDenyButton: true,
-      //showCancelButton: true,
-      confirmButtonText: "דחיית פריט",
-      denyButtonText: `ביטול`
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+async function deny(itemId) {
+  Swal.fire({
+    title: "?האם לא לאשר את הפריט",
+    text: "פריט לא מאושר יימחק מהמאגר",
+    showDenyButton: true,
+    //showCancelButton: true,
+    confirmButtonText: "דחיית פריט",
+    denyButtonText: `ביטול`
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       await itemStore.deniedItem(itemId);
-       if(itemStore.isDeind)
+      if (itemStore.isDeind)
         Swal.fire({
           icon: "success",
           title: "הפריט נמחק",
           showConfirmButton: false,
           timer: 1500
         });
-     
+
       else
-      Swal.fire({
-        icon: "error",
-        title: "אופס... תקלה בעת שמירת הנתונים",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      } 
-      else if (result.isDenied) {
         Swal.fire({
-          icon: "info",
-          title: "לא נשמרו שינויים",
+          icon: "error",
+          title: "אופס... תקלה בעת שמירת הנתונים",
           showConfirmButton: false,
           timer: 1500
         });
-      }
-    });
+    }
+    else if (result.isDenied) {
+      Swal.fire({
+        icon: "info",
+        title: "לא נשמרו שינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  });
 }
-export const PendingItems= observer(() => {
-const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i.author,i.category,i.createdAt,i.description,i.filePath) ))
+export const PendingItems = observer(() => {
+  const rows = toJS(itemStore.getPendingList).map((i) => (createData(i.id, i.title, i.author, i.category, i.createdAt, i.description, i.filePath)))
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" >
-    <Paper elevation={3} sx={{ width: '90%', maxWidth: 1200 }}>
-    <Box padding={2} textAlign="center" >
+      <Paper elevation={3} sx={{ width: '90%', maxWidth: 1200 }}>
+        <Box padding={2} textAlign="center" >
           <Typography variant="h4" component="h1"><b>פריטים ממתינים לאישור</b></Typography>
         </Box>
-    <TableContainer component={Paper} dir="rtl">
-      <Table aria-label="collapsible table">
-        <TableHead className="table-head-cell">
-          <TableRow className="table-head-cell" >
-            <TableCell className="table-head-cell"/>
-            <TableCell  className="table-head-cell"style={{  color: 'white' }} align="right" >כותרת</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >מחבר</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >קטגוריה</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" >תאריך יצירה</TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" ></TableCell>
-            <TableCell className="table-head-cell" style={{  color: 'white' }} align="right" ></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
+        <TableContainer component={Paper} dir="rtl">
+          <Table aria-label="collapsible table">
+            <TableHead className="table-head-cell">
+              <TableRow className="table-head-cell" >
+                <TableCell className="table-head-cell" />
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" >כותרת</TableCell>
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" >מחבר</TableCell>
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" >קטגוריה</TableCell>
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" >תאריך יצירה</TableCell>
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" ></TableCell>
+                <TableCell className="table-head-cell" style={{ color: 'white' }} align="right" ></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {rows.length > 0 ? (
                 rows.map((row) => (
                   <Row key={row.title} row={row} />
@@ -239,9 +237,9 @@ const rows = toJS(itemStore.getPendingList).map((i)=> (createData(i.id,i.title,i
                 </TableRow>
               )}
             </TableBody>
-      </Table>
-    </TableContainer>
-    </Paper>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 })
