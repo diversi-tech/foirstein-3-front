@@ -51,16 +51,17 @@ export default function ItemEdit({ mediaItem, onClose }) {
   useEffect(() => {
     checkLink();
 
-    const isValid =
-      formData.title.length >= 2 &&
-      formData.description.length >= 5 &&
-      formData.category.length >= 2 &&
-      formData.author.length >= 2 &&
-      formData.tag.length > 0 &&
-      (link || formData.filePath);
+    // const isValid =
+    //   formData.title.length >= 2 &&
+    //   formData.description.length >= 5 &&
+    //   formData.category.length >= 2 &&
+    //   formData.author.length >= 2 &&
+    //   formData.tag.length > 0 &&
+    //   (link || formData.filePath);
 
-    setIsFormValid(isValid);
-  }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
+    // setIsFormValid(isValid);
+  // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
+  }, [formData.filePath]);
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
