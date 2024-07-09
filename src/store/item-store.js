@@ -8,7 +8,7 @@ class ItemStore {
     isUpdate = false;
     isDelete = false;
     isError = true;
-    message = "הקובץ  עודכן בהצלחה! ✅";
+    message = "";
     isApprov = false;
     isDeind = false;
 
@@ -126,9 +126,29 @@ class ItemStore {
         }
     }
 
-    async uploadMedia(mediaData) {
+    async uploadMediaFile(mediaData) {
         try {
-            const res = await fetch('https://localhost:7297/api/Item', {
+            const res = await fetch('https://localhost:7297/api/Item/file', {
+                method: 'POST',
+                body: mediaData,
+            });
+            if (res.status === 200) {
+                this.isError = false;
+                this.message = "הועלה בהצלחה! ✅"
+            } else {
+                this.isError = true;
+                this.message = "העלאה נכשלה"
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to upload media:', error);
+            this.isError = true;
+        }
+    }
+
+    async uploadMediaBook(mediaData) {
+        try {
+            const res = await fetch('https://localhost:7297/api/Item/book', {
                 method: 'POST',
                 body: mediaData,
             });
@@ -168,11 +188,35 @@ class ItemStore {
         }
     }
 
-    async updateMedia(mediaId, mediaData) {
+    async updateMediaBook(mediaId, mediaData) {
         try {
 
             console.log("formData: ", mediaData, "beforeFetch");
-            const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
+            const res = await fetch(`https://localhost:7297/api/Item/book/${mediaId}`, {
+                method: 'PUT',
+                body: mediaData
+            });
+            console.log("formData: ", mediaData, "afterFetch");
+            this.fetchMedia();
+
+            if (res.status === 200) {
+                this.isUpdate = true;
+                this.message = "  הספר  עודכן בהצלחה! ✅";
+            }
+            else{
+                this.isUpdate = false;
+                this.message = "!עדכון הספר לא הצליח"
+            }
+        } catch (error) {
+            console.error('Failed to update media:', error);
+        }
+    }
+
+    async updateMediaFile(mediaId, mediaData) {
+        try {
+           
+            console.log("formData: ", mediaData, "beforeFetch");
+            const res = await fetch(`https://localhost:7297/api/Item/file/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });
@@ -191,32 +235,6 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
-
-    // async updateMedia(mediaId, mediaData) {
-    //     try {
-    //         console.log("media data: ", mediaData);
-    //         const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
-    //             method: 'PUT',
-    //             body: JSON.stringify(mediaData),
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //         });
-
-
-    //         console.log("res: ", res);
-
-    //         if (res.status === 200) {
-    //             this.isUpdate = true;
-    //             this.message = "הקובץ עודכן בהצלחה! ✅";
-    //         } else {
-    //             this.isUpdate = false;
-    //             this.message = "!עדכון הקובץ לא הצליח";
-    //         }
-    //     } catch (error) {
-    //         console.error('Failed to update media:', error);
-    //     }
-    // }
 
 }
 const itemStore = new ItemStore();

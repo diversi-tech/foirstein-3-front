@@ -10,35 +10,57 @@ import {
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
-    map[tag.id] = tag.name; // Changed to map tag id to tag name
+    map[tag.id] = tag.name;
     return map;
   }, {});
 
-  const initialTagNames = Array.isArray(mediaItem.tags)
-    ? mediaItem.tags.map((tagId) => tagMap[tagId])
+  const initialTagIds = Array.isArray(mediaItem.tags)
+    ? mediaItem.tags.map((tagId) => tagId)
     : [];
 
-  const [id, setId] = useState(mediaItem.id);
-  const [isApproved, setIsApproved] = useState(mediaItem.isApproved)
   const [formData, setFormData] = useState({
-
-    // id: mediaItem.id,
+    id: mediaItem.id,
     title: mediaItem.title,
     description: mediaItem.description,
     category: mediaItem.category,
     author: mediaItem.author,
-    // isApproved: mediaItem.isApproved,
-    tag: initialTagNames, // Initialize with tag names instead of tag ids
+    isApproved: mediaItem.isApproved,
+    tags: initialTagIds,
     filePath: mediaItem.filePath || '',
-    // file: mediaItem.file || ''
   });
 
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
+  const [isFormValid, setIsFormValid] = useState(true);
+
+  // useEffect(() => {
+  //   checkLink();
+
+  //   const isValid =
+  //     formData.title.length >= 2 &&
+  //     formData.description.length >= 5 &&
+  //     formData.category.length >= 5 &&
+  //     formData.author.length >= 5 &&
+  //     formData.tag.length > 0;
+
+  //   setIsFormValid(isValid);
+  // }, [formData.filePath]);
+
   useEffect(() => {
     checkLink();
+
+    // const isValid =
+    //   formData.title.length >= 2 &&
+    //   formData.description.length >= 5 &&
+    //   formData.category.length >= 2 &&
+    //   formData.author.length >= 2 &&
+    //   formData.tag.length > 0 &&
+    //   (link || formData.filePath);
+
+    // setIsFormValid(isValid);
+  // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
   }, [formData.filePath]);
 
   const ITEM_HEIGHT = 48;
@@ -57,6 +79,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'category' || name === 'author') {
+      const lettersRegex = /^[א-תA-Za-z\s]*$/;
+      if (!lettersRegex.test(value)) {
+        return; // If the value doesn't match, do nothing
+      }
+    }
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value
@@ -67,27 +95,47 @@ export default function ItemEdit({ mediaItem, onClose }) {
     const { target: { value } } = event;
     setFormData((prevData) => ({
       ...prevData,
-      tag: value, // Store tag names directly
+      tags: typeof value === 'string' ? value.split(',') : value,
+    }));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      filePath: file ? URL.createObjectURL(file) : prevData.filePath,
+      file: file || prevData.file
     }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
-    // formDataToSend.append('id', formData.id);
+    formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
-    // formDataToSend.append('isApproved', formData.isApproved);
-    formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
-    formDataToSend.append('filePath', formData.filePath);
-    // if (formData.file) {
-    //   formDataToSend.append('file', formData.file);
-    // }
-    console.log("Submitting form data:", formDataToSend);
+    formDataToSend.append('isApproved', formData.isApproved);
+    formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
+
+    if (formData.file) {
+      formDataToSend.append('file', formData.file);
+    } else {
+      formDataToSend.append('filePath', formData.filePath);
+    }
+    // formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
+    // formDataToSend.append('filePath', formData.filePath);
+
     try {
-      const response = await itemStore.updateMedia(formData.id, formDataToSend);
+      let response;
+      if (mediaItem.type === 'file') {
+        response = await itemStore.updateMediaFile(formData.id, formDataToSend);
+      } else if (mediaItem.type != 'file') {
+        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
+      } else {
+        response = await itemStore.updateMedia(formData.id, formDataToSend);
+      }
       if (response && response.ok) {
         setUpdateSuccess(true);
         onClose();
@@ -179,49 +227,56 @@ export default function ItemEdit({ mediaItem, onClose }) {
             <Select
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
-              name='tag'
-
+                            name='tag'
               multiple
-              value={formData.tag}
+              value={formData.tags}
               onChange={handleChangeChip}
               input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((tagName) => (
-                    <Chip key={tagName} label={tagName} style={{ color: 'dark' }}
-                      variant='outlined' />
+
+                  {selected.map((tagId) => (
+                    <Chip key={tagId} label={tagMap[tagId]} style={{ color: 'dark' }} variant='outlined' />
+
                   ))}
                 </Box>
               )}
               MenuProps={MenuProps}
             >
               {tagStore.tagList.map((tag) => (
-                <MenuItem key={tag.id} value={tag.name}>
-                  <Checkbox checked={formData.tag.indexOf(tag.name) > -1} />
+                <MenuItem key={tag.id} value={tag.id}>
+                  <Checkbox checked={formData.tags.indexOf(tag.id) > -1} />
                   <ListItemText primary={tag.name} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          {!link && (
+{/*           
             <TextField
               margin="dense"
-              label="מדף"
+              label="קישור"
               type="text"
               fullWidth
               name="filePath"
               value={formData.filePath}
               onChange={handleChange}
-              required
-            />
-          )}
-          {link && (
+            /> */}
+        
             <TextField
               margin="dense"
-              type="file"
+              label="מיקום"
+              type="text"
               fullWidth
               name="filePath"
-              onChange={(e) => setFormData({ ...formData, filePath: e.target.files[0] })}
+              value={formData.filePath}
+              onChange={handleChange}
+            />
+          {mediaItem.type === 'file' && (
+            <input
+              type="file"
+              name="filePath"
+              onChange={handleFileChange}
+              style={{ marginTop: '1rem' }}
             />
           )}
         </DialogContent>
@@ -229,10 +284,10 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} >
+          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
             שמירה
           </Button>
-          {send && (updateSuccess === true ? <Success /> : updateSuccess === false ? <Failure /> : null)}
+          {send && (itemStore.isUpdate ?<Success /> : <Failure /> )}
         </DialogActions>
       </form>
     </Dialog>

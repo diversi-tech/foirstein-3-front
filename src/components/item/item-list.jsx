@@ -1,6 +1,3 @@
-
-
-
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import itemStore from '../../store/item-store';
@@ -33,10 +30,10 @@ import tagStore from '../../store/tag-store';
 import ItemAdd from './item-add';
 import Success from '../message/success';
 import Failure from '../message/failure';
-import { makeStyles } from '@mui/styles'; // הוסף את makeStyles
+import { styled } from '@mui/material/styles';
 import './item.css';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled((theme) => ({
     title: {
         backgroundColor: '#468585', // צבע רקע שחור לכותרת
         color: 'white', // צבע טקסט לכותרת
@@ -69,7 +66,7 @@ const ItemList = observer(() => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [send, setSend] = useState(false);
-    const [deleteTagOpen, setDdeleteTagOpen] = useState(false);
+    const [deleteTagOpen, setDeleteTagOpen] = useState(false);
 
     const handleDelete = (item) => {
         setDeleteItem(item);
@@ -79,7 +76,7 @@ const ItemList = observer(() => {
     const handleDeleteChip = (item, tag) => {
         setDeleteTag(tag);
         setDeleteItem(item);
-        setDdeleteTagOpen(true);
+        setDeleteTagOpen(true);
     };
 
     const confirmDelete = async () => {
@@ -114,7 +111,7 @@ const ItemList = observer(() => {
         setDeleteTag(null);
         setEditOpen(false);
         setEditedItem(null);
-        setDdeleteTagOpen(false);
+        setDeleteTagOpen(false);
     };
 
     const handleSelectItem = (item) => {
@@ -128,11 +125,27 @@ const ItemList = observer(() => {
     };
 
     const handleDeleteSelectedItems = async () => {
-        for (const itemId of selectedItems) {
-            await itemStore.deleteMedia(itemId);
+        setDeleteOpen(true); // Open confirmation dialog for bulk delete
+    };
+
+    const handleConfirmBulkDelete = async () => {
+        if (selectedItems.length > 1) {
+
+            try {
+                await Promise.all(selectedItems.map(async (itemId) => {
+                    await itemStore.deleteMedia(itemId);
+                }));
+                setSend(true);
+                setSelectedItems([]);
+                setDeleteOpen(false);
+            } catch (error) {
+                console.error('Error deleting selected items:', error);
+            }
+
         }
-        setSelectedItems([]);
-        setSend(true);
+        else {
+            deletee();
+        }
     };
 
     return (
@@ -157,13 +170,13 @@ const ItemList = observer(() => {
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell align="center"className={classes.headerCell}>
+                                    <TableCell align="center" className={classes.headerCell}>
                                         כותרת
                                     </TableCell>
                                     <TableCell align="center" className={classes.headerCell}>
                                         תיאור
                                     </TableCell>
-                                    <TableCell align="center"className={classes.headerCell}>
+                                    <TableCell align="center" className={classes.headerCell}>
                                         קטגוריה
                                     </TableCell>
                                     <TableCell align="center" className={classes.headerCell}>
@@ -224,7 +237,7 @@ const ItemList = observer(() => {
                                             <IconButton onClick={() => handleClickEdit(item)}>
                                                 <EditIcon style={{ color: '#468585' }} />
                                             </IconButton>
-                                            <IconButton onClick={() => handleDelete(item)} style={{ marginLeft: '10px' }}>
+                                            <IconButton onClick={() => handleDelete(item)}>
                                                 <DeleteIcon style={{ color: '#50B498' }} />
                                             </IconButton>
                                         </TableCell>
@@ -257,13 +270,13 @@ const ItemList = observer(() => {
             <Dialog open={deleteOpen} onClose={handleClose} fullScreen={fullScreen} style={{ direction: 'rtl' }}>
                 <DialogTitle>אישור מחיקה</DialogTitle>
                 <DialogContent>
-                    <p>האם אתה בטוח שברצונך למחוק את הפריט הזה?</p>
+                    <p>האם אתה בטוח שברצונך למחוק {selectedItems.length} פריטים?</p>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} style={{ color: '#468585' }}>
                         ביטול
                     </Button>
-                    <Button onClick={deletee} style={{ color: '#468585' }}>
+                    <Button onClick={handleConfirmBulkDelete} style={{ color: '#468585' }}>
                         מחיקה
                     </Button>
                 </DialogActions>
