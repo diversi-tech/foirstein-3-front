@@ -26,12 +26,10 @@ function Header() {
         const jsonRequests=await requests.json();
         const dataRequests = extractRawData(jsonRequests);
         setRequestsCount(dataRequests.length);
-        debugger
         const items = await fetch(baseUrl + `Item`);
         const jsonItems=await items.json()
         const dataItems = extractRawData(jsonItems);
         setItemsCount(dataItems.length);
-        debugger
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
