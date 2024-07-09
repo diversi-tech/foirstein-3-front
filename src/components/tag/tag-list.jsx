@@ -29,6 +29,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   textAlign: "center",
 }));
 
+const StickyTableRow = styled(TableRow)({
+  position: "sticky",
+  top: 0,
+  zIndex: 10,
+  backgroundColor: "#FFFFFF",
+});
+
 const TagList = observer(() => {
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -93,19 +100,19 @@ const TagList = observer(() => {
     >
       <Grid item xs={12} md={8} lg={6}>
         <Paper elevation={3}>
-          <Box padding={3}>
+          <Box padding={2}>
             <Typography variant="h5" component="h2" align="center" gutterBottom>
               -תגים-
             </Typography>
-            <TableContainer>
-              <Table aria-label="תגים">
-                <TableBody>
+            <TableContainer style={{ maxHeight: 450, overflow: 'auto' }}>
+              <Table aria-label="תגים" >
+                <TableBody >
                   {/* כותרות העמודות */}
-                  <TableRow>
+                  <StickyTableRow>
                     <StyledTableCell>שם</StyledTableCell>
                     <StyledTableCell>עריכה</StyledTableCell>
                     <StyledTableCell>מחיקה</StyledTableCell>
-                  </TableRow>
+                  </StickyTableRow>
                   {/* תוכן הטבלה */}
                   {tagStore.tagList.map((row) => (
                     <TableRow key={row.id}>
@@ -164,8 +171,8 @@ const TagList = observer(() => {
               editItem && !editItem.name
                 ? "זהו שדה חובה"
                 : editItem && editItem.name.length < 2
-                ? "השם חייב להכיל לפחות 2 תווים"
-                : ""
+                  ? "השם חייב להכיל לפחות 2 תווים"
+                  : ""
             }
           />
         </DialogContent>
