@@ -21,6 +21,7 @@ import {
     Stack,
     Checkbox,
     Grid,
+    Tooltip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -199,7 +200,9 @@ const ItemList = observer(() => {
                                             {selectedItems.length > 0 ? (
                                                 <DeleteIcon />
                                             ) : (
-                                                <AddIcon />
+                                                <Tooltip title="להוספת פריט חדש" arrow>
+                                                    <AddIcon />
+                                                </Tooltip>
                                             )}
                                         </Button>
                                     </TableCell>

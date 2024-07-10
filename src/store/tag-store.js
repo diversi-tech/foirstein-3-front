@@ -47,7 +47,6 @@ class TagStore {
 
     }
   }
-
    
   async deleteTag(tagId) {
     try {
