@@ -9,7 +9,7 @@ class ItemStore {
     isDeleteItem;
     isDeleteTag;
     isError = true;
-    message = "";
+    message = "נכשל";
     isApprov = false;
     isDeind = false;
 
