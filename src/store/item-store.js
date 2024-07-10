@@ -5,8 +5,9 @@ class ItemStore {
     pendingItemsList = []
     mediaList = [];
     add = false;
-    isUpdate = false;
-    isDelete = false;
+    isUpdate;
+    isDeleteItem;
+    isDeleteTag;
     isError = true;
     message = "";
     isApprov = false;
@@ -14,7 +15,8 @@ class ItemStore {
 
     constructor() {
         makeAutoObservable(this, {
-            isDelete: observable,
+            isDeleteItem: observable,
+            isDeleteTag: observable,
             mediaList: observable,
             isAdd: observable,
             isUpdate: observable,
@@ -26,7 +28,7 @@ class ItemStore {
             isApprov: observable,
             // add: observable,
             pendingItemsList: observable,
-            getPendingList: computed,
+            // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action
@@ -43,12 +45,12 @@ class ItemStore {
             });
             console.log("delete tag:");
             if (res.status === 200) {
-                this.isDelete = true;
+                this.isDeleteTag = true;
                 this.message = " נמחק בהצלחה! ✅"
 
             }
             else {
-                this.isDelete = false;
+                this.isDeleteTag = false;
                 this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
@@ -174,12 +176,12 @@ class ItemStore {
                 method: 'DELETE'
             });
             if (res.status === 200) {
-                this.isDelete = true;
+                this.isDeleteItem = true;
                 this.message = " נמחק בהצלחה! ✅"
 
             }
             else {
-                this.isDelete = false;
+                this.isDeleteItem = false;
                 this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
@@ -203,7 +205,7 @@ class ItemStore {
                 this.isUpdate = true;
                 this.message = "  הספר  עודכן בהצלחה! ✅";
             }
-            else{
+            else {
                 this.isUpdate = false;
                 this.message = "!עדכון הספר לא הצליח"
             }
@@ -214,7 +216,7 @@ class ItemStore {
 
     async updateMediaFile(mediaId, mediaData) {
         try {
-           
+
             console.log("formData: ", mediaData, "beforeFetch");
             const res = await fetch(`https://localhost:7297/api/Item/file/${mediaId}`, {
                 method: 'PUT',
