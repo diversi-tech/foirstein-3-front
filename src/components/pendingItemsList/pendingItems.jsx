@@ -149,8 +149,6 @@ async function approval(itemId) {
           timer: 1500
         });
       }
-        
-
       else
         Swal.fire({
           icon: "error",
