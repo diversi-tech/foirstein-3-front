@@ -186,7 +186,6 @@ const StudentRequest = observer(() => {
         <Box padding={2} textAlign="center">
           <Typography variant="h4" component="h1"><b>בקשות התלמידות</b></Typography>
         </Box>
-       
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
@@ -209,8 +208,7 @@ const StudentRequest = observer(() => {
             ).map((row) => (
               <Row key={row.requestId} row={row} requestId={row.requestId} />
             ))}
-          </TableBody>
-          
+          </TableBody> 
         </Table>
         <TablePagination
             rowsPerPageOptions={rowsPerPageOptions}
