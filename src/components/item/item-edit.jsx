@@ -61,7 +61,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     //   (link || formData.filePath);
 
     // setIsFormValid(isValid);
-  // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
+    // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
   }, [formData.filePath]);
 
   const ITEM_HEIGHT = 48;
@@ -228,7 +228,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             <Select
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
-                            name='tag'
+              name='tag'
               multiple
               value={formData.tags}
               onChange={handleChangeChip}
@@ -252,7 +252,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
-{/*           
+          {/*           
             <TextField
               margin="dense"
               label="קישור"
@@ -262,16 +262,16 @@ export default function ItemEdit({ mediaItem, onClose }) {
               value={formData.filePath}
               onChange={handleChange}
             /> */}
-        
-            <TextField
-              margin="dense"
-              label="מיקום"
-              type="text"
-              fullWidth
-              name="filePath"
-              value={formData.filePath}
-              onChange={handleChange}
-            />
+
+          <TextField
+            margin="dense"
+            label="מיקום"
+            type="text"
+            fullWidth
+            name="filePath"
+            value={formData.filePath}
+            onChange={handleChange}
+          />
           {mediaItem.type === 'file' && (
             <input
               type="file"
@@ -288,7 +288,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
             שמירה
           </Button>
-          {send && (itemStore.isUpdate ?<Success /> : <Failure /> )}
+          {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
         </DialogActions>
       </form>
     </Dialog>

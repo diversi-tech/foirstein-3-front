@@ -12,6 +12,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "postbuild": "cpy ./404.html ./dist"
+
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
