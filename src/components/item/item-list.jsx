@@ -1,3 +1,5 @@
+
+
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import itemStore from '../../store/item-store';
@@ -30,8 +32,10 @@ import tagStore from '../../store/tag-store';
 import ItemAdd from './item-add';
 import Success from '../message/success';
 import Failure from '../message/failure';
+import ItemSearch from './itemSearch'; 
 import { styled } from '@mui/material/styles';
 import './item.css';
+import { flexbox } from '@mui/system';
 
 const useStyles = styled((theme) => ({
     title: {
@@ -50,7 +54,12 @@ const useStyles = styled((theme) => ({
     headerCell: {
         backgroundColor: 'black', // צבע רקע שחור לכותרת
         color: 'white', // צבע טקסט לכותרת
-    }
+    },
+    searchContainer: {
+        display: 'flex',
+        justifyContent: 'left',
+        marginBottom: theme.spacing(2),
+    },
 }));
 
 const ItemList = observer(() => {
@@ -62,11 +71,16 @@ const ItemList = observer(() => {
     const [editedItem, setEditedItem] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [send, setSend] = useState(false);
     const [deleteTagOpen, setDeleteTagOpen] = useState(false);
+
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+    };
 
     const handleDelete = (item) => {
         setDeleteItem(item);
@@ -130,7 +144,6 @@ const ItemList = observer(() => {
 
     const handleConfirmBulkDelete = async () => {
         if (selectedItems.length > 1) {
-
             try {
                 await Promise.all(selectedItems.map(async (itemId) => {
                     await itemStore.deleteMedia(itemId);
@@ -141,17 +154,22 @@ const ItemList = observer(() => {
             } catch (error) {
                 console.error('Error deleting selected items:', error);
             }
-
-        }
-        else {
+        } else {
             deletee();
         }
     };
+
+    const filteredItems = itemStore.mediaList.filter((item) =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <>
             <div className="itemListDiv">
                 <h2 className={classes.title}>רשימת קבצים</h2>
+                <div className={classes.searchContainer}>
+                    <ItemSearch onSearch={handleSearch} />
+                </div>
                 <Grid item xs={12} md={2} lg={2}>
                     <TableContainer component={Paper} className="tableContainer" style={{ maxHeight: 470, overflow: 'auto' }}>
                         <Table stickyHeader>
@@ -206,7 +224,7 @@ const ItemList = observer(() => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {itemStore.mediaList.map((item) => (
+                                {filteredItems.map((item) => (
                                     <TableRow key={item.id}>
                                         <TableCell align="center">
                                             <Checkbox
@@ -250,57 +268,57 @@ const ItemList = observer(() => {
                                                             <Chip
                                                                 key={tag.id}
                                                                 label={tag.name}
-                                                                style={{ color: '#9CDBA6' }}
-                                                                variant="outlined"
-                                                                onDelete={() => handleDeleteChip(item, tag)}
-                                                            />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </Stack>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Grid>
-            </div>
-            <Dialog open={deleteOpen} onClose={handleClose} fullScreen={fullScreen} style={{ direction: 'rtl' }}>
-                <DialogTitle>אישור מחיקה</DialogTitle>
-                <DialogContent>
-                    <p>האם אתה בטוח שברצונך למחוק {selectedItems.length} פריטים?</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} style={{ color: '#468585' }}>
-                        ביטול
-                    </Button>
-                    <Button onClick={handleConfirmBulkDelete} style={{ color: '#468585' }}>
-                        מחיקה
-                    </Button>
-                </DialogActions>
-                {send && (itemStore.isDelete ? <Success /> : <Failure />)}
-            </Dialog>
-            {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
-            {itemStore.add && <ItemAdd />}
-            <Dialog open={deleteTagOpen} onClose={handleClose} fullScreen={fullScreen} style={{ direction: 'rtl' }}>
-                <DialogTitle>אישור מחיקה</DialogTitle>
-                <DialogContent>
-                    <p>האם אתה בטוח שברצונך למחוק את התג הזה?</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} style={{ color: '#468585' }}>
-                        ביטול
-                    </Button>
-                    <Button onClick={confirmDelete} style={{ color: '#468585' }}>
-                        מחיקה
-                    </Button>
-                </DialogActions>
-                {send && (itemStore.isDelete ? <Success /> : <Failure />)}
-            </Dialog>
-        </>
-    );
-});
-
-export default ItemList;
+                                                                style={{
+                                                                    color: '#9CDBA6' }}
+                                                                    variant="outlined"
+                                                                    onDelete={() => handleDeleteChip(item, tag)}
+                                                                />
+                                                            );
+                                                        }
+                                                        return null;
+                                                    })}
+                                                </Stack>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                </div>
+                <Dialog open={deleteOpen} onClose={handleClose} fullScreen={fullScreen} style={{ direction: 'rtl' }}>
+                    <DialogTitle>אישור מחיקה</DialogTitle>
+                    <DialogContent>
+                        <p>האם אתה בטוח שברצונך למחוק {selectedItems.length} פריטים?</p>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} style={{ color: '#468585' }}>
+                            ביטול
+                        </Button>
+                        <Button onClick={handleConfirmBulkDelete} style={{ color: '#468585' }}>
+                            מחיקה
+                        </Button>
+                    </DialogActions>
+                    {send && (itemStore.isDelete ? <Success /> : <Failure />)}
+                </Dialog>
+                {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
+                {itemStore.add && <ItemAdd />}
+                <Dialog open={deleteTagOpen} onClose={handleClose} fullScreen={fullScreen} style={{ direction: 'rtl' }}>
+                    <DialogTitle>אישור מחיקה</DialogTitle>
+                    <DialogContent>
+                        <p>האם אתה בטוח שברצונך למחוק את התג הזה?</p>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} style={{ color: '#468585' }}>
+                            ביטול
+                        </Button>
+                        <Button onClick={confirmDelete} style={{ color: '#468585' }}>
+                            מחיקה
+                        </Button>
+                    </DialogActions>
+                    {send && (itemStore.isDelete ? <Success /> : <Failure />)}
+                </Dialog>
+            </>
+        );
+    });
+    export default ItemList;    
