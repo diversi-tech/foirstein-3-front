@@ -32,7 +32,7 @@ const baseUrl = "https://localhost:7297/api/";
 const rowsPerPageOptions = [5, 10, 25];
 
 function Request(props) {
-  const { row } = props;
+  const {  request } = props;
   const [detailRequest, setDetailRequest] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -40,7 +40,7 @@ function Request(props) {
     const fetchRequest = async () => {
       try {
         const res = await fetch(
-          `${baseUrl}BorrowApprovalRequest/details/${row.requestId}`
+          `${baseUrl}BorrowApprovalRequest/details/${request.requestId}`
         );
         let data = await res.json();
         const _detailRequest = extractRawData(data);
@@ -50,7 +50,7 @@ function Request(props) {
       }
     };
     fetchRequest();
-  }, [row.requestId]);
+  }, [request.requestId]);
 
   return (
     <React.Fragment>
@@ -66,15 +66,15 @@ function Request(props) {
         </TableCell>
         <TableCell className="styled-table-cell">
           <Box className="center-content">
-            <AlertDialog option="דחיה" requestId={row.requestId} />
-            <AlertDialog option="אישור" requestId={row.requestId} />
+            <AlertDialog option="דחיה" requestId={request.requestId} />
+            <AlertDialog option="אישור" requestId={request.requestId} />
           </Box>
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {formatDate(row.approvalDate)}
+          {formatDate(request.approvalDate)}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {formatDate(row.requestDate)}
+          {formatDate(request.requestDate)}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
           {detailRequest && detailRequest.userName
@@ -87,7 +87,7 @@ function Request(props) {
             : "טוען..."}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {row.requestId}
+          {request.requestId}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -183,7 +183,7 @@ const StudentRequest = observer(() => {
                 )
               : rows
             ).map((row) => (
-              <Request key={row.requestId} row={row} requestId={row.requestId} />
+              <Request key={row.requestId} request={row} requestId={row.requestId} />
             ))}
           </TableBody>
         </Table>
@@ -268,7 +268,7 @@ DetailRequest.propTypes = {
 };
 
 Request.propTypes = {
-  row: PropTypes.shape({
+  request: PropTypes.shape({
     requestId: PropTypes.number.isRequired,
     itemId: PropTypes.number.isRequired,
     userId: PropTypes.number.isRequired,
