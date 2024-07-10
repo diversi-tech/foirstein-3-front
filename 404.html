@@ -1,14 +1,27 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script type="text/javascript">
-      const pathname = window.location.pathname;
-      const base = '/foirstein-3-front/';
-      const redirectTo = base + pathname.replace(base, '');
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found</title>
+  <script type="text/javascript">
+    // Get the current pathname
+    const pathname = window.location.pathname;
+
+    // Define the base path of your application
+    const base = '/foirstein-3-front/';
+
+    // Construct the target redirect URL
+    const redirectTo = base + pathname.replace(base, '');
+
+    // Check if the current pathname is already the target URL
+    if (redirectTo !== window.location.pathname) {
+      // Redirect to the target URL
       window.location.replace(redirectTo);
-    </script>
-  </head>
-  <body>
-    <p>Redirecting...</p>
-  </body>
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
 </html>
