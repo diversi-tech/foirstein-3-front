@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TagStore from "../../store/tag-store";
 import {
   Button,
   TextField,
@@ -10,14 +11,38 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
-import TagStore from "../../store/tag-store";
-import Fields_rtl from '../fields_rtl';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import rtlPlugin from "stylis-plugin-rtl";
+import { prefixer } from "stylis";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
+
+export const theme = (outerTheme) =>
+  createTheme({
+    direction: "rtl",
+    palette: {
+      mode: outerTheme?.palette?.mode || 'light',
+    },
+  });
+
+export const cacheRtl = createCache({
+  key: "muirtl",
+  stylisPlugins: [prefixer, rtlPlugin],
+});
 
 const TagAdd = ({ onClose }) => {
   const [addItem, setAddItem] = useState("");
   const [addOpen, setAddOpen] = useState(true);
   const [addAnother, setAddAnother] = useState(false); // State for checkbox
   const [showValidation, setShowValidation] = useState(false); // State for validation message
+  
+  const Fields_rtl = ({ children }) => (
+    <CacheProvider value={cacheRtl}>
+      <ThemeProvider theme={theme}>
+        {children}
+      </ThemeProvider>
+    </CacheProvider>
+  );
 
   const dialogClose = () => {
     setAddItem("");
