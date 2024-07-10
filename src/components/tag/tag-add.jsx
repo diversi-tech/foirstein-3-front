@@ -43,7 +43,7 @@ const TagAdd = ({ onClose }) => {
   };
 
   return (
-    <Dialog open={addOpen} maxWidth="sm">
+    <Dialog open={addOpen} maxWidth="sm" dir="rtl">
       <DialogTitle>הוספת תג חדש</DialogTitle>
       <Fields_rtl>
         <DialogContent dividers dir="rtl">
