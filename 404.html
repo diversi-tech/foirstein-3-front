@@ -17,7 +17,7 @@
     // Only redirect if not already at the correct URL
     if (window.location.href == redirectTo) {
       // Redirect to the target URL
-      window.history.replaceState(redirectTo);
+      window.history.pushState(redirectTo);
     }
   </script>
 </head>
