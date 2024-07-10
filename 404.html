@@ -11,17 +11,11 @@
     // Define the base path of your application
     const base = '/foirstein-3-front';
 
-    // Check if the current pathname does not already start with the base path
-    if (!pathname.startsWith(base)) {
-      // Construct the target redirect URL
-      const redirectTo = base + pathname;
+    // Construct the target redirect URL
+    const redirectTo = base + pathname;
 
-      // Redirect to the target URL
-      window.location.replace(redirectTo);
-    } else {
-      // If we are already at the correct path, redirect to the index.html
-      window.location.replace(base + '/index.html');
-    }
+    // Redirect to the target URL
+    window.location.replace(redirectTo);
   </script>
 </head>
 <body>
