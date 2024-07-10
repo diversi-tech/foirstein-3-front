@@ -15,7 +15,7 @@
     const redirectTo = base + pathname;
 
     // Only redirect if not already at the correct URL
-    if (window.location.href !== redirectTo) {
+    if (window.location.href == redirectTo) {
       // Redirect to the target URL
       window.history.replaceState(redirectTo);
     }
