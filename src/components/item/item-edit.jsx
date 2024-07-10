@@ -50,6 +50,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   useEffect(() => {
     checkLink();
+    itemStore.fetchMedia();
 
     // const isValid =
     //   formData.title.length >= 2 &&

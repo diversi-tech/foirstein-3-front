@@ -21,13 +21,15 @@ export default function AppRoutes() {
       <Header/>
       <Routes>
           <Route path="/" element={<div> <ImageHomePage/> </div>} />
+          <Route path="/foirstein-3-front/" element={<div> <ImageHomePage/> </div>} />
           <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList/></Box>} />
           <Route path="/itemsPendingApproval" element={<Box sx={{ pt: '7%' }}><PendingItems/></Box>} />
           <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemDdd /></Box>} />
           <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
           <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
           <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest/></Box>} />
-          <Route path="/afterHanddle" element={<h1 style={{marginTop:"50px"}}>לאחר טיפול</h1>} />
+          <Route path="*" element={<h1>Page Not Found</h1>} />
+
           {/* <Route path="/studentsRequest" element={<studentsRequest />}/> */}
       </Routes>
       <Footer />
