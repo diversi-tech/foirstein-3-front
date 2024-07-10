@@ -71,7 +71,7 @@ const ItemList = observer(() => {
 
     useEffect(()=>{
         itemStore.fetchMedia();
-    });
+    },[]);
 
     const handleDelete = (item) => {
         setDeleteItem(item);
