@@ -29,7 +29,7 @@ class TagStore {
         console.log("Processed data:", this.tagList);
       });
     } catch (error) {
-      this.failure("!!!בעיה בהבאת הנתונים");
+      // this.failure("!!!בעיה בהבאת הנתונים");
       console.error("Failed to fetch tag:", error);
     }
   }

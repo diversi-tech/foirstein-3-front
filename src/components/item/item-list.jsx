@@ -69,6 +69,10 @@ const ItemList = observer(() => {
     const [send, setSend] = useState(false);
     const [deleteTagOpen, setDeleteTagOpen] = useState(false);
 
+    useEffect(()=>{
+        itemStore.fetchMedia();
+    });
+
     const handleDelete = (item) => {
         setDeleteItem(item);
         setDeleteOpen(true);
