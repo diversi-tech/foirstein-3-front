@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import itemStore from '../../store/item-store';
 import {
@@ -231,11 +231,17 @@ const ItemList = observer(() => {
                                                 ממתין לאישור
                                             </TableCell>
                                         )}
+                                        { item.filePath.includes('https') ?(
                                         <TableCell align="center">
                                             <a href={item.filePath} target="_blank" rel="noopener noreferrer">
                                                 {item.filePath}
                                             </a>
                                         </TableCell>
+                                        ):(
+                                        <TableCell align="center">{item.filePath}</TableCell>
+                                         )}
+                                        
+                                        
                                         <TableCell align="center">
                                             <IconButton onClick={() => handleClickEdit(item)}>
                                                 <EditIcon style={{ color: '#468585' }} />
