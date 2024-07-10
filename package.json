@@ -10,8 +10,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
-   
+    "deploy": "gh-pages -d dist",
+    "postbuild": "cpy ./404.html ./dist"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -34,6 +34,7 @@
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@vitejs/plugin-react": "^4.2.1",
+    "cpy-cli": "^5.0.0",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
