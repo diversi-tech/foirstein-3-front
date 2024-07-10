@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import books from '../assets/books.png';
 // import books1 from '../assets/books1.jpg';
@@ -60,7 +59,49 @@ const ImageHomePage = () => {
       >
         {carouselImages.map((image, index) => (
           <Paper key={index}>
-            <img src={image.url} alt={image.caption} style={{ width: '100%', height: 'auto' }} />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="column"
+              style={{ position: 'relative', width: '100%', height: 'auto' }}
+            >
+              <Typography
+                variant="h3"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                  width:'70%',
+                  padding: '20px',
+                  borderRadius: '15px',
+                }}
+              >
+                {"ברוכות הבאות לאזור האישי של צוות הספרניות"}
+              </Typography>
+              <Typography
+                variant="h5"
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                  marginTop: '6%',
+                }}
+              >
+                {".כאן תוכלי לנהל את פעילותך באחריות וביעילות"}
+                <br />
+                {"!תודה על תרומתך לספריה שלנו"}
+              </Typography>
+              <img src={image.url} alt={image.caption} style={{ width: '100%', height: 'auto' }} />
+            </Box>
           </Paper>
         ))}
       </Carousel>
