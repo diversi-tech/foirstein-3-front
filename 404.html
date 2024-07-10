@@ -14,8 +14,11 @@
     // Construct the target redirect URL
     const redirectTo = base + pathname;
 
-    // Redirect to the target URL
-    window.location.replace(redirectTo);
+    // Only redirect if not already at the correct URL
+    if (window.location.href !== redirectTo) {
+      // Redirect to the target URL
+      window.location.replace(redirectTo);
+    }
   </script>
 </head>
 <body>
