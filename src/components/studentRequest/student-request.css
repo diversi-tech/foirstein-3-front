@@ -1,0 +1,23 @@
+.styled-table-cell {
+    text-align: center;
+  }
+  
+  .styled-table-container {
+    table-layout: auto;
+  }
+  
+  .center-content {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .table-header {
+    background-color: #e3f2fd;
+  }
+  
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    direction: rtl;
+  }
+  
