@@ -2,11 +2,10 @@
 <html>
   <head>
     <script type="text/javascript">
-      // Get the pathname of the URL
       const pathname = window.location.pathname;
-
-      // Redirect to the same pathname, but prefixed with the base URL
-      window.location.replace('/foirstein-3-front' + pathname);
+      const base = '/foirstein-3-front/';
+      const redirectTo = base + pathname.replace(base, '');
+      window.location.replace(redirectTo);
     </script>
   </head>
   <body>
