@@ -23,23 +23,6 @@ const Header = observer(() => {
   const [requestsCount, setRequestsCount] = React.useState(0);
   const [itemsCount,setItemsCount]=React.useState(0)
 
-  // React.useEffect(() => {
-  //   const fetchRequest = async () => {
-  //     try {
-  //       const requests = await fetch(baseUrl + `BorrowRequest`);
-  //       const jsonRequests=await requests.json();
-  //       const dataRequests = extractRawData(jsonRequests);
-  //       setRequestsCount(dataRequests.length);
-  //       const items = await fetch(baseUrl + `Item/Pending`);
-  //       const jsonItems=await items.json()
-  //       const dataItems = extractRawData(jsonItems);
-  //       setItemsCount(dataItems.length);
-  //     } catch (error) {
-  //       console.error("Failed to fetch data:", error);
-  //     }
-  //   };
-  //   fetchRequest();
-  // }, []);
  React.useEffect(()=>{
   try{
     const countRequests=toJS(requestStore.getRequest).length
