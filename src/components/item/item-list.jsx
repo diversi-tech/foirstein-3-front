@@ -146,7 +146,6 @@ const ItemList = observer(() => {
             } catch (error) {
                 console.error('Error deleting selected items:', error);
             }
-
         }
         else {
             deletee();
@@ -235,15 +234,17 @@ const ItemList = observer(() => {
                                                 ממתין לאישור
                                             </TableCell>
                                         )}
-                                        { item.filePath.includes('https') ?(
+                                        { item.filePath.includes('https') ? (
                                         <TableCell align="center">
                                             <a href={item.filePath} target="_blank" rel="noopener noreferrer">
                                                 {item.filePath}
                                             </a>
-                                        </TableCell>
-                                        ):(
+                                        </TableCell> 
+                                        // itemStore.isLink = true;
+                                        ) : (
                                         <TableCell align="center">{item.filePath}</TableCell>
-                                         )}
+                                        // itemStore.isLink = false;
+                                        )}
                                         
                                         
                                         <TableCell align="center">

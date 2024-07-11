@@ -5,19 +5,18 @@ class ItemStore {
     pendingItemsList = []
     mediaList = [];
     add = false;
-    isUpdate = false;
-    isDelete = false;
+    isUpdate;
+    isDelete;
     isError = true;
     message = "נכשל";
     isApprov = false;
-    isDeind = false;
 
     constructor() {
         makeAutoObservable(this, {
-            isDelete: observable,
             mediaList: observable,
             isAdd: observable,
             isUpdate: observable,
+            isDelete: observable,
             isError: observable,
             setAdd: action,
             add: observable,
@@ -168,19 +167,18 @@ class ItemStore {
 
 
     async deleteMedia(mediaId) {
-        console.log("hiiDeleteMedia!!!!!!!!");
+        // console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
                 this.isDelete = true;
-                this.message = " נמחק בהצלחה! ✅"
-
+                this.message = " נמחק בהצלחה! ✅";
             }
             else {
                 this.isDelete = false;
-                this.message = "מחיקה נכשלה"
+                this.message = "מחיקה נכשלה";
             }
             this.fetchMedia();
         } catch (error) {
