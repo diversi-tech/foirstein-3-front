@@ -1,5 +1,5 @@
 // import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, HashRouter } from "react-router-dom";
 // import ResponsiveAppBar from './components/ResponsiveAppBar';
 // import HomePage from "./components/homePage";
 
@@ -16,12 +16,12 @@ import StudentRequest from "./components/studentRequest/student-request";
 import { Box } from '@mui/material';
 export default function AppRoutes() {
   return (
-  
-    <Router>
+  <HashRouter>
+    {/* <Router basename="/foirstein-3-front/"> */}
       <Header/>
       <Routes>
           <Route path="/" element={<div> <ImageHomePage/> </div>} />
-          <Route path="/foirstein-3-front/" element={<div> <ImageHomePage/> </div>} />
+          {/* <Route path="/foirstein-3-front/" element={<div> <ImageHomePage/> </div>} /> */}
           <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList/></Box>} />
           <Route path="/itemsPendingApproval" element={<Box sx={{ pt: '7%' }}><PendingItems/></Box>} />
           <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemDdd /></Box>} />
@@ -33,6 +33,7 @@ export default function AppRoutes() {
           {/* <Route path="/studentsRequest" element={<studentsRequest />}/> */}
       </Routes>
       <Footer />
-    </Router>
+    {/* </Router> */}
+    </HashRouter>
   );
 }
