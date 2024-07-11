@@ -223,6 +223,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
+
   <TextField
   margin="dense"
   label="מיקום"
