@@ -525,24 +525,30 @@ const ItemList = observer(() => {
                                                 }}
                                             />
                                         </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            קטגוריה
-                                        </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            מחבר
-                                        </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            סטטוס
-                                        </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            מדף/קובץ
-                                        </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            פעולה
-                                        </TableCell>
-                                        <TableCell align="center" className={classes.headerCell}>
-                                            תגית
-                                        </TableCell>
+                                        <TableCell align="center"className={classes.headerCell}>
+                                        כותרת
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        תיאור
+                                    </TableCell>
+                                    <TableCell align="center"className={classes.headerCell}>
+                                        קטגוריה
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        מחבר
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        סטטוס
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        מדף/קובץ
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        פעולה
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
+                                        תגית
+                                    </TableCell>
                                         <TableCell className={classes.headerCell}>
                                             <Button onClick={selectedItems.length > 0 ? handleDeleteSelectedItems : handleClickAdd} className={classes.addButton}>
                                                 {selectedItems.length > 0 ? (
