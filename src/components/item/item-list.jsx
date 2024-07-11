@@ -550,7 +550,10 @@ const ItemList = observer(() => {
                                         <TableCell className={classes.headerCell}>
                                             <Button onClick={selectedItems.length > 0 ? handleDeleteSelectedItems : handleClickAdd} className={classes.addButton}>
                                                 {selectedItems.length > 0 ? (
-                                                    <DeleteIcon />
+                                                    <Tooltip title="למחיקת פריטים מרובים">
+                                                        <DeleteIcon />
+                                                    </Tooltip>
+
                                                 ) : (
                                                     <Tooltip title="להוספת פריט חדש" arrow>
                                                         <AddIcon />
@@ -595,7 +598,10 @@ const ItemList = observer(() => {
                                                 </IconButton>
                                             </TableCell>
                                             <TableCell align="center" className={classes.tableCell}>
-                                                <Stack direction="row" style={{ flexWrap: 'nowrap', overflowX: 'auto', width: '200px', color: '#A80B8BD' }}>
+                                                <Stack direction="row" style={{
+                                                    flexWrap: 'nowrap', overflowX: 'auto',
+                                                    width: '200px', color: '#A80B8BD'
+                                                }}>
                                                     {item.tags.map((tagId) => {
                                                         const tag = tagStore.tagList.find((tag) => tag.id === tagId);
                                                         if (tag) {

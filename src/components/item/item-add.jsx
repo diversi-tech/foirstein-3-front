@@ -308,12 +308,9 @@ const ItemDdd = observer(() => {
                                         MenuProps={MenuProps}
                                     >
                                         {tagStore.tagList.map((tag) => (
-                                            <MenuItem key={tag.id} value={tag.name} style={{
-                                                fontWeight: formData.tag.includes(tag.name)
-                                                    ? theme.typography.fontWeightMedium
-                                                    : theme.typography.fontWeightRegular,
-                                            }}>
-                                                {tag.name}
+                                            <MenuItem key={tag.id} value={tag.id}>
+                                                <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
+                                                <ListItemText primary={tag.name} />
                                             </MenuItem>
                                         ))}
                                     </Select>
