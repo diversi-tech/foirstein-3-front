@@ -100,9 +100,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
   
     try {
       let response;
-      if (mediaItem.type === 'file') {
+      if (link) {
         response = await itemStore.updateMediaFile(formData.id, formDataToSend);
-      } else if (mediaItem.type !== 'file') {
+      } else if (!link) {
         response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       } else {
         response = await itemStore.updateMedia(formData.id, formDataToSend);
@@ -123,7 +123,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const checkLink = () =>{
     const filePath = formData.filePath;
     console.log(filePath);
-     if( filePath.includes('https'))
+     if( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
      {
       setLink(true);
      }
