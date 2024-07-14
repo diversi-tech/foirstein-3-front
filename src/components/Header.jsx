@@ -13,39 +13,28 @@ import { useNavigate } from 'react-router-dom';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Grid from '@mui/system/Unstable_Grid/Grid';
 import Tooltip from '@mui/material/Tooltip';
+import { toJS } from 'mobx'
+import requestStore from '../store/studentsRequest-store';
+import itemStore from '../store/item-store';
+import { observer } from 'mobx-react-lite'; 
 
-function Header() {
+const Header = observer(() => {
   const baseUrl = "https://localhost:7297/api/";
   const [requestsCount, setRequestsCount] = React.useState(0);
   const [itemsCount,setItemsCount]=React.useState(0)
 
-  React.useEffect(() => {
-    const fetchRequest = async () => {
-      try {
-        const requests = await fetch(baseUrl + `BorrowRequest`);
-        const jsonRequests=await requests.json();
-        const dataRequests = extractRawData(jsonRequests);
-        setRequestsCount(dataRequests.length);
-        const items = await fetch(baseUrl + `Item`);
-        const jsonItems=await items.json()
-        const dataItems = extractRawData(jsonItems);
-        setItemsCount(dataItems.length);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    };
-    fetchRequest();
-  }, []);
-
-  function extractRawData(proxyObject) {
-    if (proxyObject && proxyObject.data) {
-      console.log("Extracting data from proxy object:", proxyObject.data);
-      return proxyObject.data;
-    } else {
-      console.log("Returning original object as it's not a proxy:", proxyObject);
-      return proxyObject;
-    }
+ React.useEffect(()=>{
+  try{
+    const countRequests=toJS(requestStore.getRequest).length
+    setRequestsCount(countRequests)
+    const countItems=toJS(itemStore.getPendingList).length
+   setItemsCount(countItems)
   }
+ catch(error)
+ {
+  console.error("Failed to fetch data:", error);
+ }
+ },[requestStore.getRequest, itemStore.getPendingList])
 
   const navigate = useNavigate();
 
@@ -62,35 +51,6 @@ function Header() {
     <AppBar position="fixed" sx={{ backgroundImage: 'linear-gradient(to left, lightgrey, grey)', height: '15%' }}>
       <Container maxWidth="xl">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Tooltip title="בקשות שמחכות לאישור" arrow>
-                <IconButton size="large"
-                  aria-label="show 4 new mails"
-                  color="inherit"
-                  onClick={() => navigate('/studentRequest')}>
-                  <Badge badgeContent={requestsCount} color="primary">
-                    <MailIcon />
-                  </Badge>
-                </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={6}>
-              <Tooltip title="פריטים שמחכים לאישור" arrow>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                  onClick={() => navigate('/itemsPendingApproval')}
-                >
-                  <Badge badgeContent={itemsCount} color="warning">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap',marginTop:'1%'}}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Tooltip title="בקשות שמחכות לאישור" arrow>
@@ -142,7 +102,6 @@ function Header() {
             >
               {"אודות"}
               <StickyNote2OutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
-              <StickyNote2OutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
             <Typography
               variant="h6"
@@ -165,7 +124,6 @@ function Header() {
               }}
             >
               {"בית"}
-              <RoofingOutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
               <RoofingOutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
           </Box>

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import Tooltip from '@mui/material/Tooltip';
 import DialogContentText from "@mui/material/DialogContentText";
+import Grid from '@mui/system/Unstable_Grid/Grid';
+import BeenhereOutlinedIcon from '@mui/icons-material/BeenhereOutlined';
+import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import {
   Paper,
   TableRow,
@@ -63,18 +68,20 @@ function Row(props) {
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+          <Tooltip title="פרטים נוספים" arrow>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </Tooltip>
         </TableCell>
         <TableCell className="styled-table-cell">
-          <Box className="center-content">
-            <AlertDialog option="דחיה" requestId={row.requestId} />
-            <AlertDialog option="אישור" requestId={row.requestId} />
+          <Box className="center-content" justifyContent="space-around">
+            <AlertDialog option={"דחייה"} requestId={row.requestId} color="error" />
+            <AlertDialog option="אישור" requestId={row.requestId} color="success" />
           </Box>
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
@@ -185,9 +192,9 @@ const StudentRequest = observer(() => {
           <TableBody>
             {(rowsPerPage > 0
               ? rows.slice(
-                  currentPage * rowsPerPage,
-                  currentPage * rowsPerPage + rowsPerPage
-                )
+                currentPage * rowsPerPage,
+                currentPage * rowsPerPage + rowsPerPage
+              )
               : rows
             ).map((row) => (
               <Row key={row.requestId} row={row} requestId={row.requestId} />
@@ -212,7 +219,7 @@ const StudentRequest = observer(() => {
 
 export default StudentRequest;
 
-function AlertDialog({ option, requestId }) {
+function AlertDialog({ option, requestId, color }) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -234,8 +241,10 @@ function AlertDialog({ option, requestId }) {
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" onClick={handleClickOpen} color={color}>
         {option}
+        {option==="אישור"&&(<BeenhereOutlinedIcon sx={{marginLeft:'5px'}}/>)}
+        {option==="דחייה"&&(<BackspaceOutlinedIcon sx={{marginLeft:'5px'}}/>)}
       </Button>
       <Dialog
         open={open}

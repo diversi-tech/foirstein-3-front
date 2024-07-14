@@ -1,229 +1,213 @@
-import * as React from "react";
-import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
+import * as React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useState, useEffect } from 'react';
 import {
-  Button,
-  Radio,
-  FormControlLabel,
-  RadioGroup,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-  FormControl,
-  Grid,
-  Select,
-  MenuItem,
-  InputLabel,
-  Chip,
-  Box,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
-} from "@mui/material";
-import itemStore from "../../store/item-store";
-import Success from "../message/success";
-import Failure from "../message/failure";
-import tagStore from "../../store/tag-store";
-import { useTheme } from "@mui/material/styles";
+    Button,
+    Radio,
+    FormControlLabel,
+    RadioGroup,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Typography,
+    FormControl,
+    Grid,
+    Select,
+    MenuItem,
+    InputLabel,
+    Chip,
+    Box,
+    OutlinedInput,
+    Checkbox,
+    ListItemText
+} from '@mui/material';
+import itemStore from '../../store/item-store';
+import Success from '../message/success';
+import Failure from '../message/failure';
+import tagStore from '../../store/tag-store';
+import { useTheme } from '@mui/material/styles';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
     },
-  },
 };
 
 const ItemDdd = observer(() => {
-  const theme = useTheme();
-  const [open, setOpen] = useState(true);
-  const [openF, setOpenF] = useState(false);
-  const [error, setError] = useState(false);
-  const [isApproved, setIsApproved] = useState();
-  const [isHandleUpload, setIsHndleUpload] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
-  const [isUpload, setIsUpload] = useState(false);
-  const [isFormValid, setIsFormValid] = useState(false);
-  const [touchedFields, setTouchedFields] = useState({});
+    const theme = useTheme();
+    const [open, setOpen] = useState(true);
+    const [openF, setOpenF] = useState(false);
+    const [error, setError] = useState(false);
+    const [isApproved, setIsApproved] = useState();
+    const [isHandleUpload, setIsHndleUpload] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+    const [isUpload, setIsUpload] = useState(false);
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [touchedFields, setTouchedFields] = useState({});
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "",
-    author: "",
-    tag: [],
-    filePath: "",
-  });
-
-  const allowedExtensions = [
-    "pdf",
-    "jpg",
-    "jpeg",
-    "png",
-    "zip",
-    "mp4",
-    "docx",
-    "mp3",
-  ];
-  const maxSize = 5 * 1024 * 1024; // 5MB
-
-  const handleClose = () => {
-    setOpen(false);
-    itemStore.add = false;
-    setFormData({
-      title: "",
-      description: "",
-      category: "",
-      author: "",
-      tag: [],
-      filePath: "",
-    });
-    setIsHndleUpload(false);
-    setSelectedValue("");
-    setIsApproved("");
-    setTouchedFields({});
-  };
-
-  const handleRadioChange = (event) => {
-    setOpenF(true);
-    const value = event.target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      filePath: value === "book" ? "" : null,
-    }));
-    setSelectedValue(value);
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    setTouchedFields((prev) => ({ ...prev, [name]: true }));
-    if (type === "file") {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: files[0],
-      }));
-    } else {
-      if (name === "category" || name === "author") {
-        const lettersRegex = /^[א-תA-Za-z\s]*$/;
-        if (!lettersRegex.test(value)) {
-          return; // If the value doesn't match, do nothing
-        }
-      }
-
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleTagChange = (event) => {
-    const { value } = event.target;
-    setTouchedFields((prev) => ({ ...prev, tag: true }));
-    setFormData((prevData) => {
-      const newTags = typeof value === "string" ? value.split(",") : value;
-      return {
-        ...prevData,
-        tag: newTags.map((tagName) => {
-          const tag = tagStore.tagList.find((t) => t.name === tagName);
-          return tag ? tag.id : tagName;
-        }),
-      };
-    });
-  };
-
-  const fileExtension =
-    formData.filePath && typeof formData.filePath.name === "string"
-      ? formData.filePath.name.split(".").pop().toLowerCase()
-      : "";
-
-  useEffect(() => {
-    const isValid =
-      formData.title.length >= 2 &&
-      formData.description.length >= 5 &&
-      formData.category.length >= 5 &&
-      formData.author.length >= 5 &&
-      formData.tag.length > 0 &&
-      (selectedValue === "book" ||
-        (selectedValue === "file" &&
-          formData.filePath &&
-          allowedExtensions.includes(fileExtension)));
-        //formData.filePath.size <= maxSize
-    setIsFormValid(isValid);
-  }, [formData, selectedValue, fileExtension]);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const dataToSend = { ...formData };
-
-    const formDataToSend = new FormData();
-    for (const key in dataToSend) {
-      if (key === "tag") {
-        const tagIds = dataToSend[key].map((tagName) => {
-          const tag = tagStore.tagList.find((t) => t.name === tagName);
-          return tag ? tag.id : tagName;
-        });
-        tagIds.forEach((tagId) => formDataToSend.append("tags[]", tagId));
-      } else {
-        formDataToSend.append(key, dataToSend[key]);
-      }
-    }
-
-    try {
-      if (selectedValue === "file") {
-        await itemStore.uploadMediaFile(formDataToSend);
-      } else {
-        await itemStore.uploadMediaBook(formDataToSend);
-      }
-
-      setFormData({
-        title: "",
-        description: "",
-        category: "",
-        author: "",
+    const [formData, setFormData] = useState({
+        title: '',
+        description: '',
+        category: '',
+        author: '',
+        year: '',
         tag: [],
-        filePath: "",
-      });
-      setIsHndleUpload(true);
-      setSelectedValue("");
-      setIsUpload(true);
-      handleClose();
-    } catch (error) {
-      console.error("Failed to upload media:", error);
-    }
-  };
+        filePath: '',
+    });
 
-  return (
-    <>
-      <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
-        <DialogTitle>
-          {selectedValue === "book" ? "העלאת ספר" : "העלאת קובץ דיגיטלי"}
-        </DialogTitle>
-        <FormControl>
-          <RadioGroup
-            aria-label="upload-type"
-            name="upload-type"
-            value={selectedValue}
-            onChange={handleRadioChange}
-          >
-            <FormControlLabel
-              value="book"
-              control={<Radio style={{ color: "#DEF9C4" }} />}
-              label="ספר"
-            />
-            <FormControlLabel
-              value="file"
-              control={<Radio style={{ color: "#DEF9C4" }} />}
-              label="קובץ דיגיטלי"
-            />
-          </RadioGroup>
-        </FormControl>
+    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    const handleClose = () => {
+        setOpen(false);
+        itemStore.add = false;
+        setFormData({
+            title: '',
+            description: '',
+            category: '',
+            author: '',
+            year: '',
+            tag: [],
+            filePath: '',
+        });
+        setIsHndleUpload(false);
+        setSelectedValue('');
+        setIsApproved('');
+        setTouchedFields({});
+    };
+
+    const handleRadioChange = (event) => {
+        setOpenF(true);
+        const value = event.target.value;
+        setFormData((prevData) => ({
+            ...prevData,
+            filePath: value === 'book' ? '' : null,
+        }));
+        setSelectedValue(value);
+    };
+
+    const handleChange = (e) => {
+        const { name, value, type, files } = e.target;
+        setTouchedFields((prev) => ({ ...prev, [name]: true }));
+        if (type === 'file') {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: files[0],
+            }));
+        } else {
+            if (name === 'category' || name === 'author') {
+                const lettersRegex = /^[א-תA-Za-z\s]*$/;
+                if (!lettersRegex.test(value)) {
+                    return; // If the value doesn't match, do nothing
+                }
+            }
+
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
+    };
+
+    const handleTagChange = (event) => {
+        const { value } = event.target;
+        setTouchedFields((prev) => ({ ...prev, tag: true }));
+        setFormData((prevData) => {
+            const newTags = typeof value === 'string' ? value.split(',') : value;
+            return {
+                ...prevData, tag: newTags.map(tagName => {
+                    const tag = tagStore.tagList.find(t => t.name === tagName);
+                    return tag ? tag.id : tagName;
+                })
+            };
+        });
+    };
+
+    const fileExtension = formData.filePath && typeof formData.filePath.name === 'string'
+        ? formData.filePath.name.split('.').pop().toLowerCase()
+        : '';
+
+    useEffect(() => {
+        const isValid =
+            formData.title.length >= 2 &&
+            formData.description.length >= 5 &&
+            formData.category.length >= 3 &&
+            formData.author.length >= 3 &&
+            formData.year.length >= 4 &&
+            formData.tag.length > 0 &&
+            (selectedValue === 'book' ||
+                (selectedValue === 'file' &&
+                    formData.filePath &&
+                    allowedExtensions.includes(fileExtension)
+                    //formData.filePath.size <= maxSize
+                )
+            );
+        setIsFormValid(isValid);
+    }, [formData, selectedValue, fileExtension]);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const dataToSend = { ...formData };
+
+        const formDataToSend = new FormData();
+        for (const key in dataToSend) {
+            if (key === 'tag') {
+                const tagIds = dataToSend[key].map(tagName => {
+                    const tag = tagStore.tagList.find(t => t.name === tagName);
+                    return tag ? tag.id : tagName;
+                });
+                tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId));
+            } else {
+                formDataToSend.append(key, dataToSend[key]);
+            }
+        }
+
+        try {
+            if (selectedValue === 'file') {
+                await itemStore.uploadMediaFile(formDataToSend);
+            }
+            else { await itemStore.uploadMediaBook(formDataToSend); }
+
+            setFormData({
+                title: '',
+                description: '',
+                category: '',
+                author: '',
+                year: '',
+                tag: [],
+                filePath: '',
+            });
+            setIsHndleUpload(true);
+            setSelectedValue('');
+            setIsUpload(true);
+            handleClose();
+        } catch (error) {
+            console.error('Failed to upload media:', error);
+        }
+    };
+
+    return (
+        <>
+            <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
+                <DialogTitle>{selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
+                <FormControl>
+                    <RadioGroup
+                        aria-label="upload-type"
+                        name="upload-type"
+                        value={selectedValue}
+                        onChange={handleRadioChange}
+                    >
+                        <FormControlLabel value="book" control={<Radio style={{ color: '#DEF9C4' }} />} label="ספר" />
+                        <FormControlLabel value="file" control={<Radio style={{ color: '#DEF9C4' }} />} label="קובץ דיגיטלי" />
+                    </RadioGroup>
+                </FormControl>
 
                 {openF &&
                     <DialogContent>
@@ -283,8 +267,8 @@ const ItemDdd = observer(() => {
                                     {touchedFields.category && !formData.category && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.category && formData.category.length < 5 && (
-                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 5 תווים</Typography>
+                                    {formData.category && formData.category.length < 3 && (
+                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -303,11 +287,34 @@ const ItemDdd = observer(() => {
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.author && formData.author.length < 5 && (
-                                        <Typography color="error">המחבר חייב להכיל לפחות 5 תווים</Typography>
+                                    {formData.author && formData.author.length < 3 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid> 
+                            {selectedValue === 'book' && (
+
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="yearId"
+                                        label="שנת הוצאה"
+                                        variant="outlined"
+                                        name="year"
+                                        value={formData.year}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, year: true }))}
+                                    />
+                                    {touchedFields.year && !formData.year && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.year && formData.year.length < 4 && (
+                                        <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
+                            )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <InputLabel id="tagId">תגיות</InputLabel>

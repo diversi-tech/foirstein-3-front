@@ -26,6 +26,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     description: mediaItem.description,
     category: mediaItem.category,
     author: mediaItem.author,
+    year: mediaItem.year,
     isApproved: mediaItem.isApproved,
     tags: initialTagIds,
     filePath: mediaItem.filePath || '',
@@ -99,25 +100,31 @@ export default function ItemEdit({ mediaItem, onClose }) {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
+  
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
+    formDataToSend.append('year', formData.year);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-    formDataToSend.append('filePath', formData.filePath);
+  
+    if (formData.file) {
+      formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
+    } else {
+      formDataToSend.append('filePath', formData.filePath); // Use existing filePath
+    }
   
     try {
       let response;
       if (link) {
         response = await itemStore.updateMediaFile(formData.id, formDataToSend);
-      } else if (!link) {
-        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       } else {
-        response = await itemStore.updateMedia(formData.id, formDataToSend);
+        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       }
+  
       if (response && response.ok) {
         setUpdateSuccess(true);
         onClose();
@@ -129,7 +136,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
       setUpdateSuccess(false);
       console.error('Error updating media:', error);
     }
-  };
+  };  
 
   const checkLink = () =>{
     const filePath = formData.filePath;
@@ -206,6 +213,19 @@ export default function ItemEdit({ mediaItem, onClose }) {
           />
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
+          )}
+           <TextField
+            margin="dense"
+            label="שנת הוצאה"
+            type="text"
+            fullWidth
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            required
+          />
+          {formData.year && formData.year.length < 4 && (
+            <Typography color="error">שנת ההוצאה חייבת להכיל 4 תווים</Typography>
           )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
