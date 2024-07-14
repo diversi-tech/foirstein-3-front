@@ -7,19 +7,21 @@ class ItemStore {
     pendingItemsList = []
     mediaList = [];
     add = false;
-    isUpdate = false;
-    isDelete = false;
+    isUpdate;
+    isDeleteItem;
+    isDeleteTag;
     isError = true;
     message = "נכשל";
     isApprov = false;
-    isDeind = false;
 
     constructor() {
         makeAutoObservable(this, {
-            isDelete: observable,
+            isDeleteItem: observable,
+            isDeleteTag: observable,
             mediaList: observable,
             isAdd: observable,
             isUpdate: observable,
+            isDelete: observable,
             isError: observable,
             setAdd: action,
             add: observable,
@@ -28,7 +30,7 @@ class ItemStore {
             isApprov: observable,
             // add: observable,
             pendingItemsList: observable,
-            getPendingList: computed,
+            // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action
@@ -45,12 +47,12 @@ class ItemStore {
             });
             console.log("delete tag:");
             if (res.status === 200) {
-                this.isDelete = true;
+                this.isDeleteTag = true;
                 this.message = " נמחק בהצלחה! ✅"
 
             }
             else {
-                this.isDelete = false;
+                this.isDeleteTag = false;
                 this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
@@ -170,19 +172,21 @@ class ItemStore {
 
 
     async deleteMedia(mediaId) {
-        console.log("hiiDeleteMedia!!!!!!!!");
+        // console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`${baseURL}/${mediaId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
-                this.isDelete = true;
+
+                this.isDeleteItem = true;
                 this.message = " נמחק בהצלחה! ✅"
 
             }
             else {
-                this.isDelete = false;
+                this.isDeleteItem = false;
                 this.message = "מחיקה נכשלה"
+
             }
             this.fetchMedia();
         } catch (error) {
@@ -205,7 +209,7 @@ class ItemStore {
                 this.isUpdate = true;
                 this.message = "  הספר  עודכן בהצלחה! ✅";
             }
-            else{
+            else {
                 this.isUpdate = false;
                 this.message = "!עדכון הספר לא הצליח"
             }
@@ -216,7 +220,7 @@ class ItemStore {
 
     async updateMediaFile(mediaId, mediaData) {
         try {
-           
+
             console.log("formData: ", mediaData, "beforeFetch");
             const res = await fetch(`${baseURL}/file/${mediaId}`, {
                 method: 'PUT',
@@ -237,7 +241,6 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
-
 }
 const itemStore = new ItemStore();
 export default itemStore;

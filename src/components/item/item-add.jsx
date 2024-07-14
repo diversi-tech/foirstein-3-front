@@ -57,6 +57,7 @@ const ItemDdd = observer(() => {
         description: '',
         category: '',
         author: '',
+        year: '',
         tag: [],
         filePath: '',
     });
@@ -72,6 +73,7 @@ const ItemDdd = observer(() => {
             description: '',
             category: '',
             author: '',
+            year: '',
             tag: [],
             filePath: '',
         });
@@ -136,8 +138,9 @@ const ItemDdd = observer(() => {
         const isValid =
             formData.title.length >= 2 &&
             formData.description.length >= 5 &&
-            formData.category.length >= 5 &&
-            formData.author.length >= 5 &&
+            formData.category.length >= 3 &&
+            formData.author.length >= 3 &&
+            formData.year.length >= 4 &&
             formData.tag.length > 0 &&
             (selectedValue === 'book' ||
                 (selectedValue === 'file' &&
@@ -177,6 +180,7 @@ const ItemDdd = observer(() => {
                 description: '',
                 category: '',
                 author: '',
+                year: '',
                 tag: [],
                 filePath: '',
             });
@@ -263,8 +267,8 @@ const ItemDdd = observer(() => {
                                     {touchedFields.category && !formData.category && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.category && formData.category.length < 5 && (
-                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 5 תווים</Typography>
+                                    {formData.category && formData.category.length < 3 && (
+                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -283,11 +287,34 @@ const ItemDdd = observer(() => {
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.author && formData.author.length < 5 && (
-                                        <Typography color="error">המחבר חייב להכיל לפחות 5 תווים</Typography>
+                                    {formData.author && formData.author.length < 3 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid> 
+                            {selectedValue === 'book' && (
+
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="yearId"
+                                        label="שנת הוצאה"
+                                        variant="outlined"
+                                        name="year"
+                                        value={formData.year}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, year: true }))}
+                                    />
+                                    {touchedFields.year && !formData.year && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.year && formData.year.length < 4 && (
+                                        <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
+                            )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <InputLabel id="tagId">תגיות</InputLabel>
@@ -308,12 +335,9 @@ const ItemDdd = observer(() => {
                                         MenuProps={MenuProps}
                                     >
                                         {tagStore.tagList.map((tag) => (
-                                            <MenuItem key={tag.id} value={tag.name} style={{
-                                                fontWeight: formData.tag.includes(tag.name)
-                                                    ? theme.typography.fontWeightMedium
-                                                    : theme.typography.fontWeightRegular,
-                                            }}>
-                                                {tag.name}
+                                            <MenuItem key={tag.id} value={tag.id}>
+                                                <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
+                                                <ListItemText primary={tag.name} />
                                             </MenuItem>
                                         ))}
                                     </Select>

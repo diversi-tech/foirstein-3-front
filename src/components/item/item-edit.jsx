@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
 import Success from '../message/success';
 import Failure from '../message/failure';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent,
-  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { style } from '@mui/system';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
@@ -24,6 +26,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     description: mediaItem.description,
     category: mediaItem.category,
     author: mediaItem.author,
+    year: mediaItem.year,
     isApproved: mediaItem.isApproved,
     tags: initialTagIds,
     filePath: mediaItem.filePath || '',
@@ -32,36 +35,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(null);
-
   const [isFormValid, setIsFormValid] = useState(true);
-
-  // useEffect(() => {
-  //   checkLink();
-
-  //   const isValid =
-  //     formData.title.length >= 2 &&
-  //     formData.description.length >= 5 &&
-  //     formData.category.length >= 5 &&
-  //     formData.author.length >= 5 &&
-  //     formData.tag.length > 0;
-
-  //   setIsFormValid(isValid);
-  // }, [formData.filePath]);
 
   useEffect(() => {
     checkLink();
     itemStore.fetchMedia();
-
-    // const isValid =
-    //   formData.title.length >= 2 &&
-    //   formData.description.length >= 5 &&
-    //   formData.category.length >= 2 &&
-    //   formData.author.length >= 2 &&
-    //   formData.tag.length > 0 &&
-    //   (link || formData.filePath);
-
-    // setIsFormValid(isValid);
-  // }, [formData.title, formData.description, formData.category, formData.author, formData.tag, formData.filePath, link]);
   }, [formData.filePath]);
 
   const ITEM_HEIGHT = 48;
@@ -100,43 +78,42 @@ export default function ItemEdit({ mediaItem, onClose }) {
     }));
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
     setFormData((prevData) => ({
       ...prevData,
-      filePath: file ? URL.createObjectURL(file) : prevData.filePath,
-      file: file || prevData.file
+      filePath: file ? file.name : prevData.filePath,
+      file: file || null
     }));
   };
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
+  
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
+    formDataToSend.append('year', formData.year);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-
+  
     if (formData.file) {
-      formDataToSend.append('file', formData.file);
+      formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
     } else {
-      formDataToSend.append('filePath', formData.filePath);
+      formDataToSend.append('filePath', formData.filePath); // Use existing filePath
     }
-    // formDataToSend.append('tags', formData.tag.join(',')); // Send tag names
-    // formDataToSend.append('filePath', formData.filePath);
-
+  
     try {
       let response;
-      if (mediaItem.type === 'file') {
+      if (link) {
         response = await itemStore.updateMediaFile(formData.id, formDataToSend);
-      } else if (mediaItem.type != 'file') {
-        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       } else {
-        response = await itemStore.updateMedia(formData.id, formDataToSend);
+        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       }
+  
       if (response && response.ok) {
         setUpdateSuccess(true);
         onClose();
@@ -148,16 +125,19 @@ export default function ItemEdit({ mediaItem, onClose }) {
       setUpdateSuccess(false);
       console.error('Error updating media:', error);
     }
-  };
+  };  
 
-  const checkLink = () => {
+  const checkLink = () =>{
     const filePath = formData.filePath;
-    if (typeof filePath === 'string' && filePath.includes('https')) {
+    console.log(filePath);
+     if( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
+     {
       setLink(true);
-    } else {
+     }
+     else{
       setLink(false);
-    }
-  };
+     }
+  }
 
   return (
     <Dialog
@@ -223,22 +203,33 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
+           <TextField
+            margin="dense"
+            label="שנת הוצאה"
+            type="text"
+            fullWidth
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            required
+          />
+          {formData.year && formData.year.length < 4 && (
+            <Typography color="error">שנת ההוצאה חייבת להכיל 4 תווים</Typography>
+          )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
             <Select
               labelId="demo-multiple-chip-label"
               id="demo-multiple-chip"
-                            name='tag'
+              name='tag'
               multiple
               value={formData.tags}
               onChange={handleChangeChip}
               input={<OutlinedInput id="select-multiple-chip" label="תגית" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-
                   {selected.map((tagId) => (
                     <Chip key={tagId} label={tagMap[tagId]} style={{ color: 'dark' }} variant='outlined' />
-
                   ))}
                 </Box>
               )}
@@ -252,34 +243,26 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
-{/*           
-            <TextField
-              margin="dense"
-              label="קישור"
-              type="text"
-              fullWidth
-              name="filePath"
-              value={formData.filePath}
-              onChange={handleChange}
-            /> */}
-        
-            <TextField
-              margin="dense"
-              label="מיקום"
-              type="text"
-              fullWidth
-              name="filePath"
-              value={formData.filePath}
-              onChange={handleChange}
-            />
-          {mediaItem.type === 'file' && (
-            <input
-              type="file"
-              name="filePath"
-              onChange={handleFileChange}
-              style={{ marginTop: '1rem' }}
-            />
-          )}
+
+  <TextField
+  margin="dense"
+  label="מיקום"
+  type="text"
+  fullWidth
+  name="filePath"
+  value={formData.filePath}
+  onChange={handleChange}
+  style={{ marginRight: '1rem' }}
+  disabled={link}
+  />
+  {link && (
+    <input
+      type="file"
+      name="filePath"
+      onChange={handleFileChange}
+      style={{ marginTop: '1rem' }}
+    />
+  )} 
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} style={{ color: '#468585' }}>
@@ -288,7 +271,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
             שמירה
           </Button>
-          {send && (itemStore.isUpdate ?<Success /> : <Failure /> )}
+          {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
         </DialogActions>
       </form>
     </Dialog>

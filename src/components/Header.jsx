@@ -16,38 +16,19 @@ import Tooltip from '@mui/material/Tooltip';
 import { toJS } from 'mobx'
 import requestStore from '../store/studentsRequest-store';
 import itemStore from '../store/item-store';
-import { observer } from 'mobx-react-lite'; // הוספת observer
+import { observer } from 'mobx-react-lite'; 
 
 const Header = observer(() => {
   const baseUrl = "https://localhost:7297/api/";
   const [requestsCount, setRequestsCount] = React.useState(0);
   const [itemsCount,setItemsCount]=React.useState(0)
 
-  // React.useEffect(() => {
-  //   const fetchRequest = async () => {
-  //     try {
-  //       const requests = await fetch(baseUrl + `BorrowRequest`);
-  //       const jsonRequests=await requests.json();
-  //       const dataRequests = extractRawData(jsonRequests);
-  //       setRequestsCount(dataRequests.length);
-  //       const items = await fetch(baseUrl + `Item/Pending`);
-  //       const jsonItems=await items.json()
-  //       const dataItems = extractRawData(jsonItems);
-  //       setItemsCount(dataItems.length);
-  //     } catch (error) {
-  //       console.error("Failed to fetch data:", error);
-  //     }
-  //   };
-  //   fetchRequest();
-  // }, []);
  React.useEffect(()=>{
   try{
     const countRequests=toJS(requestStore.getRequest).length
     setRequestsCount(countRequests)
-   //  debugger
     const countItems=toJS(itemStore.getPendingList).length
    setItemsCount(countItems)
-   //  debugger
   }
  catch(error)
  {
