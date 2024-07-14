@@ -17,7 +17,7 @@ export default function Footer() {
       }}
     >
       <Typography variant="body2" color="textSecondary" align="center">
-      ספריה דיגיטלית סמינר פוירשטיין  <CopyrightIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />
+      מרחבית - הספרייה הפדגוגית של בית יעקב <CopyrightIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />
       </Typography>
     </Box>
   );
