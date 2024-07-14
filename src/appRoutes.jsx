@@ -16,24 +16,19 @@ import StudentRequest from "./components/studentRequest/student-request";
 import { Box } from '@mui/material';
 export default function AppRoutes() {
   return (
-  <HashRouter>
-    {/* <Router basename="/foirstein-3-front/"> */}
-      <Header/>
+    <HashRouter>
+      <Header />
       <Routes>
-          <Route path="/" element={<div> <ImageHomePage/> </div>} />
-          {/* <Route path="/foirstein-3-front/" element={<div> <ImageHomePage/> </div>} /> */}
-          <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList/></Box>} />
-          <Route path="/itemsPendingApproval" element={<Box sx={{ pt: '7%' }}><PendingItems/></Box>} />
-          <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemDdd /></Box>} />
-          <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
-          <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
-          <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest/></Box>} />
-          <Route path="*" element={<h1>Page Not Found</h1>} />
-
-          {/* <Route path="/studentsRequest" element={<studentsRequest />}/> */}
+        <Route path="/" element={<div> <ImageHomePage /> </div>} />
+        <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList /></Box>} />
+        <Route path="/itemsPendingApproval" element={<Box sx={{ pt: '7%' }}><PendingItems /></Box>} />
+        <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemDdd /></Box>} />
+        <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
+        <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
+        <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest /></Box>} />
+        <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
       <Footer />
-    {/* </Router> */}
     </HashRouter>
   );
 }
