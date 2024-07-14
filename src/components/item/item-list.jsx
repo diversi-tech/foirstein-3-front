@@ -538,6 +538,9 @@ const ItemList = observer(() => {
                                         מחבר
                                     </TableCell>
                                     <TableCell align="center" className={classes.headerCell}>
+                                        שנת הוצאה
+                                    </TableCell>
+                                    <TableCell align="center" className={classes.headerCell}>
                                         סטטוס
                                     </TableCell>
                                     <TableCell align="center" className={classes.headerCell}>
@@ -579,6 +582,7 @@ const ItemList = observer(() => {
                                             <TableCell align="center" className={classes.tableCell}>{item.description}</TableCell>
                                             <TableCell align="center" className={classes.tableCell}>{item.category}</TableCell>
                                             <TableCell align="center" className={classes.tableCell}>{item.author}</TableCell>
+                                            <TableCell align="center" className={classes.tableCell}>{item.year}</TableCell>
                                             <TableCell align="center" className={classes.tableCell} style={{ color: item.isApproved ? 'green' : 'red' }}>
                                                 {item.isApproved ? 'מאושר' : 'ממתין לאישור'}
                                             </TableCell>
