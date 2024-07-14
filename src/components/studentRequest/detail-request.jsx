@@ -41,7 +41,7 @@ function DetailRequest({ detailRequest }) {
 
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: '10px' }}>
-          {formatDate(detailRequest.Date)}
+          {formatDate(detailRequest.requestDate)}
         </Typography>
         <Typography variant="subtitle1" style={{ display: 'flex', alignItems: 'center' }}>
           {":תאריך בקשה"}
