@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TagStore from "../../store/tag-store";
 import {
   Paper,
   TableRow,
@@ -20,7 +21,6 @@ import {
 import { observer } from "mobx-react-lite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import tagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TagStore from "../../store/tag-store";
@@ -42,12 +42,13 @@ const TagList = observer(() => {
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [showValidation, setShowValidation] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
   useEffect(() => {
-    tagStore.fetchTag();
+    TagStore.fetchTag();
   }, []);
 
   const dialogOpen = (dialogType) => {
@@ -77,8 +78,9 @@ const TagList = observer(() => {
   };
 
   const tagDelete = async () => {
+  const tagDelete = async () => {
     if (deleteItem) {
-      tagStore.deleteTag(deleteItem.id);
+      TagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
     }
   };
@@ -94,7 +96,7 @@ const TagList = observer(() => {
 
   const tagAdd = () => {
     setIsAddTagOpen(true);
-    tagStore.message = "";
+    TagStore.message = "";
   };
 
   return (
@@ -112,6 +114,9 @@ const TagList = observer(() => {
             <TableContainer style={{ maxHeight: 450, overflow: "auto" }}>
               <Table aria-label="תגים">
                 <TableBody>
+            <TableContainer style={{ maxHeight: 450, overflow: "auto" }}>
+              <Table aria-label="תגים">
+                <TableBody>
                   {/* כותרות העמודות */}
                   <StickyTableRow>
                     <StyledTableCell>שם</StyledTableCell>
@@ -119,7 +124,7 @@ const TagList = observer(() => {
                     <StyledTableCell>מחיקה</StyledTableCell>
                   </StickyTableRow>
                   {/* תוכן הטבלה */}
-                  {tagStore.tagList.map((row) => (
+                  {TagStore.tagList.map((row) => (
                     <TableRow key={row.id}>
                       <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>
@@ -178,8 +183,27 @@ const TagList = observer(() => {
             />
           </DialogContent>
         </Fields_rtl>
+        <Fields_rtl>
+          <DialogContent dividers dir="rtl">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="שם"
+              type="text"
+              value={editItem ? editItem.name : ""}
+              onChange={(e) => {
+                setEditItem({ ...editItem, name: e.target.value }),
+                  setShowValidation(false);
+              }}
+              error={showValidation}
+              helperText={showValidation ? "השם חייב להכיל לפחות 2 תווים" : ""}
+            />
+          </DialogContent>
+        </Fields_rtl>
         <DialogActions>
           <Button onClick={() => dialogClose("editOpen")}>ביטול</Button>
+          <Button onClick={tagEdit} color="primary">
           <Button onClick={tagEdit} color="primary">
             שמור
           </Button>
@@ -205,3 +229,4 @@ const TagList = observer(() => {
 });
 
 export default TagList;
+

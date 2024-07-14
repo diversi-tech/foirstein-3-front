@@ -225,230 +225,176 @@ const ItemDdd = observer(() => {
           </RadioGroup>
         </FormControl>
 
-        {openF && (
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="titleId"
-                    label="כותרת"
-                    variant="outlined"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                    onBlur={() =>
-                      setTouchedFields((prev) => ({ ...prev, title: true }))
-                    }
-                  />
-                  {touchedFields.title && !formData.title && (
-                    <Typography color="error">שדה חובה</Typography>
-                  )}
-                  {formData.title && formData.title.length < 2 && (
-                    <Typography color="error">
-                      הכותרת חייבת להכיל לפחות 2 תווים
-                    </Typography>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="descId"
-                    label="תיאור"
-                    variant="outlined"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                    onBlur={() =>
-                      setTouchedFields((prev) => ({
-                        ...prev,
-                        description: true,
-                      }))
-                    }
-                  />
-                  {touchedFields.description && !formData.description && (
-                    <Typography color="error">שדה חובה</Typography>
-                  )}
-                  {formData.description && formData.description.length < 5 && (
-                    <Typography color="error">
-                      התיאור חייב להכיל לפחות 5 תווים
-                    </Typography>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="categoryId"
-                    label="קטגוריה"
-                    variant="outlined"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                    onBlur={() =>
-                      setTouchedFields((prev) => ({ ...prev, category: true }))
-                    }
-                  />
-                  {touchedFields.category && !formData.category && (
-                    <Typography color="error">שדה חובה</Typography>
-                  )}
-                  {formData.category && formData.category.length < 5 && (
-                    <Typography color="error">
-                      הקטגוריה חייבת להכיל לפחות 5 תווים
-                    </Typography>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="authorId"
-                    label="מחבר"
-                    variant="outlined"
-                    name="author"
-                    value={formData.author}
-                    onChange={handleChange}
-                    required
-                    onBlur={() =>
-                      setTouchedFields((prev) => ({ ...prev, author: true }))
-                    }
-                  />
-                  {touchedFields.author && !formData.author && (
-                    <Typography color="error">שדה חובה</Typography>
-                  )}
-                  {formData.author && formData.author.length < 5 && (
-                    <Typography color="error">
-                      המחבר חייב להכיל לפחות 5 תווים
-                    </Typography>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="tagId">תגיות</InputLabel>
-                  <Select
-                    labelId="tagId"
-                    id="tagId"
-                    multiple
-                    value={formData.tag}
-                    onChange={handleTagChange}
-                    input={
-                      <OutlinedInput id="select-multiple-chip" label="תגיות" />
-                    }
-                    renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip
-                            key={value}
-                            label={
-                              tagStore.tagList.find((tag) => tag.id === value)
-                                ?.name || value
-                            }
-                          />
-                        ))}
-                      </Box>
-                    )}
-                    MenuProps={MenuProps}
-                  >
-                    {tagStore.tagList.map((tag) => (
-                      <MenuItem
-                        key={tag.id}
-                        value={tag.id}
-                        style={{
-                          fontWeight: formData.tag.includes(tag.name)
-                            ? theme.typography.fontWeightMedium
-                            : theme.typography.fontWeightRegular,
-                        }}
-                      >
-                        <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
-                        <ListItemText primary={tag.name} />{" "}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              {selectedValue === "book" && (
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField
-                      id="filePathId"
-                      label="מיקום"
-                      variant="outlined"
-                      name="filePath"
-                      value={formData.filePath}
-                      onChange={handleChange}
-                      required
-                      onBlur={() =>
-                        setTouchedFields((prev) => ({
-                          ...prev,
-                          filePath: true,
-                        }))
-                      }
-                      type="text"
-                    />
-                    {touchedFields.filePath && !formData.filePath && (
-                      <Typography color="error">שדה חובה</Typography>
-                    )}
-                  </FormControl>
-                </Grid>
-              )}
-              {selectedValue === "file" && (
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <TextField
-                      id="fileId"
-                      type="file"
-                      label="מיקום"
-                      name="filePath"
-                      onChange={handleChange}
-                      required
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onBlur={() =>
-                        setTouchedFields((prev) => ({
-                          ...prev,
-                          filePath: true,
-                        }))
-                      }
-                    />
-                    {touchedFields.filePath && !formData.filePath && (
-                      <Typography color="error">שדה חובה</Typography>
-                    )}
-                    {formData.filePath &&
-                      !allowedExtensions.includes(fileExtension) && (
-                        <Typography color="error">
-                          סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx,
-                          ZIP, mp3, או MP4 file.
-                        </Typography>
-                      )}
-                  </FormControl>
-                </Grid>
-              )}
-            </Grid>
-          </DialogContent>
-        )}
-        <DialogActions>
-          <Button
-            type="submit"
-            onClick={handleSubmit}
-            style={{ color: "#9CDBA6" }}
-            disabled={!isFormValid}
-          >
-            העלאה
-          </Button>
-          <Button onClick={handleClose} style={{ color: "#9CDBA6" }}>
-            ביטול
-          </Button>
-        </DialogActions>
-        {isUpload && <>{itemStore.isError ? <Failure /> : <Success />}</>}
-      </Dialog>
-    </>
-  );
+                {openF &&
+                    <DialogContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="titleId"
+                                        label="כותרת"
+                                        variant="outlined"
+                                        name="title"
+                                        value={formData.title}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, title: true }))}
+                                    />
+                                    {touchedFields.title && !formData.title && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.title && formData.title.length < 2 && (
+                                        <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="descId"
+                                        label="תיאור"
+                                        variant="outlined"
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, description: true }))}
+                                    />
+                                    {touchedFields.description && !formData.description && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.description && formData.description.length < 5 && (
+                                        <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="categoryId"
+                                        label="קטגוריה"
+                                        variant="outlined"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, category: true }))}
+                                    />
+                                    {touchedFields.category && !formData.category && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.category && formData.category.length < 5 && (
+                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 5 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="authorId"
+                                        label="מחבר"
+                                        variant="outlined"
+                                        name="author"
+                                        value={formData.author}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, author: true }))}
+                                    />
+                                    {touchedFields.author && !formData.author && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                    {formData.author && formData.author.length < 5 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 5 תווים</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="tagId">תגיות</InputLabel>
+                                    <Select
+                                        labelId="tagId"
+                                        id="tagId"
+                                        multiple
+                                        value={formData.tag}
+                                        onChange={handleTagChange}
+                                        input={<OutlinedInput id="select-multiple-chip" label="תגיות" />}
+                                        renderValue={(selected) => (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                {selected.map((value) => (
+                                                    <Chip key={value} label={tagStore.tagList.find(tag => tag.id === value)?.name || value} />
+                                                ))}
+                                            </Box>
+                                        )}
+                                        MenuProps={MenuProps}
+                                    >
+                                        {tagStore.tagList.map((tag) => (
+                                            <MenuItem key={tag.id} value={tag.id}>
+                                                <Checkbox checked={formData.tag.indexOf(tag.id) > -1} />
+                                                <ListItemText primary={tag.name} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {selectedValue === 'book' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="filePathId"
+                                            label="מיקום"
+                                            variant="outlined"
+                                            name="filePath"
+                                            value={formData.filePath}
+                                            onChange={handleChange}
+                                            required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
+                                            type='text'
+                                        />
+                                        {touchedFields.filePath && !formData.filePath && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
+                            )}
+                            {selectedValue === 'file' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="fileId"
+                                            type="file"
+                                            label="מיקום"
+                                            name="filePath"
+                                            onChange={handleChange}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
+                                        />
+                                        {touchedFields.filePath && !formData.filePath && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
+                                        {formData.filePath && !allowedExtensions.includes(fileExtension) && (
+                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx, ZIP, mp3, או MP4 file.</Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </DialogContent>
+                }
+                <DialogActions>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} disabled={!isFormValid}>העלאה</Button>
+                    <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
+                </DialogActions>
+                {isUpload && (
+                    <>
+                        {itemStore.isError ? <Failure /> : <Success />}
+                    </>
+                )}
+            </Dialog>
+        </>
+    );
 });
 
 export default ItemDdd;

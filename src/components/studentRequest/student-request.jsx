@@ -4,7 +4,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import {
   Paper,
   TableRow,
-  TableCell,
   Table,
   TableBody,
   Typography,
@@ -16,11 +15,13 @@ import {
   DialogActions,
   TableContainer,
   TablePagination,
+  TablePagination,
   TableHead,
+  Box,
+  Collapse,
+  IconButton,
+  TableCell,
 } from "@mui/material";
-import Box from "@mui/material/Box";
-import Collapse from "@mui/material/Collapse";
-import IconButton from "@mui/material/IconButton";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DetailRequest from "./detail-request";
@@ -40,7 +41,7 @@ const StyledTableContainer = styled(Table)(() => ({
 }));
 function Row(props) {
   const { row } = props;
-  const [detailRequest, setDetailRequest] = useState(null); // Initiate with null
+  const [detailRequest, setDetailRequest] = useState(null);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const fetchRequest = async () => {
@@ -56,7 +57,7 @@ function Row(props) {
       }
     };
     fetchRequest();
-  }, [row.requestId]); // Dependency array should include row.requestId
+  }, [row.requestId]);
 
   return (
     <React.Fragment>
@@ -70,29 +71,31 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <StyledTableCell>
-          <Box display="flex" justifyContent="center">
+        <TableCell className="styled-table-cell">
+          <Box className="center-content">
             <AlertDialog option="דחיה" requestId={row.requestId} />
             <AlertDialog option="אישור" requestId={row.requestId} />
           </Box>
-        </StyledTableCell>
-        <StyledTableCell align="right">
+        </TableCell>
+        <TableCell className="styled-table-cell" align="right">
           {formatDate(row.approvalDate)}
-        </StyledTableCell>
-        <StyledTableCell align="right">
+        </TableCell>
+        <TableCell className="styled-table-cell" align="right">
           {formatDate(row.requestDate)}
-        </StyledTableCell>
-        <StyledTableCell align="right">
+        </TableCell>
+        <TableCell className="styled-table-cell" align="right">
           {detailRequest && detailRequest.userName
             ? detailRequest.userName
             : "טוען..."}
-        </StyledTableCell>
-        <StyledTableCell align="right">
+        </TableCell>
+        <TableCell className="styled-table-cell" align="right">
           {detailRequest && detailRequest.itemName
             ? detailRequest.itemName
             : "טוען..."}
-        </StyledTableCell>
-        <StyledTableCell align="right">{row.requestId}</StyledTableCell>
+        </TableCell>
+        <TableCell className="styled-table-cell" align="right">
+          {row.requestId}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
@@ -107,27 +110,7 @@ function Row(props) {
   );
 }
 
-DetailRequest.propTypes = {
-  detailRequest: PropTypes.shape({
-    tz: PropTypes.string.isRequired,
-    phoneNumber: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    userName: PropTypes.string.isRequired,
-    itemName: PropTypes.string.isRequired,
-    requestDate: PropTypes.string.isRequired,
-    numUserRequests: PropTypes.number.isRequired,
-  }).isRequired,
-};
 
-Row.propTypes = {
-  row: PropTypes.shape({
-    requestId: PropTypes.number.isRequired,
-    itemId: PropTypes.number.isRequired,
-    userId: PropTypes.number.isRequired,
-    requestDate: PropTypes.string.isRequired,
-    approvalDate: PropTypes.string.isRequired,
-  }).isRequired,
-};
 
 function extractRawData(proxyObject) {
   if (proxyObject && proxyObject.data) {
@@ -189,14 +172,14 @@ const StudentRequest = observer(() => {
        
         <Table aria-label="collapsible table">
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
+            <TableRow className="table-header">
               <TableCell />
-              <StyledTableCell align="center"></StyledTableCell>
-              <StyledTableCell align="center">תאריך בקשה</StyledTableCell>
-              <StyledTableCell align="center">תאריך אישור</StyledTableCell>
-              <StyledTableCell align="center">שם משתמש</StyledTableCell>
-              <StyledTableCell align="center">שם פריט</StyledTableCell>
-              <StyledTableCell align="center">מספר בקשה</StyledTableCell>
+              <TableCell className="styled-table-cell" align="center"></TableCell>
+              <TableCell className="styled-table-cell" align="center">תאריך בקשה</TableCell>
+              <TableCell className="styled-table-cell" align="center">תאריך אישור</TableCell>
+              <TableCell className="styled-table-cell" align="center">שם משתמש</TableCell>
+              <TableCell className="styled-table-cell" align="center">שם פריט</TableCell>
+              <TableCell className="styled-table-cell" align="center">מספר בקשה</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -262,21 +245,15 @@ function AlertDialog({ option, requestId }) {
       >
         <DialogTitle id="alert-dialog-title"></DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-            style={{ fontWeight: "bold" }}
-          >
+          <DialogContentText id="alert-dialog-description" style={{ fontWeight: "bold" }}>
             ? האם אתה רוצה לבצע {option}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <div style={{ display: 'flex', justifyContent: 'flex-end',direction:'rtl' }}>
-            <Button onClick={handleClose}>ביטול</Button>
-            <Button onClick={handleSumbit} autoFocus variant="contained">
-              אישור
-            </Button>
-          </div>
-
+        <DialogActions className="dialog-actions">
+          <Button onClick={handleClose}>ביטול</Button>
+          <Button onClick={handleSumbit} autoFocus variant="contained">
+            אישור
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
@@ -285,5 +262,26 @@ function AlertDialog({ option, requestId }) {
 
 AlertDialog.propTypes = {
   option: PropTypes.string.isRequired,
-  requestId: PropTypes.number.isRequired, // should be number instead of string
+  requestId: PropTypes.number.isRequired,
+};
+DetailRequest.propTypes = {
+  detailRequest: PropTypes.shape({
+    tz: PropTypes.string.isRequired,
+    phoneNumber: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    userName: PropTypes.string.isRequired,
+    itemName: PropTypes.string.isRequired,
+    requestDate: PropTypes.string.isRequired,
+    numUserRequests: PropTypes.number.isRequired,
+  }).isRequired,
+};
+
+Request.propTypes = {
+  row: PropTypes.shape({
+    requestId: PropTypes.number.isRequired,
+    itemId: PropTypes.number.isRequired,
+    userId: PropTypes.number.isRequired,
+    requestDate: PropTypes.string.isRequired,
+    approvalDate: PropTypes.string.isRequired,
+  }).isRequired,
 };

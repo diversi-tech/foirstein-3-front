@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TagStore from "../../store/tag-store";
 import {
   Button,
   TextField,
@@ -26,6 +27,10 @@ const TagAdd = ({ onClose }) => {
   };
 
   const tagAdd = async () => {
+    if (addItem.length < 2 || addItem === "") {
+      setShowValidation(true); // Show validation message if conditions not met
+      return;
+    }
     if (addItem.length < 2 || addItem === "") {
       setShowValidation(true); // Show validation message if conditions not met
       return;
@@ -83,6 +88,7 @@ const TagAdd = ({ onClose }) => {
       </Fields_rtl>
       <DialogActions>
         <Button onClick={dialogClose}>ביטול</Button>
+        <Button onClick={tagAdd}>הוספה</Button>
         <Button onClick={tagAdd}>הוספה</Button>
       </DialogActions>
     </Dialog>

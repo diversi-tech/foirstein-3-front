@@ -91,6 +91,35 @@ function Header() {
             </Grid>
           </Grid>
           <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap',marginTop:'1%'}}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Tooltip title="בקשות שמחכות לאישור" arrow>
+                <IconButton size="large"
+                  aria-label="show 4 new mails"
+                  color="inherit"
+                  onClick={() => navigate('/studentRequest')}>
+                  <Badge badgeContent={requestsCount} color="primary">
+                    <MailIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={6}>
+              <Tooltip title="פריטים שמחכים לאישור" arrow>
+                <IconButton
+                  size="large"
+                  aria-label="show 17 new notifications"
+                  color="inherit"
+                  onClick={() => navigate('/itemsPendingApproval')}
+                >
+                  <Badge badgeContent={itemsCount} color="warning">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap',marginTop:'1%'}}>
             <Typography
               variant="h6"
               noWrap
@@ -112,6 +141,7 @@ function Header() {
               }}
             >
               {"אודות"}
+              <StickyNote2OutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
               <StickyNote2OutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
             <Typography
@@ -136,12 +166,13 @@ function Header() {
             >
               {"בית"}
               <RoofingOutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
+              <RoofingOutlinedIcon style={{ height: '1em', verticalAlign: 'middle', ml: '5px' }} />
             </Typography>
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+})
 
 export default Header;
