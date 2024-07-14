@@ -23,6 +23,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import tagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import TagStore from "../../store/tag-store";
+import Fields_rtl from "../fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -39,6 +41,7 @@ const StickyTableRow = styled(TableRow)({
 const TagList = observer(() => {
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [showValidation, setShowValidation] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
@@ -73,18 +76,20 @@ const TagList = observer(() => {
     }
   };
 
-  const tagDelete = () => {
+  const tagDelete = async () => {
     if (deleteItem) {
       tagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
     }
   };
 
-  const tagEdit = () => {
-    if (editItem) {
-      tagStore.updateTag(editItem.id, { name: editItem.name });
-      dialogClose("editOpen");
+  const tagEdit = async () => {
+    if (editItem.name.length < 2 || editItem.name === "") {
+      setShowValidation(true); // Show validation message if conditions not met
+      return;
     }
+    await tagStore.updateTag(editItem.id, { name: editItem.name });
+    dialogClose("editOpen");
   };
 
   const tagAdd = () => {
@@ -104,9 +109,9 @@ const TagList = observer(() => {
             <Typography variant="h5" component="h2" align="center" gutterBottom>
               -תגים-
             </Typography>
-            <TableContainer style={{ maxHeight: 450, overflow: 'auto' }}>
-              <Table aria-label="תגים" >
-                <TableBody >
+            <TableContainer style={{ maxHeight: 450, overflow: "auto" }}>
+              <Table aria-label="תגים">
+                <TableBody>
                   {/* כותרות העמודות */}
                   <StickyTableRow>
                     <StyledTableCell>שם</StyledTableCell>
@@ -155,34 +160,27 @@ const TagList = observer(() => {
       {/* dialog edit */}
       <Dialog open={editOpen} maxWidth="sm" dir="rtl">
         <DialogTitle>{editItem && `עריכת #${editItem.id}`}</DialogTitle>
-        <DialogContent dividers>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="שם"
-            type="text"
-            value={editItem ? editItem.name : ""}
-            onChange={(e) =>
-              editItem && setEditItem({ ...editItem, name: e.target.value })
-            }
-            error={editItem && (!editItem.name || editItem.name.length < 2)}
-            helperText={
-              editItem && !editItem.name
-                ? "זהו שדה חובה"
-                : editItem && editItem.name.length < 2
-                  ? "השם חייב להכיל לפחות 2 תווים"
-                  : ""
-            }
-          />
-        </DialogContent>
+        <Fields_rtl>
+          <DialogContent dividers dir="rtl">
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="שם"
+              type="text"
+              value={editItem ? editItem.name : ""}
+              onChange={(e) => {
+                setEditItem({ ...editItem, name: e.target.value }),
+                  setShowValidation(false);
+              }}
+              error={showValidation}
+              helperText={showValidation ? "השם חייב להכיל לפחות 2 תווים" : ""}
+            />
+          </DialogContent>
+        </Fields_rtl>
         <DialogActions>
           <Button onClick={() => dialogClose("editOpen")}>ביטול</Button>
-          <Button
-            onClick={tagEdit}
-            disabled={!editItem || !editItem.name || editItem.name.length < 2}
-            color="primary"
-          >
+          <Button onClick={tagEdit} color="primary">
             שמור
           </Button>
         </DialogActions>

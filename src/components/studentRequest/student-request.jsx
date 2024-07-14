@@ -7,6 +7,7 @@ import {
   TableCell,
   Table,
   TableBody,
+  Typography,
   styled,
   Button,
   Dialog,
@@ -14,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   TableContainer,
+  TablePagination,
   TableHead,
 } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -24,18 +26,22 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DetailRequest from "./detail-request";
 import requestStore from "../../store/studentsRequest-store";
 import { observer } from "mobx-react-lite";
-
-const StyledTableCell = styled(TableCell)(() => ({
-  textAlign: "center", // Center align content in the table cell
-}));
+// import { margin } from "@mui/system";
 
 const baseUrl = "https://localhost:7297/api/";
 
+const rowsPerPageOptions = [5,10, 25]; // Options for rows per page
+const StyledTableCell = styled(TableCell)(() => ({
+textAlign: "center",
+}));
+
+const StyledTableContainer = styled(Table)(() => ({
+  tableLayout: "auto", // אפשר תצוגה אוטומטית של העמודות בטבלה
+}));
 function Row(props) {
   const { row } = props;
   const [detailRequest, setDetailRequest] = useState(null); // Initiate with null
   const [open, setOpen] = useState(false);
-
   useEffect(() => {
     const fetchRequest = async () => {
       try {
@@ -43,10 +49,8 @@ function Row(props) {
           `${baseUrl}BorrowApprovalRequest/details/${row.requestId}`
         );
         let data = await res.json();
-        console.log("Data fetched from server:", data); // Log the fetched data
         const _detailRequest = extractRawData(data);
         setDetailRequest(_detailRequest);
-        console.log("Extracted data:", _detailRequest); // Log the extracted data
       } catch (error) {
         console.error("Failed to fetch data:", error);
       }
@@ -147,6 +151,9 @@ function formatDate(dateString) {
 }
 
 const StudentRequest = observer(() => {
+  const [currentPage, setCurrentPage] = useState(0); // Current page index
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
+
   useEffect(() => {
     const fetchRequest = async () => {
       try {
@@ -162,9 +169,24 @@ const StudentRequest = observer(() => {
   }, []);
 
   const rows = requestStore.getRequest;
+
+  const handleChangePage = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setCurrentPage(0); // Reset to first page when changing rows per page
+  };
+
   return (
-    <Box>
-      <TableContainer component={Paper}>
+    <Box sx={{ margin: "0 auto", width: "95%", maxWidth: "1200px" }}>
+       <StyledTableContainer component={Paper}>
+      <TableContainer component={Paper} >
+        <Box padding={2} textAlign="center">
+          <Typography variant="h4" component="h1"><b>בקשות התלמידות</b></Typography>
+        </Box>
+       
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
@@ -178,12 +200,29 @@ const StudentRequest = observer(() => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {(rowsPerPage > 0
+              ? rows.slice(
+                  currentPage * rowsPerPage,
+                  currentPage * rowsPerPage + rowsPerPage
+                )
+              : rows
+            ).map((row) => (
               <Row key={row.requestId} row={row} requestId={row.requestId} />
             ))}
           </TableBody>
+          
         </Table>
+        <TablePagination
+            rowsPerPageOptions={rowsPerPageOptions}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={currentPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
       </TableContainer>
+      </StyledTableContainer>
     </Box>
   );
 });

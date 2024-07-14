@@ -140,12 +140,16 @@ async function approval(itemId) {
     if (result.isConfirmed) {
       await itemStore.approvalItem(itemId);
       if (itemStore.isApprov)
+      {
+        await itemStore.fetchPendingItems();
         Swal.fire({
           icon: "success",
           title: "הפריט אושר",
           showConfirmButton: false,
           timer: 1500
         });
+      }
+        
 
       else
         Swal.fire({
@@ -177,13 +181,16 @@ async function deny(itemId) {
     if (result.isConfirmed) {
       await itemStore.deniedItem(itemId);
       if (itemStore.isDeind)
+      {
+        await itemStore.fetchPendingItems();
         Swal.fire({
           icon: "success",
           title: "הפריט נמחק",
           showConfirmButton: false,
           timer: 1500
-        });
-
+        }
+      );
+    }
       else
         Swal.fire({
           icon: "error",

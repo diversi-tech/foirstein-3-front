@@ -17,7 +17,7 @@ function DetailRequest({ detailRequest }) {
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
           {detailRequest.userName}
         </Typography>
-        <Typography variant="subtitle1">:שם תלמיד</Typography>
+        <Typography variant="subtitle1">:שם תלמידה</Typography>
       </Box>
       <Box display="flex" justifyContent="flex-end">
         <Typography variant="subtitle1" style={{ marginRight: "10px" }}>
