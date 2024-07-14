@@ -47,6 +47,7 @@ function Request(props) {
         setDetailRequest(_detailRequest);
       } catch (error) {
         console.error("Failed to fetch data:", error);
+        alert('אירעה שגיאה בעת טעינת הנתונים');
       }
     };
     fetchRequest();
@@ -102,9 +103,6 @@ function Request(props) {
     </React.Fragment>
   );
 }
-
-
-
 function extractRawData(proxyObject) {
   if (proxyObject && proxyObject.data) {
     console.log("Extracting data from proxy object:", proxyObject.data);
@@ -114,7 +112,6 @@ function extractRawData(proxyObject) {
     return proxyObject;
   }
 }
-
 function formatDate(dateString) {
   const dateObj = new Date(dateString);
   const day = dateObj.getDate().toString().padStart(2, "0");
@@ -125,7 +122,6 @@ function formatDate(dateString) {
   const seconds = dateObj.getSeconds().toString().padStart(2, "0");
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
-
 const StudentRequest = observer(() => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -200,12 +196,9 @@ const StudentRequest = observer(() => {
     </Box>
   );
 });
-
 export default StudentRequest;
-
 function AlertDialog({ option, requestId }) {
   const [open, setOpen] = useState(false);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -250,7 +243,6 @@ function AlertDialog({ option, requestId }) {
     </React.Fragment>
   );
 }
-
 AlertDialog.propTypes = {
   option: PropTypes.string.isRequired,
   requestId: PropTypes.number.isRequired,
@@ -266,7 +258,6 @@ DetailRequest.propTypes = {
     numUserRequests: PropTypes.number.isRequired,
   }).isRequired,
 };
-
 Request.propTypes = {
   request: PropTypes.shape({
     requestId: PropTypes.number.isRequired,
