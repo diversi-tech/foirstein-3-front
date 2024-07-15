@@ -30,10 +30,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DetailRequest from "./detail-request";
 import requestStore from "../../store/studentsRequest-store";
 import { observer } from "mobx-react-lite";
-import "./student-request.css"; // Import the CSS file
+import "./student-request.css"; 
 
 const baseUrl = "https://libererisas-backend.onrender.com/api/";
-
 const rowsPerPageOptions = [5, 10, 25];
 
 function Request(props) {
