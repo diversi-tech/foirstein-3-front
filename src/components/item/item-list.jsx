@@ -446,6 +446,9 @@ const ItemList = observer(() => {
         if (deleteTag && deleteTag.id) {
             await itemStore.deleteTag(deleteItem.id, deleteTag.id);
             setSendTag(true);
+            setTimeout(() => {
+                handleClose();
+              }, 1000);
         }
     };
 
@@ -453,6 +456,9 @@ const ItemList = observer(() => {
         try {
             await itemStore.deleteMedia(deleteItem.id);
             setSendItem(true);
+            setTimeout(() => {
+                handleClose();
+              }, 1000);
         } catch (error) {
             console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
         }
@@ -506,7 +512,6 @@ const ItemList = observer(() => {
             }
         }
         else {
-
             deletee();
         }
         
@@ -530,7 +535,6 @@ const ItemList = observer(() => {
                                     <TableRow>
                                         <TableCell align="center" className={classes.headerCell}
                                         >
-                                        
                                             <Checkbox
                                                 indeterminate={selectedItems.length > 0 && selectedItems.length < itemStore.mediaList.length}
                                                 checked={selectedItems.length === itemStore.mediaList.length}
@@ -601,7 +605,7 @@ const ItemList = observer(() => {
                                             <TableCell align="center" className={classes.tableCell}>{item.category}</TableCell>
                                             <TableCell align="center" className={classes.tableCell}>{item.author}</TableCell>
                                             {!item.filePath.includes('https') ? (
-                                                <TableCell align="center" className={classes.tableCell}>{item.year}</TableCell>
+                                                <TableCell align="center" className={classes.tableCell}>{item.publishingYear}</TableCell>
                                             ):(
                                                 <TableCell align="center" className={classes.tableCell}>--</TableCell>
                                             )
