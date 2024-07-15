@@ -32,7 +32,7 @@ import requestStore from "../../store/studentsRequest-store";
 import { observer } from "mobx-react-lite";
 import "./student-request.css"; // Import the CSS file
 
-const baseUrl = "https://localhost:7297/api/";
+const baseUrl = "https://libererisas-backend.onrender.com/api/";
 
 const rowsPerPageOptions = [5, 10, 25];
 
