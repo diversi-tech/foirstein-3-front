@@ -334,6 +334,7 @@
 import { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import itemStore from '../../store/item-store';
+import ItemSearch from './item-search';
 import {
     Table,
     TableBody,
@@ -410,6 +411,7 @@ const ItemList = observer(() => {
     const [editedItem, setEditedItem] = useState(null);
     const [editOpen, setEditOpen] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -421,6 +423,10 @@ const ItemList = observer(() => {
     useEffect(() => {
         itemStore.fetchMedia();
     }, []);
+
+    useEffect(() => {
+        setFilteredItems(itemStore.mediaList); 
+    }, [itemStore.mediaList]);
 
     const handleDelete = (item) => {
         setDeleteItem(item);
@@ -502,11 +508,17 @@ const ItemList = observer(() => {
             deletee();
         }
     };
-
+    const handleSearch = (searchTerm) => {
+        const filtered = itemStore.mediaList.filter((item) =>
+            item.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredItems(filtered);
+    };
     return (
         <>
             <div className="itemListDiv">
                 <h2 className={classes.title}>רשימת קבצים</h2>
+                <ItemSearch onSearch={handleSearch} /> 
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
                         <TableContainer component={Paper} className={classes.tableContainer}>
@@ -570,7 +582,7 @@ const ItemList = observer(() => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {itemStore.mediaList.map((item) => (
+                                {filteredItems.map((item) => (
                                         <TableRow key={item.id} className={classes.tableRow}>
                                             <TableCell align="center" className={classes.tableCell}>
                                                 <Checkbox

@@ -1,6 +1,8 @@
 import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
+const baseURL='https://libererisas-backend.onrender.com/api/Item';
+
 class ItemStore {
     pendingItemsList = []
     mediaList = [];
@@ -40,7 +42,7 @@ class ItemStore {
     async deleteTag(itemId, tagId) {
         console.log("hiiDeleteTag");
         try {
-            const res = await fetch(`https://localhost:7297/api/Item/${itemId}/${tagId}`, {
+            const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'DELETE'
             });
             console.log("delete tag:");
@@ -65,7 +67,7 @@ class ItemStore {
     async fetchPendingItems() {
 
         try {
-            const res = await fetch('https://localhost:7297/api/Item/Pending');
+            const res = await fetch(`${baseURL}/Pending`);
             const obj = await res.json();
             let list = toJS(obj);
             this.pendingItemsList = list;
@@ -80,7 +82,7 @@ class ItemStore {
         console.log(itemId)
         // this.isApprov = false;
         try {
-            const res = await fetch(`https://localhost:7297/api/Item/approvItem/${itemId}`, { method: 'PUT' });
+            const res = await fetch(`${baseURL}/approvItem/${itemId}`, { method: 'PUT' });
             console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
@@ -99,7 +101,7 @@ class ItemStore {
         console.log(itemId)
         this.isDeind = false;
         try {
-            const res = await fetch(`https://localhost:7297/api/Item/deny/${itemId}`, {
+            const res = await fetch(`${baseURL}/deny/${itemId}`, {
                 method: 'PUT'
             });
             if (res.status === 200) {
@@ -118,7 +120,7 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch('https://localhost:7297/api/Item');
+            const res = await fetch(`${baseURL}`);
             const obj = await res.json();
             this.mediaList = obj.data;
             console.log("list media: ", this.mediaList);
@@ -130,7 +132,7 @@ class ItemStore {
 
     async uploadMediaFile(mediaData) {
         try {
-            const res = await fetch('https://localhost:7297/api/Item/file', {
+            const res = await fetch(`${baseURL}/file`, {
                 method: 'POST',
                 body: mediaData,
             });
@@ -150,7 +152,7 @@ class ItemStore {
 
     async uploadMediaBook(mediaData) {
         try {
-            const res = await fetch('https://localhost:7297/api/Item/book', {
+            const res = await fetch(`${baseURL}/book`, {
                 method: 'POST',
                 body: mediaData,
             });
@@ -172,7 +174,7 @@ class ItemStore {
     async deleteMedia(mediaId) {
         // console.log("hiiDeleteMedia!!!!!!!!");
         try {
-            const res = await fetch(`https://localhost:7297/api/Item/${mediaId}`, {
+            const res = await fetch(`${baseURL}/${mediaId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
@@ -196,7 +198,7 @@ class ItemStore {
         try {
 
             console.log("formData: ", mediaData, "beforeFetch");
-            const res = await fetch(`https://localhost:7297/api/Item/book/${mediaId}`, {
+            const res = await fetch(`${baseURL}/book/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });
@@ -220,7 +222,7 @@ class ItemStore {
         try {
 
             console.log("formData: ", mediaData, "beforeFetch");
-            const res = await fetch(`https://localhost:7297/api/Item/file/${mediaId}`, {
+            const res = await fetch(`${baseURL}/file/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });

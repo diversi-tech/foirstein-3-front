@@ -18,8 +18,7 @@ import requestStore from '../store/studentsRequest-store';
 import itemStore from '../store/item-store';
 import { observer } from 'mobx-react-lite'; 
 
-const Header = observer(() => {
-  const baseUrl = "https://localhost:7297/api/";
+const Header = observer(() => {;
   const [requestsCount, setRequestsCount] = React.useState(0);
   const [itemsCount,setItemsCount]=React.useState(0)
 

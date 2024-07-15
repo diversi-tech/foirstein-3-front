@@ -1,7 +1,7 @@
 import { makeObservable, runInAction, observable, action } from "mobx";
 import Swal from "sweetalert2";
 
-const baseUrl = "https://localhost:7297/api/Tag";
+const baseUrl = "https://libererisas-backend.onrender.com/api/Tag";
 
 class TagStore {
   tagList = [];

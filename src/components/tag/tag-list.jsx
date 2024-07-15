@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import TagStore from "../../store/tag-store";
 import {
   Paper,
   TableRow,
@@ -23,7 +22,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TagAdd from "./tag-add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import Fields_rtl from "./tag-add";
+import TagStore from "../../store/tag-store";
+import Fields_rtl from "./fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
