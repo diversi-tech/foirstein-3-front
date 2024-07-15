@@ -5,8 +5,9 @@ import Success from '../message/success';
 import Failure from '../message/failure';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent,
-  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
@@ -24,7 +25,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     description: mediaItem.description,
     category: mediaItem.category,
     author: mediaItem.author,
-    year: mediaItem.year,
+    publishingYear: mediaItem.publishingYear,
     isApproved: mediaItem.isApproved,
     tags: initialTagIds,
     filePath: mediaItem.filePath || '',
@@ -32,6 +33,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
 
@@ -59,14 +61,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     if (name === 'category' || name === 'author') {
       const lettersRegex = /^[א-תA-Za-z\s]*$/;
       if (!lettersRegex.test(value)) {
-        return;
-      }
-    }
-    if (name === 'year') {
-      const currentYear = new Date().getFullYear();
-      const numbersRegex = /^\d{0,4}$/;
-      if (!numbersRegex.test(value) || (value.length === 4 && parseInt(value) > currentYear)) {
-        return;
+        return; // If the value doesn't match, do nothing
       }
     }
     setFormData((prevFormData) => ({
@@ -94,34 +89,30 @@ export default function ItemEdit({ mediaItem, onClose }) {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const currentYear = new Date().getFullYear();
-    if (formData.year.length !== 4 || parseInt(formData.year) > currentYear) {
-      console.error('Invalid year');
-      return;
-    }
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
-    formDataToSend.append('year', formData.year);
+    formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
     if (formData.file) {
-      formDataToSend.append('filePath', formData.file);
+      formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
     } else {
-      formDataToSend.append('filePath', null); // שליחת NULL כאשר הקובץ לא עודכן
-    }
+      formDataToSend.append('filePath', formData.filePath); // Use existing filePath
+    } 
     try {
       if (link) {
-        await itemStore.updateMediaFile(formData.id, formDataToSend);
+         await itemStore.updateMediaFile(formData.id, formDataToSend);
       } else {
-        await itemStore.updateMediaBook(formData.id, formDataToSend);
+         await itemStore.updateMediaBook(formData.id, formDataToSend);
       }
+      console.log("res ", send);
       setTimeout(() => {
         onClose();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error('Error updating media:', error);
     }
@@ -130,7 +121,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const checkLink = () =>{
     const filePath = formData.filePath;
     console.log(filePath);
-    setLink(filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'));
+    setLink( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
   }
 
   return (
@@ -197,19 +188,21 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-          <TextField
-            margin="dense"
-            label="שנת הוצאה"
-            type="text"
-            fullWidth
-            name="year"
-            value={formData.year}
-            onChange={handleChange}
-            required
-            />
-          {formData.year && formData.year.length === 4 && parseInt(formData.year) > new Date().getFullYear() && (
-            <Typography color="error">יש להכניס שנת הוצאה תקינה</Typography>
-          )}
+          {!link &&
+           <TextField
+           margin="dense"
+           label="שנת הוצאה"
+           type="text"
+           fullWidth
+           name="publishingYear"
+           value={formData.publishingYear}
+           onChange={handleChange}
+           required
+           />
+          }
+        {formData.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
+          <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
+        )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
             <Select
@@ -261,7 +254,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={() => {setSend(true)}} disabled={!isFormValid}>
+          <Button type="submit" style={{ color: '#468585' }} onClick={()=>{setSend(true)}} disabled={!isFormValid}>
             שמירה
           </Button>
           {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
