@@ -184,11 +184,14 @@ const ItemDdd = observer(() => {
                 tag: [],
                 filePath: '',
             });
+
             setIsHndleUpload(true);
             setSelectedValue('');
             setIsUpload(true);
             handleClose();
-        } catch (error) {
+        } 
+       
+        catch (error) {
             console.error('Failed to upload media:', error);
         }
     };

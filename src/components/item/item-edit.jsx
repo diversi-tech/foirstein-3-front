@@ -5,10 +5,8 @@ import Success from '../message/success';
 import Failure from '../message/failure';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent,
-  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText
 } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { style } from '@mui/system';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
@@ -34,8 +32,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const [send, setSend] = useState(false);
   const [link, setLink] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(null);
   const [isFormValid, setIsFormValid] = useState(true);
+  const [openI, setOpenI] = useState(true);
 
   useEffect(() => {
     checkLink();
@@ -61,7 +59,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
     if (name === 'category' || name === 'author') {
       const lettersRegex = /^[א-תA-Za-z\s]*$/;
       if (!lettersRegex.test(value)) {
-        return; // If the value doesn't match, do nothing
+        return;
+      }
+    }
+    if (name === 'year') {
+      const currentYear = new Date().getFullYear();
+      const numbersRegex = /^\d{0,4}$/;
+      if (!numbersRegex.test(value) || (value.length === 4 && parseInt(value) > currentYear)) {
+        return;
       }
     }
     setFormData((prevFormData) => ({
@@ -78,6 +83,10 @@ export default function ItemEdit({ mediaItem, onClose }) {
     }));
   };
 
+  const funcAlert =() => {
+    setSend(true);
+  }
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFormData((prevData) => ({
@@ -89,7 +98,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+    
+    const currentYear = new Date().getFullYear();
+    if (formData.year.length !== 4 || parseInt(formData.year) > currentYear) {
+      console.error('Invalid year');
+      return;
+    }
+
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
@@ -99,13 +114,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('year', formData.year);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-  
     if (formData.file) {
-      formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
+      formDataToSend.append('filePath', formData.file);
     } else {
-      formDataToSend.append('filePath', formData.filePath); // Use existing filePath
+      formDataToSend.append('filePath', null); // שליחת NULL כאשר הקובץ לא עודכן
     }
-  
     try {
       let response;
       if (link) {
@@ -113,16 +126,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
       } else {
         response = await itemStore.updateMediaBook(formData.id, formDataToSend);
       }
-  
       if (response && response.ok) {
-        setUpdateSuccess(true);
-        onClose();
+        setTimeout(() => {
+          onClose();
+        }, 2000);
       } else {
-        setUpdateSuccess(false);
         console.error('Error updating media:', response ? response.statusText : 'No response from server');
       }
     } catch (error) {
-      setUpdateSuccess(false);
       console.error('Error updating media:', error);
     }
   };  
@@ -130,18 +141,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const checkLink = () =>{
     const filePath = formData.filePath;
     console.log(filePath);
-     if( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
-     {
-      setLink(true);
-     }
-     else{
-      setLink(false);
-     }
+    setLink(filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'));
   }
 
   return (
     <Dialog
-      open={true}
+      open={openI}
       onClose={onClose}
       fullScreen={fullScreen}
       maxWidth="sm"
@@ -160,7 +165,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.title}
             onChange={handleChange}
             required
-          />
+            />
           {formData.title && formData.title.length < 2 && (
             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
           )}
@@ -173,7 +178,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.description}
             onChange={handleChange}
             required
-          />
+            />
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
@@ -186,7 +191,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.category}
             onChange={handleChange}
             required
-          />
+            />
           {formData.category && formData.category.length < 2 && (
             <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
           )}
@@ -199,11 +204,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.author}
             onChange={handleChange}
             required
-          />
+            />
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-           <TextField
+          <TextField
             margin="dense"
             label="שנת הוצאה"
             type="text"
@@ -212,9 +217,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.year}
             onChange={handleChange}
             required
-          />
-          {formData.year && formData.year.length < 4 && (
-            <Typography color="error">שנת ההוצאה חייבת להכיל 4 תווים</Typography>
+            />
+          {formData.year && formData.year.length === 4 && parseInt(formData.year) > new Date().getFullYear() && (
+            <Typography color="error">יש להכניס שנת הוצאה תקינה (לא עתידית)</Typography>
           )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
@@ -234,7 +239,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Box>
               )}
               MenuProps={MenuProps}
-            >
+              >
               {tagStore.tagList.map((tag) => (
                 <MenuItem key={tag.id} value={tag.id}>
                   <Checkbox checked={formData.tags.indexOf(tag.id) > -1} />
@@ -243,32 +248,31 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
-
-  <TextField
-  margin="dense"
-  label="מיקום"
-  type="text"
-  fullWidth
-  name="filePath"
-  value={formData.filePath}
-  onChange={handleChange}
-  style={{ marginRight: '1rem' }}
-  disabled={link}
-  />
-  {link && (
-    <input
-      type="file"
-      name="filePath"
-      onChange={handleFileChange}
-      style={{ marginTop: '1rem' }}
-    />
-  )} 
+          <TextField
+            margin="dense"
+            label="מיקום"
+            type="text"
+            fullWidth
+            name="filePath"
+            value={formData.filePath}
+            onChange={handleChange}
+            style={{ marginRight: '1rem' }}
+            disabled={link}
+          />
+          {link && (
+            <input
+              type="file"
+              name="filePath"
+              onChange={handleFileChange}
+              style={{ marginTop: '1rem' }}
+            />
+          )} 
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={() => { setSend(true) }} disabled={!isFormValid}>
+          <Button type="submit" style={{ color: '#468585' }} onClick={funcAlert} disabled={!isFormValid}>
             שמירה
           </Button>
           {send && (itemStore.isUpdate ? <Success /> : <Failure />)}

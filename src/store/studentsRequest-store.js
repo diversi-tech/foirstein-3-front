@@ -33,6 +33,10 @@ class StudentsRequestStore {
 
       runInAction(() => {
         this.requestList = this.extractRawData(data);
+<<<<<<< HEAD
+=======
+        // debugger
+>>>>>>> master
       });
     } catch (error) {
       console.error("Failed to fetch request:", error);
@@ -40,6 +44,10 @@ class StudentsRequestStore {
   }
 
   get getRequest() {
+<<<<<<< HEAD
+=======
+    // debugger
+>>>>>>> master
     return this.requestList;
   }
   //פונקציה שמחלצת מהפרוקסי
