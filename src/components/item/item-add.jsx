@@ -393,7 +393,7 @@ const ItemDdd = observer(() => {
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} disabled={!isFormValid}>העלאה</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} >העלאה</Button>
                     <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
                 {isUpload && (
