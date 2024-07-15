@@ -83,10 +83,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
     }));
   };
 
-  const funcAlert =() => {
-    setSend(true);
-  }
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFormData((prevData) => ({
@@ -98,13 +94,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
     const currentYear = new Date().getFullYear();
     if (formData.year.length !== 4 || parseInt(formData.year) > currentYear) {
       console.error('Invalid year');
       return;
     }
-
     const formDataToSend = new FormData();
     formDataToSend.append('id', formData.id);
     formDataToSend.append('title', formData.title);
@@ -120,19 +114,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
       formDataToSend.append('filePath', null); // שליחת NULL כאשר הקובץ לא עודכן
     }
     try {
-      let response;
       if (link) {
-        response = await itemStore.updateMediaFile(formData.id, formDataToSend);
+        await itemStore.updateMediaFile(formData.id, formDataToSend);
       } else {
-        response = await itemStore.updateMediaBook(formData.id, formDataToSend);
+        await itemStore.updateMediaBook(formData.id, formDataToSend);
       }
-      if (response && response.ok) {
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-      } else {
-        console.error('Error updating media:', response ? response.statusText : 'No response from server');
-      }
+      setTimeout(() => {
+        onClose();
+      }, 2000);
     } catch (error) {
       console.error('Error updating media:', error);
     }
@@ -219,7 +208,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             required
             />
           {formData.year && formData.year.length === 4 && parseInt(formData.year) > new Date().getFullYear() && (
-            <Typography color="error">יש להכניס שנת הוצאה תקינה (לא עתידית)</Typography>
+            <Typography color="error">יש להכניס שנת הוצאה תקינה</Typography>
           )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
@@ -272,7 +261,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={funcAlert} disabled={!isFormValid}>
+          <Button type="submit" style={{ color: '#468585' }} onClick={() => {setSend(true)}} disabled={!isFormValid}>
             שמירה
           </Button>
           {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
