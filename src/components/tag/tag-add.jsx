@@ -11,7 +11,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import TagStore from "../../store/tag-store";
-import Fields_rtl from '../fields_rtl';
+import Fields_rtl from './fields_rtl';
 
 const TagAdd = ({ onClose }) => {
   const [addItem, setAddItem] = useState("");

@@ -6,7 +6,7 @@ import {
   action,
 } from "mobx";
 import Swal from "sweetalert2";
-const baseUrl = "https://localhost:7297/api/";
+const baseUrl = "https://libererisas-backend.onrender.com/api/";
 
 class StudentsRequestStore {
   requestList = [];

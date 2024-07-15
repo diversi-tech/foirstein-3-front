@@ -20,11 +20,10 @@ import {
 import { observer } from "mobx-react-lite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import tagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TagStore from "../../store/tag-store";
-import Fields_rtl from "../fields_rtl";
+import Fields_rtl from "./fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -47,7 +46,7 @@ const TagList = observer(() => {
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
   useEffect(() => {
-    tagStore.fetchTag();
+    TagStore.fetchTag();
   }, []);
 
   const dialogOpen = (dialogType) => {
@@ -78,7 +77,7 @@ const TagList = observer(() => {
 
   const tagDelete = async () => {
     if (deleteItem) {
-      tagStore.deleteTag(deleteItem.id);
+      TagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
     }
   };
@@ -88,13 +87,13 @@ const TagList = observer(() => {
       setShowValidation(true); // Show validation message if conditions not met
       return;
     }
-    await tagStore.updateTag(editItem.id, { name: editItem.name });
+    await TagStore.updateTag(editItem.id, { name: editItem.name });
     dialogClose("editOpen");
   };
 
   const tagAdd = () => {
     setIsAddTagOpen(true);
-    tagStore.message = "";
+    TagStore.message = "";
   };
 
   return (
@@ -119,7 +118,7 @@ const TagList = observer(() => {
                     <StyledTableCell>מחיקה</StyledTableCell>
                   </StickyTableRow>
                   {/* תוכן הטבלה */}
-                  {tagStore.tagList.map((row) => (
+                  {TagStore.tagList.map((row) => (
                     <TableRow key={row.id}>
                       <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>
