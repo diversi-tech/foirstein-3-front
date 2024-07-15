@@ -203,7 +203,7 @@ const StudentRequest = observer(() => {
   );
 });
 export default StudentRequest;
-function AlertDialog({ option, requestId, color }) {
+function AlertDialog({ option, requestId, color}) {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
