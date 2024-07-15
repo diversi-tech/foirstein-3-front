@@ -368,6 +368,7 @@ import { styled } from '@mui/material/styles';
 import './item.css';
 
 const useStyles = styled((theme) => ({
+
     title: {
         backgroundColor: '#468585', // צבע רקע שחור לכותרת
         color: 'white', // צבע טקסט לכותרת
@@ -402,6 +403,7 @@ const useStyles = styled((theme) => ({
 }));
 
 const ItemList = observer(() => {
+   
     const classes = useStyles(); // השתמש בסגנונות של useStyles
 
     const [deleteItem, setDeleteItem] = useState(null);
@@ -500,6 +502,7 @@ const ItemList = observer(() => {
 
             deletee();
         }
+        
     };
 
     return (
@@ -509,10 +512,12 @@ const ItemList = observer(() => {
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
                         <TableContainer component={Paper} className={classes.tableContainer}>
-                            <Table stickyHeader>
+                            <Table stickyHeader >
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell align="center" className={classes.headerCell}>
+                                        <TableCell align="center" className={classes.headerCell}
+                                        >
+                                        
                                             <Checkbox
                                                 indeterminate={selectedItems.length > 0 && selectedItems.length < itemStore.mediaList.length}
                                                 checked={selectedItems.length === itemStore.mediaList.length}
