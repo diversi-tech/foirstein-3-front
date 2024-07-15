@@ -425,6 +425,7 @@ const ItemList = observer(() => {
     const handleDelete = (item) => {
         setDeleteItem(item);
         setDeleteOpen(true);
+        
     };
 
     const handleDeleteTag = (item, tag) => {
@@ -582,7 +583,12 @@ const ItemList = observer(() => {
                                             <TableCell align="center" className={classes.tableCell}>{item.description}</TableCell>
                                             <TableCell align="center" className={classes.tableCell}>{item.category}</TableCell>
                                             <TableCell align="center" className={classes.tableCell}>{item.author}</TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>{item.year}</TableCell>
+                                            {!item.filePath.includes('https') ? (
+                                                <TableCell align="center" className={classes.tableCell}>{item.year}</TableCell>
+                                            ):(
+                                                <TableCell align="center" className={classes.tableCell}>--</TableCell>
+                                            )
+                                            }
                                             <TableCell align="center" className={classes.tableCell} style={{ color: item.isApproved ? 'green' : 'red' }}>
                                                 {item.isApproved ? 'מאושר' : 'ממתין לאישור'}
                                             </TableCell>
