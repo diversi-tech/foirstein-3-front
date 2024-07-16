@@ -11,7 +11,6 @@ class ItemStore {
     isDeleteItem;
     isDeleteTag;
     isError = true;
-    message;
     isApprov = false;
 
     constructor() {
