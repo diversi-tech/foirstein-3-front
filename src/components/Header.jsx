@@ -130,6 +130,6 @@ const Header = observer(() => {;
       </Container>
     </AppBar>
   );
-}
+})
 
 export default Header;

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Tooltip from '@mui/material/Tooltip';
 import DialogContentText from "@mui/material/DialogContentText";
-import Grid from '@mui/system/Unstable_Grid/Grid';
+// import Grid from '@mui/system/Unstable_Grid/Grid';
 import BeenhereOutlinedIcon from '@mui/icons-material/BeenhereOutlined';
 import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+// import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import {
   Paper,
   TableRow,
@@ -40,21 +40,33 @@ function Request(props) {
   const [detailRequest, setDetailRequest] = useState(null);
   const [open, setOpen] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchRequest = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${baseUrl}BorrowApprovalRequest/details/${request.requestId}`
+  //       );
+  //       let data = await res.json();
+  //       const _detailRequest = extractRawData(data);
+  //       setDetailRequest(_detailRequest);
+  //     } catch (error) {
+  //       console.error("Failed to fetch data:", error);
+  //       alert('אירעה שגיאה בעת טעינת הנתונים');
+  //     }
+  //   };
+  //   fetchRequest();
+  // }, [request.requestId]);
+
   useEffect(() => {
-    const fetchRequest = async () => {
+    const getRequestDetails = async () => {
       try {
-        const res = await fetch(
-          `${baseUrl}BorrowApprovalRequest/details/${request.requestId}`
-        );
-        let data = await res.json();
-        const _detailRequest = extractRawData(data);
+        const _detailRequest = await requestStore.d(request.requestId);
         setDetailRequest(_detailRequest);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
-        alert('אירעה שגיאה בעת טעינת הנתונים');
+        // Handle error if needed
       }
     };
-    fetchRequest();
+    getRequestDetails();
   }, [request.requestId]);
 
   return (
@@ -254,6 +266,7 @@ function AlertDialog({ option, requestId, color}) {
 AlertDialog.propTypes = {
   option: PropTypes.string.isRequired,
   requestId: PropTypes.number.isRequired,
+  color:PropTypes.string.isRequired
 };
 DetailRequest.propTypes = {
   detailRequest: PropTypes.shape({

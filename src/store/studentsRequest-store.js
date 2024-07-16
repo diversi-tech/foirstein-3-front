@@ -33,31 +33,15 @@ class StudentsRequestStore {
 
       runInAction(() => {
         this.requestList = this.extractRawData(data);
-<<<<<<< HEAD
-=======
-        // debugger
->>>>>>> master
-      });
+ });
     } catch (error) {
       console.error("Failed to fetch request:", error);
     }
   }
 
-  get getRequest() {
-<<<<<<< HEAD
-=======
-    // debugger
->>>>>>> master
-    return this.requestList;
+  get getRequest() { return this.requestList;
   }
-  //פונקציה שמחלצת מהפרוקסי
-  extractRawData(proxyObject) {
-    if (proxyObject && proxyObject.data) {
-      return proxyObject.data;
-    } else {
-      return proxyObject;
-    }
-  }
+  
   //עדכון שהבקשה אושרה
   async updateApproveRequest(requestId) {
     try {
@@ -140,7 +124,26 @@ class StudentsRequestStore {
       console.error("Failed to fetch request:", error);
     }
   }
+  async getById(requestId) {
+    try {
+      const res = await fetch(`${baseUrl}BorrowApprovalRequest/details/${requestId}`);
+      let data = await res.json();
+      return extractRawData(data);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      alert('אירעה שגיאה בעת טעינת הנתונים');
+      throw error;
+    }
+  };
 }
 
 const requestStore = new StudentsRequestStore();
 export default requestStore;
+//פונקציה שמחלצת מהפרוקסי
+extractRawData(proxyObject) {
+  if (proxyObject && proxyObject.data) {
+    return proxyObject.data;
+  } else {
+    return proxyObject;
+  }
+}
