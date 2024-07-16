@@ -105,9 +105,15 @@ const TagList = observer(() => {
       <Grid item xs={12} md={8} lg={6}>
         <Paper elevation={3}>
           <Box padding={2}>
-            <Typography variant="h5" component="h2" align="center" gutterBottom>
+            {/* <Typography variant="h5" component="h2" align="center" gutterBottom>
               -תגים-
-            </Typography>
+            </Typography> */}
+            <Box textAlign="center" marginTop={3}>
+              <Button variant="contained" color="primary" onClick={tagAdd}>
+                <AddCircleOutlineIcon />
+                יצירת תג חדש
+              </Button>
+            </Box>
             <TableContainer style={{ maxHeight: 450, overflow: "auto" }}>
               <Table aria-label="תגים">
                 <TableBody>
@@ -146,12 +152,6 @@ const TagList = observer(() => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <Box textAlign="center" marginTop={3}>
-              <Button variant="contained" color="primary" onClick={tagAdd}>
-                <AddCircleOutlineIcon />
-                יצירת תג חדש
-              </Button>
-            </Box>
           </Box>
         </Paper>
       </Grid>

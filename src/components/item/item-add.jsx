@@ -57,7 +57,7 @@ const ItemDdd = observer(() => {
         description: '',
         category: '',
         author: '',
-        year: '',
+        publishingYear: '',
         tag: [],
         filePath: '',
     });
@@ -73,7 +73,7 @@ const ItemDdd = observer(() => {
             description: '',
             category: '',
             author: '',
-            year: '',
+            publishingYear: '',
             tag: [],
             filePath: '',
         });
@@ -140,7 +140,7 @@ const ItemDdd = observer(() => {
             formData.description.length >= 5 &&
             formData.category.length >= 3 &&
             formData.author.length >= 3 &&
-            formData.year.length >= 4 &&
+            formData.publishingYear.length >= 4 &&
             formData.tag.length > 0 &&
             (selectedValue === 'book' ||
                 (selectedValue === 'file' &&
@@ -180,7 +180,7 @@ const ItemDdd = observer(() => {
                 description: '',
                 category: '',
                 author: '',
-                year: '',
+                publishingYear: '',
                 tag: [],
                 filePath: '',
             });
@@ -295,24 +295,23 @@ const ItemDdd = observer(() => {
                                     )}
                                 </FormControl>
                             </Grid> 
-                            {selectedValue === 'book' && (
-
+                         {selectedValue === 'book' && (
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        id="yearId"
+                                        id="publishingYearId"
                                         label="שנת הוצאה"
                                         variant="outlined"
-                                        name="year"
-                                        value={formData.year}
+                                        name="publishingYear"
+                                        value={formData.publishingYear}
                                         onChange={handleChange}
-                                        required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, year: true }))}
+                                        // required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
                                     />
-                                    {touchedFields.year && !formData.year && (
+                                    {touchedFields.publishingYear && !formData.publishingYear && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.year && formData.year.length < 4 && (
+                                    {formData.publishingYear && formData.publishingYear.length < 4 && (
                                         <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
                                     )}
                                 </FormControl>
@@ -394,7 +393,7 @@ const ItemDdd = observer(() => {
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} disabled={!isFormValid}>העלאה</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} >העלאה</Button>
                     <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
                 {isUpload && (
