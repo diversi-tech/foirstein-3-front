@@ -8,7 +8,7 @@ import ItemDdd from "./components/item/item-add";
 import TagList from "./components/tag/tag-list";
 import TagAdd from "./components/tag/tag-add";
 import ImageHomePage from "./components/homePage"
-import Header from './components/Header'
+// import Header from './components/Header'
 import Footer from "./components/footer";
 import PendingItems from "./components/pendingItemsList/pendingItems";
 // import { RiH1 } from "react-icons/ri";
@@ -17,7 +17,7 @@ import { Box } from '@mui/material';
 export default function AppRoutes() {
   return (
     <HashRouter>
-      <Header />
+      {/* <Header /> */}
       <Routes>
         <Route path="/" element={<div> <ImageHomePage /> </div>} />
         <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList /></Box>} />

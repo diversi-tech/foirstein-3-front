@@ -11,7 +11,6 @@ class ItemStore {
     isDeleteItem;
     isDeleteTag;
     isError = true;
-    message = "נכשל";
     isApprov = false;
 
     constructor() {
@@ -48,7 +47,7 @@ class ItemStore {
             console.log("delete tag:");
             if (res.status === 200) {
                 this.isDeleteTag = true;
-                this.message = " נמחק בהצלחה! ✅"
+                this.message = " נמחק בהצלחה ✅"
 
             }
             else {
@@ -138,7 +137,7 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isError = false;
-                this.message = "הועלה בהצלחה! ✅"
+                this.message = "הועלה בהצלחה ✅"
             } else {
                 this.isError = true;
                 this.message = "העלאה נכשלה"
@@ -158,7 +157,7 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isError = false;
-                this.message = "הועלה בהצלחה! ✅"
+                this.message = "הועלה בהצלחה ✅"
             } else {
                 this.isError = true;
                 this.message = "העלאה נכשלה"
@@ -180,7 +179,7 @@ class ItemStore {
             if (res.status === 200) {
 
                 this.isDeleteItem = true;
-                this.message = " נמחק בהצלחה! ✅"
+                this.message = " נמחק בהצלחה ✅"
 
             }
             else {
@@ -207,7 +206,7 @@ class ItemStore {
 
             if (res.status === 200) {
                 this.isUpdate = true;
-                this.message = "  הספר  עודכן בהצלחה! ✅";
+                this.message = "  הספר  עודכן בהצלחה ✅";
             }
             else {
                 this.isUpdate = false;
@@ -231,7 +230,7 @@ class ItemStore {
 
             if (res.status === 200) {
                 this.isUpdate = true;
-                this.message = "  הקובץ  עודכן בהצלחה! ✅";
+                this.message = "  הקובץ  עודכן בהצלחה ✅";
             }
             else {
                 this.isUpdate = false;
