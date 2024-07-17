@@ -154,6 +154,7 @@ const ItemList = observer(() => {
     };
 
   const handleClickAdd = () => {
+    handleConfirmBulkDelete();
     itemStore.add = true;
   };
 
@@ -185,6 +186,7 @@ const ItemList = observer(() => {
 
   const handleDeleteSelectedItems = async () => {
     setDeleteOpen(true); // Open confirmation dialog for bulk delete
+    handleConfirmBulkDelete();
     setDeleteMultieItems(true);
   };
 
@@ -209,7 +211,6 @@ const ItemList = observer(() => {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                    
                 })
             }
             if(result.isDenied){
@@ -219,7 +220,7 @@ const ItemList = observer(() => {
                     icon: "info",
                     showConfirmButton: false,
                     timer: 1500
-                  });
+                });
             }
           });
         if (selectedItems.length > 1) {
@@ -233,9 +234,9 @@ const ItemList = observer(() => {
                 console.error('Error deleting selected items:', error);
             }
         }
-        // else {
-        //     deletee();
-        // } 
+        else {
+            deletee();
+        } 
     };
 
     const handleSearch = (searchTerm) => {
