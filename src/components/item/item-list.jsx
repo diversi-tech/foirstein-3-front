@@ -3,44 +3,46 @@ import { observer } from "mobx-react-lite";
 import itemStore from "../../store/item-store";
 import ItemSearch from "./item-search";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Button,
-    useMediaQuery,
-    useTheme,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    Chip,
-    Stack,
-    Checkbox,
-    Grid,
-    Tooltip,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ItemEdit from './item-edit';
-import tagStore from '../../store/tag-store';
-import ItemAdd from './item-add';
-import Swal from 'sweetalert2'
-import { styled } from '@mui/material/styles';
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  useMediaQuery,
+  useTheme,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Chip,
+  Stack,
+  Checkbox,
+  Grid,
+  Tooltip,
+  PaginationItem
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ItemEdit from "./item-edit";
+import tagStore from "../../store/tag-store";
+import ItemAdd from "./item-add";
+import Swal from "sweetalert2";
+import { styled } from "@mui/material/styles";
 import { blue, pink } from "@mui/material/colors";
-import './item.css';
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import "./item.css";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
+import Pagination from "@mui/material/Pagination"; // Import Pagination
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const useStyles = styled((theme) => ({
   title: {
@@ -93,7 +95,8 @@ const ItemList = observer(() => {
   const [deleteTagOpen, setDeleteTagOpen] = useState(false);
   const [deleteMultieItems, setDeleteMultieItems] = useState(false);
   const [filterType, setFilterType] = useState("all");
-
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
 
   useEffect(() => {
     itemStore.fetchMedia();
@@ -103,55 +106,52 @@ const ItemList = observer(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
 
-
   const handleDelete = (item) => {
-        handleConfirmBulkDelete();  
-        setDeleteItem(item);
-        setDeleteOpen(true);
-    };
+    handleConfirmBulkDelete();
+    setDeleteItem(item);
+    setDeleteOpen(true);
+  };
 
-    const handleDeleteTag = (item, tag) => {
-        deletee();
-        setDeleteTag(tag);
-        setDeleteItem(item);
-        setDeleteTagOpen(true);
-    };
+  const handleDeleteTag = (item, tag) => {
+    deletee();
+    setDeleteTag(tag);
+    setDeleteItem(item);
+    setDeleteTagOpen(true);
+  };
 
-    const deletee = async () => {
+  const deletee = async () => {
+    Swal.fire({
+      title: "האם אתה בטוח שברצונך למחוק את התג",
+      text: "התג יימחק",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+        setDeleteOpen(false);
         Swal.fire({
-            title: "האם אתה בטוח שברצונך למחוק את התג",
-            text: "התג יימחק",
-            icon: "warning",
-            // showCancelButton: true,
-            showDenyButton: true,
-            denyButtonText: `ביטול`,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "כן, מחק"
-          }).then( async (result) => {
-            if (result.isConfirmed) {
-                await itemStore.deleteTag(deleteItem.id, deleteTag.id);
-                setDeleteOpen(false);
-                // setSend(true);
-              Swal.fire({
-                title: "נמחק בהצלחה",
-                text: "התג נמחק בהצלחה",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500
-              });
-            }
-            if(result.isDenied){
-                Swal.fire({
-                    title: "בוטל",
-                    text: "התג לא נמחק",
-                    icon: "info",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-          });
-    };
+          title: "נמחק בהצלחה",
+          text: "התג נמחק בהצלחה",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+      if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "התג לא נמחק",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
 
   const handleClickAdd = () => {
     itemStore.add = true;
@@ -188,78 +188,77 @@ const ItemList = observer(() => {
     setDeleteMultieItems(true);
   };
 
-    const handleConfirmBulkDelete = async () => {
-        Swal.fire({
-            title: "האם אתה בטוח שברצונך למחוק",
-            text: "לא תוכל לשחזר",
-            icon: "warning",
-            showDenyButton: true,
-            denyButtonText: `ביטול`,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "כן, מחק"
-          }).then(async(result) => {
-            if (result.isConfirmed) {
-                await itemStore.deleteMedia(deleteItem.id).then((res)=>{
-                  
-                        Swal.fire({
-                            title: "נמחק בהצלחה",
-                            text: "הפריט נמחק בהצלחה",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    
-                })
-            }
-            if(result.isDenied){
-                Swal.fire({
-                    title: "בוטל",
-                    text: "הפריט לא נמחק",
-                    icon: "info",
-                    showConfirmButton: false,
-                    timer: 1500
-                  });
-            }
+  const handleConfirmBulkDelete = async () => {
+    Swal.fire({
+      title: "האם אתה בטוח שברצונך למחוק",
+      text: "לא תוכל לשחזר",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await itemStore.deleteMedia(deleteItem.id).then((res) => {
+          Swal.fire({
+            title: "נמחק בהצלחה",
+            text: "הפריט נמחק בהצלחה",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
           });
-        if (selectedItems.length > 1) {
-            try {
-                await Promise.all(selectedItems.map(async (itemId) => {
-                    await itemStore.deleteMedia(itemId);
-                }));
-                setSendItem(true);
-                setSelectedItems([]);
-            } catch (error) {
-                console.error('Error deleting selected items:', error);
-            }
-        }
-        // else {
-        //     deletee();
-        // } 
-    };
+        });
+      }
+      if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "הפריט לא נמחק",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+    if (selectedItems.length > 1) {
+      try {
+        await Promise.all(
+          selectedItems.map(async (itemId) => {
+            await itemStore.deleteMedia(itemId);
+          })
+        );
+        setSendItem(true);
+        setSelectedItems([]);
+      } catch (error) {
+        console.error("Error deleting selected items:", error);
+      }
+    }
+  };
 
-    const handleSearch = (searchTerm) => {
-        const filtered = itemStore.mediaList.filter((item) =>
-            item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleSearch = (searchTerm) => {
+    const filtered = itemStore.mediaList.filter((item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredItems(filterItems(filtered));
   };
 
   const filterItems = (items) => {
     if (filterType === "all") {
-        console.log(items);
       return items;
     }
-    if(filterType=="book"){
-        console.log("book");
-
-        return items.filter((item)=>!item.filePath.includes("https"))
+    if (filterType === "book") {
+      return items.filter((item) => !item.filePath.includes("https"));
     }
-    console.log("file");
-    const y1=items.filter((item)=>item.filePath.includes("https"));
-    console.log(y1);
-    return items.filter((item)=>item.filePath.includes("https"));
+    return items.filter((item) => item.filePath.includes("https"));
   };
+
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentItems = filteredItems.slice(startIndex, endIndex);
 
   return (
     <>
@@ -270,19 +269,15 @@ const ItemList = observer(() => {
           aria-label="filter-type"
           name="filter-type"
           value={filterType}
-          onChange={(e) => {
-            // if(e.target.value=="book"){
-                
-            // }
-            setFilterType(e.target.value)}}
-            style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",  
-                justifyContent: "center", 
-                margin: "10px 0",
-                width: "100%",
-              }}
+          onChange={(e) => setFilterType(e.target.value)}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "10px 0",
+            width: "100%",
+          }}
         >
           <FormControlLabel value="all" control={<Radio />} label="הכל" />
           <FormControlLabel value="book" control={<Radio />} label="ספרים" />
@@ -291,10 +286,7 @@ const ItemList = observer(() => {
 
         <Grid container justifyContent="center">
           <Grid item xs={12}>
-            <TableContainer
-              component={Paper}
-              className={classes.tableContainer}
-            >
+            <TableContainer component={Paper} className={classes.tableContainer}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -318,8 +310,7 @@ const ItemList = observer(() => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
-                    </TableCell>
+                    <TableCell align="right" className={classes.headerCell}></TableCell>
                     <TableCell align="right" className={classes.headerCell}>
                       כותרת
                     </TableCell>
@@ -370,7 +361,7 @@ const ItemList = observer(() => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredItems.map((item) => (
+                  {currentItems.map((item) => (
                     <TableRow key={item.id} className={classes.tableRow}>
                       <TableCell align="right" className={classes.tableCell}>
                         <Checkbox
@@ -380,12 +371,12 @@ const ItemList = observer(() => {
                         />
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} >
-                          <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
+                        <TableCell align="center" className={classes.tableCell}>
+                          <MenuBookRoundedIcon sx={{ color: "#468585" }} />
                         </TableCell>
                       ) : (
                         <TableCell align="center" className={classes.tableCell}>
-                         <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
+                          <TextSnippetOutlinedIcon sx={{ color: "#468585" }} />
                         </TableCell>
                       )}
                       <TableCell align="right" className={classes.tableCell}>
@@ -394,14 +385,14 @@ const ItemList = observer(() => {
                       <TableCell align="right" className={classes.tableCell}>
                         {item.description}
                       </TableCell>
-                      <TableCell align="rifht" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell}>
                         {item.category}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell}>
                         {item.author}
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} color="info">
+                        <TableCell align="center" className={classes.tableCell}>
                           {item.publishingYear}
                         </TableCell>
                       ) : (
@@ -409,20 +400,12 @@ const ItemList = observer(() => {
                           --
                         </TableCell>
                       )}
-                      <TableCell
-                        align="right"
-                        className={classes.tableCell}
-                        style={{ color: item.isApproved ? "green" : "red" }}
-                      >
+                      <TableCell align="right" className={classes.tableCell} style={{ color: item.isApproved ? "green" : "red" }}>
                         {item.isApproved ? "מאושר" : "ממתין לאישור"}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell}>
                         {item.filePath.includes("https") ? (
-                          <a
-                            href={item.filePath}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                          <a href={item.filePath} target="_blank" rel="noopener noreferrer">
                             {item.filePath}
                           </a>
                         ) : (
@@ -471,6 +454,23 @@ const ItemList = observer(() => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+              >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(filteredItems.length / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
           </Grid>
         </Grid>
       </div>
