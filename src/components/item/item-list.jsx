@@ -3,44 +3,46 @@ import { observer } from "mobx-react-lite";
 import itemStore from "../../store/item-store";
 import ItemSearch from "./item-search";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    IconButton,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Button,
-    useMediaQuery,
-    useTheme,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    Chip,
-    Stack,
-    Checkbox,
-    Grid,
-    Tooltip,
-} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ItemEdit from './item-edit';
-import tagStore from '../../store/tag-store';
-import ItemAdd from './item-add';
-import Swal from 'sweetalert2'
-import { styled } from '@mui/material/styles';
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  useMediaQuery,
+  useTheme,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Chip,
+  Stack,
+  Checkbox,
+  Grid,
+  Tooltip,
+  PaginationItem
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ItemEdit from "./item-edit";
+import tagStore from "../../store/tag-store";
+import ItemAdd from "./item-add";
+import Swal from "sweetalert2";
+import { styled } from "@mui/material/styles";
 import { blue, pink } from "@mui/material/colors";
 import './item.css';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import "./item.css";
+import Pagination from "@mui/material/Pagination"; // Import Pagination
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const useStyles = styled((theme) => ({
   title: {
@@ -93,7 +95,8 @@ const ItemList = observer(() => {
   const [deleteTagOpen, setDeleteTagOpen] = useState(false);
   const [deleteMultieItems, setDeleteMultieItems] = useState(false);
   const [filterType, setFilterType] = useState("all");
-
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
 
   useEffect(() => {
     itemStore.fetchMedia();
@@ -102,7 +105,6 @@ const ItemList = observer(() => {
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
-
 
 const handleDelete = async (item) => {
   setDeleteItem(item);
@@ -285,6 +287,14 @@ const handleDeleteSelectedItems = async () => {
     return items.filter((item)=>item.filePath.includes("https"));
   };
 
+  const handleChangePage = (event, value) => {
+    setPage(value);
+  };
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentItems = filteredItems.slice(startIndex, endIndex);
+
   return (
     <>
       <div className="itemListDiv">
@@ -339,8 +349,7 @@ const handleDeleteSelectedItems = async () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
-                    </TableCell>
+                    <TableCell align="right" className={classes.headerCell}></TableCell>
                     <TableCell align="right" className={classes.headerCell}>
                       כותרת
                     </TableCell>
@@ -391,7 +400,7 @@ const handleDeleteSelectedItems = async () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredItems.map((item) => (
+                  {currentItems.map((item) => (
                     <TableRow key={item.id} className={classes.tableRow}>
                       <TableCell align="right" className={classes.tableCell}>
                         <Checkbox
@@ -401,12 +410,12 @@ const handleDeleteSelectedItems = async () => {
                         />
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} >
-                          <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
+                        <TableCell align="center" className={classes.tableCell}>
+                          <MenuBookRoundedIcon sx={{ color: "#468585" }} />
                         </TableCell>
                       ) : (
                         <TableCell align="center" className={classes.tableCell}>
-                         <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
+                          <TextSnippetOutlinedIcon sx={{ color: "#468585" }} />
                         </TableCell>
                       )}
                       <TableCell align="right" className={classes.tableCell}>
@@ -415,14 +424,14 @@ const handleDeleteSelectedItems = async () => {
                       <TableCell align="right" className={classes.tableCell}>
                         {item.description}
                       </TableCell>
-                      <TableCell align="rifht" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell}>
                         {item.category}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell}>
                         {item.author}
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} color="info">
+                        <TableCell align="center" className={classes.tableCell}>
                           {item.publishingYear}
                         </TableCell>
                       ) : (
@@ -430,11 +439,7 @@ const handleDeleteSelectedItems = async () => {
                           --
                         </TableCell>
                       )}
-                      <TableCell
-                        align="right"
-                        className={classes.tableCell}
-                        style={{ color: item.isApproved ? "green" : "red" }}
-                      >
+                      <TableCell align="right" className={classes.tableCell} style={{ color: item.isApproved ? "green" : "red" }}>
                         {item.isApproved ? "מאושר" : "ממתין לאישור"}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell}>
@@ -445,6 +450,7 @@ const handleDeleteSelectedItems = async () => {
                             rel="noopener noreferrer"
                           >
                             {item.title}
+
                           </a>
                         ) : (
                           item.filePath
@@ -492,6 +498,23 @@ const handleDeleteSelectedItems = async () => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+              >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(filteredItems.length / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
           </Grid>
         </Grid>
       </div>
