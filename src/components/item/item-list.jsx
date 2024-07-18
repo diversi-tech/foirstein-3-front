@@ -41,11 +41,7 @@ import './item.css';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import "./item.css";
-import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import Pagination from "@mui/material/Pagination"; // Import Pagination
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const useStyles = styled((theme) => ({
