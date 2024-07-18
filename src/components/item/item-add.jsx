@@ -229,7 +229,7 @@ const ItemDdd = observer(() => {
     return (
         <>
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
-                <DialogTitle>{selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
+                <DialogTitle>העלאת פריט</DialogTitle>
                 <FormControl>
                     <RadioGroup
                         aria-label="upload-type"

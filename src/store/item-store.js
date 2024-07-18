@@ -32,7 +32,8 @@ class ItemStore {
             // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
-            deniedItem: action
+            deniedItem: action,
+            deleteMedia: action
         });
         this.fetchPendingItems();
         this.fetchMedia();
@@ -171,7 +172,7 @@ class ItemStore {
 
 
     async deleteMedia(mediaId) {
-        // console.log("hiiDeleteMedia!!!!!!!!");
+        console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`${baseURL}/${mediaId}`, {
                 method: 'DELETE'
@@ -179,12 +180,12 @@ class ItemStore {
             if (res.status === 200) {
 
                 this.isDeleteItem = true;
-                this.message = " נמחק בהצלחה ✅"
+                // this.message = " נמחק בהצלחה ✅"
 
             }
             else {
                 this.isDeleteItem = false;
-                this.message = "מחיקה נכשלה"
+                // this.message = "מחיקה נכשלה"
 
             }
             this.fetchMedia();

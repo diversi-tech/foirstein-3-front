@@ -104,57 +104,137 @@ const ItemList = observer(() => {
   }, [itemStore.mediaList, filterType]);
 
 
-  const handleDelete = (item) => {
-        handleConfirmBulkDelete();  
-        setDeleteItem(item);
-        setDeleteOpen(true);
-    };
+const handleDelete = async (item) => {
+  setDeleteItem(item);
+  Swal.fire({
+      title: "האם אתה בטוח שברצונך למחוק",
+      text: "לא תוכל לשחזר",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק"
+  }).then(async (result) => {
+      if (result.isConfirmed) {
+          try {
+              await itemStore.deleteMedia(item.id);
+              Swal.fire({
+                  title: "נמחק בהצלחה",
+                  text: "הפריט נמחק בהצלחה",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+              // עדכן את רשימת הפריטים אחרי מחיקה
+              itemStore.fetchMedia();
+          } catch (error) {
+              Swal.fire({
+                  title: "שגיאה",
+                  text: "התרחשה שגיאה בעת מחיקת הפריט",
+                  icon: "error",
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+              console.error("Error deleting item:", error);
+          }
+      } else if (result.isDenied) {
+          Swal.fire({
+              title: "בוטל",
+              text: "הפריט לא נמחק",
+              icon: "info",
+              showConfirmButton: false,
+              timer: 1500
+          });
+      }
+  });
+};
+
+const handleDeleteSelectedItems = async () => {
+  Swal.fire({
+      title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
+      text: "לא תוכל לשחזר אותם",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק"
+  }).then(async (result) => {
+      if (result.isConfirmed) {
+          try {
+              await Promise.all(selectedItems.map(async (itemId) => {
+                  await itemStore.deleteMedia(itemId);
+              }));
+              Swal.fire({
+                  title: "נמחק בהצלחה",
+                  text: "הפריטים נמחקו בהצלחה",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+              setSelectedItems([]);
+              itemStore.fetchMedia();
+          } catch (error) {
+              Swal.fire({
+                  title: "שגיאה",
+                  text: "התרחשה שגיאה בעת מחיקת הפריטים",
+                  icon: "error",
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+              console.error('Error deleting selected items:', error);
+          }
+      } else if (result.isDenied) {
+          Swal.fire({
+              title: "בוטל",
+              text: "הפריטים לא נמחקו",
+              icon: "info",
+              showConfirmButton: false,
+              timer: 1500
+          });
+      }
+  });
+};
+
+
 
     const handleDeleteTag = (item, tag) => {
-        deletee();
-        setDeleteTag(tag);
-        setDeleteItem(item);
-        setDeleteTagOpen(true);
-    };
-
-    const deletee = async () => {
-        Swal.fire({
-            title: "האם אתה בטוח שברצונך למחוק את התג",
-            text: "התג יימחק",
-            icon: "warning",
-            // showCancelButton: true,
-            showDenyButton: true,
-            denyButtonText: `ביטול`,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "כן, מחק"
-          }).then( async (result) => {
-            if (result.isConfirmed) {
-                await itemStore.deleteTag(deleteItem.id, deleteTag.id);
-                setDeleteOpen(false);
-                // setSend(true);
+      setDeleteTag(tag);
+      setDeleteItem(item);
+      Swal.fire({
+          title: "האם אתה בטוח שברצונך למחוק את התג",
+          text: "התג יימחק",
+          icon: "warning",
+          showDenyButton: true,
+          denyButtonText: `ביטול`,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "כן, מחק"
+      }).then(async (result) => {
+          if (result.isConfirmed) {
+              await itemStore.deleteTag(item.id, tag.id);
+              setDeleteTagOpen(false);
               Swal.fire({
-                title: "נמחק בהצלחה",
-                text: "התג נמחק בהצלחה",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500
+                  title: "נמחק בהצלחה",
+                  text: "התג נמחק בהצלחה",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 1500
               });
-            }
-            if(result.isDenied){
-                Swal.fire({
-                    title: "בוטל",
-                    text: "התג לא נמחק",
-                    icon: "info",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-          });
-    };
+          } else if (result.isDenied) {
+              Swal.fire({
+                  title: "בוטל",
+                  text: "התג לא נמחק",
+                  icon: "info",
+                  showConfirmButton: false,
+                  timer: 1500
+              });
+          }
+      });
+  };
 
   const handleClickAdd = () => {
-    handleConfirmBulkDelete();
     itemStore.add = true;
   };
 
@@ -183,61 +263,6 @@ const ItemList = observer(() => {
       }
     });
   };
-
-  const handleDeleteSelectedItems = async () => {
-    setDeleteOpen(true); // Open confirmation dialog for bulk delete
-    handleConfirmBulkDelete();
-    setDeleteMultieItems(true);
-  };
-
-    const handleConfirmBulkDelete = async () => {
-        Swal.fire({
-            title: "האם אתה בטוח שברצונך למחוק",
-            text: "לא תוכל לשחזר",
-            icon: "warning",
-            showDenyButton: true,
-            denyButtonText: `ביטול`,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "כן, מחק"
-          }).then(async(result) => {
-            if (result.isConfirmed) {
-                await itemStore.deleteMedia(deleteItem.id).then((res)=>{
-                  
-                        Swal.fire({
-                            title: "נמחק בהצלחה",
-                            text: "הפריט נמחק בהצלחה",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                })
-            }
-            if(result.isDenied){
-                Swal.fire({
-                    title: "בוטל",
-                    text: "הפריט לא נמחק",
-                    icon: "info",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-          });
-        if (selectedItems.length > 1) {
-            try {
-                await Promise.all(selectedItems.map(async (itemId) => {
-                    await itemStore.deleteMedia(itemId);
-                }));
-                setSendItem(true);
-                setSelectedItems([]);
-            } catch (error) {
-                console.error('Error deleting selected items:', error);
-            }
-        }
-        else {
-            deletee();
-        } 
-    };
 
     const handleSearch = (searchTerm) => {
         const filtered = itemStore.mediaList.filter((item) =>
@@ -424,7 +449,7 @@ const ItemList = observer(() => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {item.filePath}
+                            {item.title}
                           </a>
                         ) : (
                           item.filePath

@@ -147,10 +147,10 @@ export default function ItemEdit({ mediaItem, onClose }) {
     });
   };  
 
-  const checkLink = () =>{
+  const checkLink = () => {
     const filePath = formData.filePath;
-    setLink( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
-  }
+    setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
+  };
     
   return (
     <Dialog
@@ -216,7 +216,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-          {!link &&
+          {!formData.filePath.includes('https') &&
            <TextField
            margin="dense"
            label="שנת הוצאה"
