@@ -176,22 +176,16 @@ const ItemDdd = observer(() => {
           if (result.isConfirmed) {
             if (selectedValue === 'file') {
                 await itemStore.uploadMediaFile(formDataToSend);
-                Swal.fire({
-                    icon: "success",
-                    title: "הפריט נשמר בהצלחה",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
             }
             else {
                  await itemStore.uploadMediaBook(formDataToSend); 
-               Swal.fire({
+            }
+            Swal.fire({
                 icon: "success",
                 title: "הפריט נשמר בהצלחה",
                 showConfirmButton: false,
                 timer: 1500
             });
-            }
         }   
            else if (result.isDenied) {
             Swal.fire({
@@ -202,7 +196,6 @@ const ItemDdd = observer(() => {
             });
           }
           else{
-
               Swal.fire({
                   icon: "error",
                   title: "אופס... תקלה בעת שמירת הפריט",
@@ -283,6 +276,9 @@ const ItemDdd = observer(() => {
                                     {formData.description && formData.description.length < 5 && (
                                         <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
                                     )}
+                                    {formData.description === formData.title && formData.title != '' &&(
+                                        <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
+                                    )}
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}>
@@ -335,14 +331,15 @@ const ItemDdd = observer(() => {
                                         name="publishingYear"
                                         value={formData.publishingYear}
                                         onChange={handleChange}
-                                        // required
+                                        inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+                                        required
                                         onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
                                     />
                                     {touchedFields.publishingYear && !formData.publishingYear && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                        <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                    {touchedFields.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
+                                       <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
                                     )}
                                 </FormControl>
                             </Grid>
