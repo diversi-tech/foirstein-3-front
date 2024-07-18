@@ -37,6 +37,10 @@ import ItemAdd from "./item-add";
 import Swal from "sweetalert2";
 import { styled } from "@mui/material/styles";
 import { blue, pink } from "@mui/material/colors";
+import './item.css';
+import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
+import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import "./item.css";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
@@ -154,6 +158,7 @@ const ItemList = observer(() => {
   };
 
   const handleClickAdd = () => {
+    handleConfirmBulkDelete();
     itemStore.add = true;
   };
 
@@ -185,6 +190,7 @@ const ItemList = observer(() => {
 
   const handleDeleteSelectedItems = async () => {
     setDeleteOpen(true); // Open confirmation dialog for bulk delete
+    handleConfirmBulkDelete();
     setDeleteMultieItems(true);
   };
 
@@ -217,7 +223,7 @@ const ItemList = observer(() => {
           icon: "info",
           showConfirmButton: false,
           timer: 1500,
-        });
+                  });
       }
     });
     if (selectedItems.length > 1) {
@@ -233,6 +239,9 @@ const ItemList = observer(() => {
         console.error("Error deleting selected items:", error);
       }
     }
+        // else {
+        //     deletee();
+        // } 
   };
 
   const handleSearch = (searchTerm) => {
@@ -244,12 +253,18 @@ const ItemList = observer(() => {
 
   const filterItems = (items) => {
     if (filterType === "all") {
+        console.log(items);
       return items;
     }
-    if (filterType === "book") {
-      return items.filter((item) => !item.filePath.includes("https"));
+    if(filterType=="book"){
+        console.log("book");
+
+        return items.filter((item)=>!item.filePath.includes("https"))
     }
-    return items.filter((item) => item.filePath.includes("https"));
+    console.log("file");
+    const y1=items.filter((item)=>item.filePath.includes("https"));
+    console.log(y1);
+    return items.filter((item)=>item.filePath.includes("https"));
   };
 
   const handleChangePage = (event, value) => {
@@ -269,15 +284,19 @@ const ItemList = observer(() => {
           aria-label="filter-type"
           name="filter-type"
           value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "10px 0",
-            width: "100%",
-          }}
+          onChange={(e) => {
+            // if(e.target.value=="book"){
+                
+            // }
+            setFilterType(e.target.value)}}
+            style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",  
+                justifyContent: "center", 
+                margin: "10px 0",
+                width: "100%",
+              }}
         >
           <FormControlLabel value="all" control={<Radio />} label="הכל" />
           <FormControlLabel value="book" control={<Radio />} label="ספרים" />
@@ -286,7 +305,10 @@ const ItemList = observer(() => {
 
         <Grid container justifyContent="center">
           <Grid item xs={12}>
-            <TableContainer component={Paper} className={classes.tableContainer}>
+            <TableContainer
+              component={Paper}
+              className={classes.tableContainer}
+            >
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
