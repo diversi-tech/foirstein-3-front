@@ -24,8 +24,7 @@ import {
     ListItemText
 } from '@mui/material';
 import itemStore from '../../store/item-store';
-import Success from '../message/success';
-import Failure from '../message/failure';
+import Swal from 'sweetalert2'
 import tagStore from '../../store/tag-store';
 import { useTheme } from '@mui/material/styles';
 
@@ -155,7 +154,6 @@ const ItemDdd = observer(() => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const dataToSend = { ...formData };
-
         const formDataToSend = new FormData();
         for (const key in dataToSend) {
             if (key === 'tag') {
@@ -168,13 +166,51 @@ const ItemDdd = observer(() => {
                 formDataToSend.append(key, dataToSend[key]);
             }
         }
-
-        try {
+        handleClose();
+        Swal.fire({
+          title: "?האם ברצונך לשמור את הפריט",
+          showDenyButton: true,
+          confirmButtonText: "אישור",
+          denyButtonText: `ביטול`
+        }).then(async(result) => {
+          if (result.isConfirmed) {
             if (selectedValue === 'file') {
                 await itemStore.uploadMediaFile(formDataToSend);
+                Swal.fire({
+                    icon: "success",
+                    title: "הפריט נשמר בהצלחה",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
-            else { await itemStore.uploadMediaBook(formDataToSend); }
+            else {
+                 await itemStore.uploadMediaBook(formDataToSend); 
+               Swal.fire({
+                icon: "success",
+                title: "הפריט נשמר בהצלחה",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            }
+        }   
+           else if (result.isDenied) {
+            Swal.fire({
+              icon: "info",
+              title: "הפריט לא נשמר",
+              showConfirmButton: false,
+              timer: 1500
+            });
+          }
+          else{
 
+              Swal.fire({
+                  icon: "error",
+                  title: "אופס... תקלה בעת שמירת הפריט",
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+            }
+        });
             setFormData({
                 title: '',
                 description: '',
@@ -184,22 +220,16 @@ const ItemDdd = observer(() => {
                 tag: [],
                 filePath: '',
             });
-
             setIsHndleUpload(true);
             setSelectedValue('');
             setIsUpload(true);
-            handleClose();
-        } 
-       
-        catch (error) {
-            console.error('Failed to upload media:', error);
+            // handleClose();
         }
-    };
-
+    
     return (
         <>
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
-                <DialogTitle>{selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
+                <DialogTitle>העלאת פריט</DialogTitle>
                 <FormControl>
                     <RadioGroup
                         aria-label="upload-type"
@@ -396,14 +426,15 @@ const ItemDdd = observer(() => {
                     <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} >העלאה</Button>
                     <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
-                {isUpload && (
+                {/* {isUpload && (
                     <>
                         {itemStore.isError ? <Failure /> : <Success />}
                     </>
-                )}
+                )} */}
             </Dialog>
         </>
     );
 });
+
 
 export default ItemDdd;
