@@ -18,9 +18,9 @@ export default function Footer() {
         padding: '10px 0',
       }}
     >
-      <Typography variant="body2" color="textSecondary" align="center">
+      {/* <Typography variant="body2" color="textSecondary" align="center">
       מרחבית - הספרייה הפדגוגית של בית יעקב <CopyrightIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle' }} />
-      </Typography>
+      </Typography> */}
     </Box>
   );
 }

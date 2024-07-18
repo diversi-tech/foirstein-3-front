@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
-import Success from '../message/success';
-import Failure from '../message/failure';
+import Swal from 'sweetalert2'
 import {
   TextField, Button, Dialog, DialogActions, DialogContent,
   DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
@@ -36,6 +34,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [updateSuccess, setUpdateSuccess] = useState(null);
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
+  const [res, setRes] = useState(false);
 
   useEffect(() => {
     checkLink();
@@ -103,27 +102,56 @@ export default function ItemEdit({ mediaItem, onClose }) {
     } else {
       formDataToSend.append('filePath', formData.filePath); // Use existing filePath
     } 
-    try {
-      if (link) {
-         await itemStore.updateMediaFile(formData.id, formDataToSend);
-      } else {
-         await itemStore.updateMediaBook(formData.id, formDataToSend);
+    onClose();
+    Swal.fire({
+      title: "?האם ברצונך לעדכן את הנתונים",
+      showDenyButton: true,
+      confirmButtonText: "אישור",
+      denyButtonText: `ביטול`
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        if (link) {
+        await itemStore.updateMediaFile(formData.id, formDataToSend);
+           Swal.fire({
+            icon: "success",
+            title: "השינויים נשמרו בהצלחה",
+            showConfirmButton: false,
+            timer: 1500
+          });
       }
-      console.log("res ", send);
-      setTimeout(() => {
-        onClose();
-      }, 1000);
-    } catch (error) {
-      console.error('Error updating media:', error);
-    }
+       else {
+         await itemStore.updateMediaBook(formData.id, formDataToSend);
+          Swal.fire({
+            icon: "success",
+            title: "השינויים נשמרו בהצלחה",
+            showConfirmButton: false,
+            timer: 1500
+          });
+      }    
+      }
+       else if (result.isDenied) {
+        Swal.fire({
+          icon: "info",
+          title: "לא נשמרו שינויים",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+      else
+      Swal.fire({
+        icon: "error",
+        title: "אופס... תקלה בעת שמירת השינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    });
   };  
 
-  const checkLink = () =>{
+  const checkLink = () => {
     const filePath = formData.filePath;
-    console.log(filePath);
-    setLink( filePath.includes('https')|| filePath.includes('pdf')|| filePath.includes('jpg')|| filePath.includes('jpeg')|| filePath.includes('png')|| filePath.includes('zip')|| filePath.includes('mp3')|| filePath.includes('mp4')|| filePath.includes('docx'))
-  }
-
+    setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
+  };
+    
   return (
     <Dialog
       open={openI}
@@ -149,6 +177,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.title && formData.title.length < 2 && (
             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
           )}
+          
           <TextField
             margin="dense"
             label="תיאור"
@@ -162,6 +191,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
+           {formData.description === formData.title  &&(
+            <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
+           )}
           <TextField
             margin="dense"
             label="קטגוריה"
@@ -188,15 +220,16 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-          {!link &&
+          {!formData.filePath.includes('https') &&
            <TextField
            margin="dense"
            label="שנת הוצאה"
            type="text"
            fullWidth
            name="publishingYear"
-           value={formData.publishingYear}
+           value={formData.publishingYear || ""}
            onChange={handleChange}
+           inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
            required
            />
           }
@@ -254,10 +287,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
           <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} onClick={()=>{setSend(true)}} disabled={!isFormValid}>
+          <Button type="submit" style={{ color: '#468585' }} >
             שמירה
           </Button>
-          {send && (itemStore.isUpdate ? <Success /> : <Failure />)}
         </DialogActions>
       </form>
     </Dialog>
