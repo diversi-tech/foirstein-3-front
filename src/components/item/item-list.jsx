@@ -197,8 +197,6 @@ const handleDeleteSelectedItems = async () => {
   });
 };
 
-
-
     const handleDeleteTag = (item, tag) => {
       setDeleteTag(tag);
       setDeleteItem(item);
@@ -297,9 +295,6 @@ const handleDeleteSelectedItems = async () => {
           name="filter-type"
           value={filterType}
           onChange={(e) => {
-            // if(e.target.value=="book"){
-                
-            // }
             setFilterType(e.target.value)}}
             style={{
                 display: "flex",
