@@ -529,12 +529,11 @@ const ItemList = observer(() => {
                 <ItemSearch onSearch={handleSearch} /> 
                 <Grid container justifyContent="center">
                     <Grid item xs={12}>
-                        <TableContainer component={Paper} className={classes.tableContainer}>
+                        <TableContainer component={Paper} >
                             <Table stickyHeader >
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell align="center" className={classes.headerCell}
-                                        >
+                                        <TableCell align="center">
                                             <Checkbox
                                                 indeterminate={selectedItems.length > 0 && selectedItems.length < itemStore.mediaList.length}
                                                 checked={selectedItems.length === itemStore.mediaList.length}
@@ -547,35 +546,35 @@ const ItemList = observer(() => {
                                                 }}
                                             />
                                         </TableCell>
-                                        <TableCell align="center"className={classes.headerCell}>
+                                        <TableCell align="center">
                                         כותרת
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center">
                                         תיאור
                                     </TableCell>
-                                    <TableCell align="center"className={classes.headerCell}>
+                                    <TableCell align="center">
                                         קטגוריה
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center">
                                         מחבר
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center" >
                                         שנת הוצאה
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center">
                                         סטטוס
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center" >
                                         מדף/קובץ
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center" >
                                         פעולה
                                     </TableCell>
-                                    <TableCell align="center" className={classes.headerCell}>
+                                    <TableCell align="center" >
                                         תגית
                                     </TableCell>
-                                        <TableCell className={classes.headerCell}>
-                                            <Button onClick={selectedItems.length > 0 ? handleDeleteSelectedItems : handleClickAdd} className={classes.addButton}>
+                                        <TableCell >
+                                            <Button onClick={selectedItems.length > 0 ? handleDeleteSelectedItems : handleClickAdd} >
                                                 {selectedItems.length > 0 ? (
                                                     <Tooltip title="למחיקת פריטים מרובים">
                                                         <DeleteIcon />
@@ -592,28 +591,28 @@ const ItemList = observer(() => {
                                 </TableHead>
                                 <TableBody>
                                 {filteredItems.map((item) => (
-                                        <TableRow key={item.id} className={classes.tableRow}>
-                                            <TableCell align="center" className={classes.tableCell}>
+                                        <TableRow key={item.id} >
+                                            <TableCell align="center" >
                                                 <Checkbox
                                                     color="primary"
                                                     checked={selectedItems.includes(item.id)}
                                                     onChange={() => handleSelectItem(item)}
                                                 />
                                             </TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>{item.title}</TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>{item.description}</TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>{item.category}</TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>{item.author}</TableCell>
+                                            <TableCell align="center" >{item.title}</TableCell>
+                                            <TableCell align="center" >{item.description}</TableCell>
+                                            <TableCell align="center" >{item.category}</TableCell>
+                                            <TableCell align="center" >{item.author}</TableCell>
                                             {!item.filePath.includes('https') ? (
-                                                <TableCell align="center" className={classes.tableCell}>{item.publishingYear}</TableCell>
+                                                <TableCell align="center">{item.publishingYear}</TableCell>
                                             ):(
-                                                <TableCell align="center" className={classes.tableCell}>--</TableCell>
+                                                <TableCell align="center">--</TableCell>
                                             )
                                             }
-                                            <TableCell align="center" className={classes.tableCell} style={{ color: item.isApproved ? 'green' : 'red' }}>
+                                            <TableCell align="center" style={{ color: item.isApproved ? 'green' : 'red' }}>
                                                 {item.isApproved ? 'מאושר' : 'ממתין לאישור'}
                                             </TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>
+                                            <TableCell align="center" >
                                                 {item.filePath.includes('https') ? (
                                                     <a href={item.filePath} target="_blank" rel="noopener noreferrer">
                                                         {item.filePath}
@@ -622,7 +621,7 @@ const ItemList = observer(() => {
                                                     item.filePath
                                                 )}
                                             </TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>
+                                            <TableCell align="center" >
                                                 <IconButton onClick={() => handleClickEdit(item)}>
                                                     <EditIcon style={{ color: '#468585' }} />
                                                 </IconButton>
@@ -630,7 +629,7 @@ const ItemList = observer(() => {
                                                     <DeleteIcon style={{ color: '#50B498' }} />
                                                 </IconButton>
                                             </TableCell>
-                                            <TableCell align="center" className={classes.tableCell}>
+                                            <TableCell align="center">
                                                 <Stack direction="row" style={{
                                                     flexWrap: 'nowrap', overflowX: 'auto',
                                                     width: '200px', color: '#A80B8BD'
