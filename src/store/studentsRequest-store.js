@@ -5,6 +5,7 @@ import {
   computed,
   action,
 } from "mobx";
+import Swal from "sweetalert2";
 const baseUrl = "https://libererisas-backend.onrender.com/api/";
 
 // Utility function to extract raw data
@@ -88,7 +89,13 @@ class StudentsRequestStore {
       return extractRawData(data);
     } catch (error) {
       console.error("Failed to fetch data:", error);
-      alert('שגיאה בחיבור למסד נתונים')
+      Swal.fire({
+        icon: "Error",
+        title: " אופס,שגיאה בהבאת הנתונים.. ",
+        
+        showConfirmButton: false,
+        timer: 1500
+      });
       throw error;
     }
   }
