@@ -36,7 +36,8 @@ class StudentsRequestStore {
   }
   async fetchRequest(){
     try {
-      const res = await fetch(baseUrl + `BorrowApprovalRequest`);
+      const res = await fetch(`${baseUrl}BorrowApprovalRequest`);
+      console.log("BorrowApprovalReques");
       const data = await res.json();
       const rows = extractRawData(data.data); 
       return rows;
