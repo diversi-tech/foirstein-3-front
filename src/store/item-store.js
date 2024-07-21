@@ -10,12 +10,8 @@ class ItemStore {
     isUpdate;
     isDeleteItem;
     isDeleteTag;
-<<<<<<< HEAD
     isError;
     message = "נכשל";
-=======
-    isError = true;
->>>>>>> master
     isApprov = false;
 
     constructor() {
