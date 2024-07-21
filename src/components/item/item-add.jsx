@@ -24,7 +24,8 @@ import {
     ListItemText
 } from '@mui/material';
 import itemStore from '../../store/item-store';
-import Swal from 'sweetalert2'
+import Success from '../message/success';
+import Failure from '../message/failure';
 import tagStore from '../../store/tag-store';
 import { useTheme } from '@mui/material/styles';
 
@@ -50,6 +51,8 @@ const ItemDdd = observer(() => {
     const [isUpload, setIsUpload] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
     const [touchedFields, setTouchedFields] = useState({});
+    // const [error, setTouchedFields] = useState({});
+
 
     const [formData, setFormData] = useState({
         title: '',
@@ -154,6 +157,8 @@ const ItemDdd = observer(() => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const dataToSend = { ...formData };
+        setIsUpload(true);
+
         const formDataToSend = new FormData();
         for (const key in dataToSend) {
             if (key === 'tag') {
@@ -166,51 +171,13 @@ const ItemDdd = observer(() => {
                 formDataToSend.append(key, dataToSend[key]);
             }
         }
-        handleClose();
-        Swal.fire({
-          title: "?האם ברצונך לשמור את הפריט",
-          showDenyButton: true,
-          confirmButtonText: "אישור",
-          denyButtonText: `ביטול`
-        }).then(async(result) => {
-          if (result.isConfirmed) {
+
+        try {
             if (selectedValue === 'file') {
                 await itemStore.uploadMediaFile(formDataToSend);
-                Swal.fire({
-                    icon: "success",
-                    title: "הפריט נשמר בהצלחה",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
             }
-            else {
-                 await itemStore.uploadMediaBook(formDataToSend); 
-               Swal.fire({
-                icon: "success",
-                title: "הפריט נשמר בהצלחה",
-                showConfirmButton: false,
-                timer: 1500
-            });
-            }
-        }   
-           else if (result.isDenied) {
-            Swal.fire({
-              icon: "info",
-              title: "הפריט לא נשמר",
-              showConfirmButton: false,
-              timer: 1500
-            });
-          }
-          else{
+            else { await itemStore.uploadMediaBook(formDataToSend); }
 
-              Swal.fire({
-                  icon: "error",
-                  title: "אופס... תקלה בעת שמירת הפריט",
-                  showConfirmButton: false,
-                  timer: 1500
-                });
-            }
-        });
             setFormData({
                 title: '',
                 description: '',
@@ -220,16 +187,24 @@ const ItemDdd = observer(() => {
                 tag: [],
                 filePath: '',
             });
+
             setIsHndleUpload(true);
             setSelectedValue('');
-            setIsUpload(true);
-            // handleClose();
+            console.log("setIsUpload", setIsUpload);
+
+            handleClose();
         }
-    
+
+        catch (error) {
+            console.error('Failed to upload media:', error);
+        }
+    };
+
+
     return (
         <>
             <Dialog open={open} onClose={handleClose} style={{ direction: "rtl" }}>
-                <DialogTitle>העלאת פריט</DialogTitle>
+                <DialogTitle>{selectedValue === 'book' ? 'העלאת ספר' : 'העלאת קובץ דיגיטלי'}</DialogTitle>
                 <FormControl>
                     <RadioGroup
                         aria-label="upload-type"
@@ -324,28 +299,28 @@ const ItemDdd = observer(() => {
                                         <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
-                            </Grid> 
-                         {selectedValue === 'book' && (
-                            <Grid item xs={12}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        id="publishingYearId"
-                                        label="שנת הוצאה"
-                                        variant="outlined"
-                                        name="publishingYear"
-                                        value={formData.publishingYear}
-                                        onChange={handleChange}
-                                        // required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
-                                    />
-                                    {touchedFields.publishingYear && !formData.publishingYear && (
-                                        <Typography color="error">שדה חובה</Typography>
-                                    )}
-                                    {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                        <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                    )}
-                                </FormControl>
                             </Grid>
+                            {selectedValue === 'book' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="publishingYearId"
+                                            label="שנת הוצאה"
+                                            variant="outlined"
+                                            name="publishingYear"
+                                            value={formData.publishingYear}
+                                            onChange={handleChange}
+                                            // required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                        />
+                                        {touchedFields.publishingYear && !formData.publishingYear && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
+                                        {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                            <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
                             )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
@@ -423,18 +398,22 @@ const ItemDdd = observer(() => {
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} >העלאה</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }}  >העלאה</Button>
                     <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
-                {/* {isUpload && (
+
+                {isUpload &&
                     <>
-                        {itemStore.isError ? <Failure /> : <Success />}
+                        {console.log("  itemStore.isError", itemStore.isError)}
+                       { itemStore.isError ? <Failure /> : <Success />}
                     </>
-                )} */}
+                }
+
+
+
             </Dialog>
         </>
     );
 });
-
 
 export default ItemDdd;
