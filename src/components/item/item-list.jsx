@@ -226,7 +226,7 @@ const ItemList = observer(() => {
       <div className="itemListDiv">
         <h2 className={classes.title}>רשימת קבצים</h2>
         <Grid container spacing={2} sx={{ backgroundColor: '#0D1E46', padding: 2 }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',backgroundColor:'red' }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box sx={{
               width: '100%',
               maxWidth: 600,
@@ -259,7 +259,7 @@ const ItemList = observer(() => {
               </Tabs>
             </Box>
           </Grid>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',backgroundColor:'pink' }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <CacheProvider value={cacheRtl}>
               <ThemeProvider theme={theme}>
                 <ItemSearch onSearch={handleSearch} />
