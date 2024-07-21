@@ -12,18 +12,16 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import TagIcon from '@mui/icons-material/Label';
 import RequestIcon from '@mui/icons-material/Assignment';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, HashRouter } from 'react-router-dom';
 import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle';
 import { styled } from '@mui/material/styles';
 
-import ImageHomePage from './homePage';
 import ItemList from './item/item-list';
 import PendingItems from './pendingItemsList/pendingItems';
 import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
 import StudentRequest from './studentRequest/student-request';
-
 
 const CustomIconButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: '#f0f0f0', // רקע אפור בהיר בהיר
@@ -88,7 +86,7 @@ export default function SwipeableTemporaryDrawer() {
   );
 
   return (
-    <Router>
+    <HashRouter>
       <div>
         <React.Fragment key={'right'}>
           <CustomIconButton onClick={handleToggleDrawer}>
@@ -132,6 +130,6 @@ export default function SwipeableTemporaryDrawer() {
         <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest /></Box>} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
