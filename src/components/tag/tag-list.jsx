@@ -19,15 +19,18 @@ import {
   Stack,
   Pagination,
   PaginationItem,
+  List,
+  ListItem,
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import TagAdd from "./tag-add";
 import TagStore from "../../store/tag-store";
+import TagAdd from "./tag-add";
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import Fields_rtl from "./fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -48,6 +51,8 @@ const TagList = observer(() => {
   const [showValidation, setShowValidation] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [itemsUsingTag, setItemsUsingTag] = useState([]);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState("asc");
   const [page, setPage] = useState(1);
@@ -76,19 +81,43 @@ const TagList = observer(() => {
     setPage(value);
   };
 
-  const dialogOpen = (dialogType) => {
-    if (dialogType === "deleteOpen") {
-      setDeleteOpen(true);
-    } else if (dialogType === "editOpen") {
-      setEditOpen(true);
+  const dialogOpen = async (dialogType, item) => {
+    switch (dialogType) {
+      case "deleteOpen":
+        setDeleteItem(item);
+        const itemsUsingTag = await TagStore.checkItemsUsingTag(item.id);
+        if (itemsUsingTag.length > 0) {
+          setItemsUsingTag(itemsUsingTag);
+          setConfirmDeleteOpen(true);
+        } else {
+          setDeleteOpen(true);
+        }
+        break;
+      case "editOpen":
+        setEditItem(item);
+        setEditOpen(true);
+        break;
+      default:
+        break;
     }
   };
 
   const dialogClose = (dialogType) => {
-    if (dialogType === "deleteOpen") {
-      setDeleteOpen(false);
-    } else if (dialogType === "editOpen") {
-      setEditOpen(false);
+    switch (dialogType) {
+      case "deleteOpen":
+        setDeleteOpen(false);
+        setDeleteItem(null);
+        break;
+      case "editOpen":
+        setEditOpen(false);
+        setEditItem(null);
+        break;
+      case "confirmDeleteOpen":
+        setConfirmDeleteOpen(false);
+        setDeleteItem(null);
+        break;
+      default:
+        break;
     }
   };
 
@@ -163,20 +192,14 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
-                          onClick={() => {
-                            setEditItem(row);
-                            dialogOpen("editOpen");
-                          }}
+                          onClick={() => dialogOpen("editOpen", row)}
                         >
                           <EditIcon />
                         </Button>
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
-                          onClick={() => {
-                            setDeleteItem(row);
-                            dialogOpen("deleteOpen");
-                          }}
+                          onClick={() => dialogOpen("deleteOpen", row)}
                         >
                           <DeleteIcon />
                         </Button>
@@ -254,6 +277,29 @@ const TagList = observer(() => {
         </DialogActions>
       </Dialog>
 
+      {/* Confirmation dialog */}
+      <Dialog open={confirmDeleteOpen} maxWidth="xs" dir="rtl">
+        <DialogTitle>אישור מחיקה</DialogTitle>
+        <DialogContent>
+          <Typography>התג הזה משויך לפריטים הבאים:</Typography>
+          <Box sx={{ maxHeight: 200, overflow: 'auto', padding: 1, border: '1px solid #ddd' }}>
+          <List>
+            {itemsUsingTag.map((item) => (
+              <ListItem key={item.id}><ArrowLeftIcon/> {item.title}</ListItem>
+            ))}
+          </List>
+        </Box>
+          <Typography>האם אתה בטוח שברצונך למחוק את התג הזה?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+            ביטול
+          </Button>
+          <Button onClick={tagDelete} color="primary">
+            מחק בכל זאת
+          </Button>
+        </DialogActions>
+      </Dialog>
       {isAddTagOpen && <TagAdd onClose={() => setIsAddTagOpen(false)} />}
     </Grid>
   );
