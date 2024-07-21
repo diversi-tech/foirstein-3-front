@@ -51,6 +51,8 @@ const ItemDdd = observer(() => {
     const [isUpload, setIsUpload] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
     const [touchedFields, setTouchedFields] = useState({});
+    // const [error, setTouchedFields] = useState({});
+
 
     const [formData, setFormData] = useState({
         title: '',
@@ -155,6 +157,7 @@ const ItemDdd = observer(() => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const dataToSend = { ...formData };
+        setIsUpload(true);
 
         const formDataToSend = new FormData();
         for (const key in dataToSend) {
@@ -187,14 +190,16 @@ const ItemDdd = observer(() => {
 
             setIsHndleUpload(true);
             setSelectedValue('');
-            setIsUpload(true);
+            console.log("setIsUpload", setIsUpload);
+
             handleClose();
-        } 
-       
+        }
+
         catch (error) {
             console.error('Failed to upload media:', error);
         }
     };
+
 
     return (
         <>
@@ -294,28 +299,28 @@ const ItemDdd = observer(() => {
                                         <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
-                            </Grid> 
-                         {selectedValue === 'book' && (
-                            <Grid item xs={12}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        id="publishingYearId"
-                                        label="שנת הוצאה"
-                                        variant="outlined"
-                                        name="publishingYear"
-                                        value={formData.publishingYear}
-                                        onChange={handleChange}
-                                        // required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
-                                    />
-                                    {touchedFields.publishingYear && !formData.publishingYear && (
-                                        <Typography color="error">שדה חובה</Typography>
-                                    )}
-                                    {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                        <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                    )}
-                                </FormControl>
                             </Grid>
+                            {selectedValue === 'book' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="publishingYearId"
+                                            label="שנת הוצאה"
+                                            variant="outlined"
+                                            name="publishingYear"
+                                            value={formData.publishingYear}
+                                            onChange={handleChange}
+                                            // required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                        />
+                                        {touchedFields.publishingYear && !formData.publishingYear && (
+                                            <Typography color="error">שדה חובה</Typography>
+                                        )}
+                                        {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                            <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                        )}
+                                    </FormControl>
+                                </Grid>
                             )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
@@ -393,14 +398,19 @@ const ItemDdd = observer(() => {
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }} >העלאה</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }}  >העלאה</Button>
                     <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
                 </DialogActions>
-                {isUpload && (
+
+                {isUpload &&
                     <>
-                        {itemStore.isError ? <Failure /> : <Success />}
+                        {console.log("  itemStore.isError", itemStore.isError)}
+                       { itemStore.isError ? <Failure /> : <Success />}
                     </>
-                )}
+                }
+
+
+
             </Dialog>
         </>
     );

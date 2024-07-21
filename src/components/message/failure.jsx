@@ -17,6 +17,7 @@ export default function Failure() {
 
   const handleClose = () => {
     setOpen(false);
+    itemStore.isError = null
     // onClose();
   };
 

@@ -10,7 +10,7 @@ class ItemStore {
     isUpdate;
     isDeleteItem;
     isDeleteTag;
-    isError = true;
+    isError;
     message = "נכשל";
     isApprov = false;
 
@@ -33,7 +33,8 @@ class ItemStore {
             // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
-            deniedItem: action
+            deniedItem: action,
+            deleteMedia: action
         });
         this.fetchPendingItems();
         this.fetchMedia();
@@ -48,12 +49,12 @@ class ItemStore {
             console.log("delete tag:");
             if (res.status === 200) {
                 this.isDeleteTag = true;
-                this.message = " נמחק בהצלחה! ✅"
+                // this.message = " נמחק בהצלחה ✅"
 
             }
             else {
                 this.isDeleteTag = false;
-                this.message = "מחיקה נכשלה"
+                // this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
@@ -138,10 +139,8 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isError = false;
-                this.message = "הועלה בהצלחה! ✅"
             } else {
                 this.isError = true;
-                this.message = "העלאה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
@@ -158,10 +157,8 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isError = false;
-                this.message = "הועלה בהצלחה! ✅"
             } else {
                 this.isError = true;
-                this.message = "העלאה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
@@ -170,23 +167,17 @@ class ItemStore {
         }
     }
 
-
     async deleteMedia(mediaId) {
-        // console.log("hiiDeleteMedia!!!!!!!!");
+        console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`${baseURL}/${mediaId}`, {
                 method: 'DELETE'
             });
             if (res.status === 200) {
-
                 this.isDeleteItem = true;
-                this.message = " נמחק בהצלחה! ✅"
-
             }
             else {
                 this.isDeleteItem = false;
-                this.message = "מחיקה נכשלה"
-
             }
             this.fetchMedia();
         } catch (error) {
@@ -207,11 +198,9 @@ class ItemStore {
 
             if (res.status === 200) {
                 this.isUpdate = true;
-                this.message = "  הספר  עודכן בהצלחה! ✅";
             }
             else {
                 this.isUpdate = false;
-                this.message = "!עדכון הספר לא הצליח"
             }
         } catch (error) {
             console.error('Failed to update media:', error);
@@ -231,11 +220,9 @@ class ItemStore {
 
             if (res.status === 200) {
                 this.isUpdate = true;
-                this.message = "  הקובץ  עודכן בהצלחה! ✅";
             }
             else {
                 this.isUpdate = false;
-                this.message = "!עדכון הקובץ לא הצליח"
             }
         } catch (error) {
             console.error('Failed to update media:', error);

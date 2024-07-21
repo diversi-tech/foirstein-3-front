@@ -250,6 +250,7 @@
 //                                             <TableCell align="center">{item.filePath}</TableCell>
 //                                         )}
 
+
 //                                         <TableCell align="center">
 //                                             <IconButton onClick={() => handleClickEdit(item)}>
 //                                                 <EditIcon style={{ color: '#468585' }} />
@@ -326,6 +327,7 @@
 // });
 
 // export default ItemList;
+
 
 import { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
@@ -408,99 +410,100 @@ const useStyles = styled((theme) => ({
 }));
 
 const ItemList = observer(() => {
-  const classes = useStyles(); // השתמש בסגנונות של useStyles
+   
+    const classes = useStyles(); // השתמש בסגנונות של useStyles
 
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [deleteTag, setDeleteTag] = useState(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [editedItem, setEditedItem] = useState(null);
-  const [editOpen, setEditOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
+    const [deleteItem, setDeleteItem] = useState(null);
+    const [deleteTag, setDeleteTag] = useState(null);
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [editedItem, setEditedItem] = useState(null);
+    const [editOpen, setEditOpen] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [filterType, setFilterType] = useState("all");
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [sendItem, setSendItem] = useState(false);
+    const [sendTag, setSendTag] = useState(false);
+    const [deleteTagOpen, setDeleteTagOpen] = useState(false);
+    const [deleteMultieItems, setDeleteMultieItems] = useState(false);
 
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [sendItem, setSendItem] = useState(false);
-  const [sendTag, setSendTag] = useState(false);
-  const [deleteTagOpen, setDeleteTagOpen] = useState(false);
-  const [deleteMultieItems, setDeleteMultieItems] = useState(false);
-  const [filterType, setFilterType] = useState("all");
+    useEffect(() => {
+        itemStore.fetchMedia();
+    }, []);
 
-  useEffect(() => {
-    itemStore.fetchMedia();
-  }, []);
+    useEffect(() => {
+      setFilteredItems(filterItems(itemStore.mediaList));
+    }, [itemStore.mediaList, filterType]);
 
-  useEffect(() => {
-    setFilteredItems(filterItems(itemStore.mediaList));
-  }, [itemStore.mediaList, filterType]);
+    const handleDelete = (item) => {
+        setDeleteItem(item);
+        setDeleteOpen(true);
+        
+    };
 
-  const handleDelete = (item) => {
-    setDeleteItem(item);
-    setDeleteOpen(true);
-  };
+    const handleDeleteTag = (item, tag) => {
+        setDeleteTag(tag);
+        setDeleteItem(item);
+        setDeleteTagOpen(true);
+    };
 
-  const handleDeleteTag = (item, tag) => {
-    setDeleteTag(tag);
-    setDeleteItem(item);
-    setDeleteTagOpen(true);
-  };
+    const confirmDelete = async () => {
+        if (deleteTag && deleteTag.id) {
+            await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+            setSendTag(true);
+            setTimeout(() => {
+                handleClose();
+              }, 1000);
+        }
+    };
 
-  const confirmDelete = async () => {
-    if (deleteTag && deleteTag.id) {
-      await itemStore.deleteTag(deleteItem.id, deleteTag.id);
-      setSendTag(true);
-      setTimeout(() => {
-        handleClose();
-      }, 1000);
-    }
-  };
+    const deletee = async () => {
+        try {
+            await itemStore.deleteMedia(deleteItem.id);
+            setSendItem(true);
+            setTimeout(() => {
+                handleClose();
+              }, 1000);
+        } catch (error) {
+            console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
+        }
+    };
 
-  const deletee = async () => {
-    try {
-      await itemStore.deleteMedia(deleteItem.id);
-      setSendItem(true);
-      setTimeout(() => {
-        handleClose();
-      }, 1000);
-    } catch (error) {
-      console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
-    }
-  };
+    const handleClickAdd = () => {
+        itemStore.add = true;
+    };
 
-  const handleClickAdd = () => {
-    itemStore.add = true;
-  };
+    const handleClickEdit = (item) => {
+        setEditedItem(item);
+        setEditOpen(true);
+    };
 
-  const handleClickEdit = (item) => {
-    setEditedItem(item);
-    setEditOpen(true);
-  };
+    const handleClose = () => {
+        setSendItem(false);
+        setSendTag(false);
+        setDeleteOpen(false);
+        setDeleteItem(null);
+        setDeleteTag(null);
+        setEditOpen(false);
+        setEditedItem(null);
+        setDeleteTagOpen(false);
+    };
 
-  const handleClose = () => {
-    setSendItem(false);
-    setSendTag(false);
-    setDeleteOpen(false);
-    setDeleteItem(null);
-    setDeleteTag(null);
-    setEditOpen(false);
-    setEditedItem(null);
-    setDeleteTagOpen(false);
-  };
+    const handleSelectItem = (item) => {
+        setSelectedItems((prevSelectedItems) => {
+            if (prevSelectedItems.includes(item.id)) {
+                return prevSelectedItems.filter((id) => id !== item.id);
+            } else {
+                return [...prevSelectedItems, item.id];
+            }
+        });
+    };
 
-  const handleSelectItem = (item) => {
-    setSelectedItems((prevSelectedItems) => {
-      if (prevSelectedItems.includes(item.id)) {
-        return prevSelectedItems.filter((id) => id !== item.id);
-      } else {
-        return [...prevSelectedItems, item.id];
-      }
-    });
-  };
-
-  const handleDeleteSelectedItems = async () => {
-    setDeleteOpen(true); // Open confirmation dialog for bulk delete
-    setDeleteMultieItems(true);
-  };
+    const handleDeleteSelectedItems = async () => {
+        setDeleteOpen(true); // Open confirmation dialog for bulk delete
+        setDeleteMultieItems(true);
+    };
 
   const handleConfirmBulkDelete = async () => {
     if (selectedItems.length > 1) {

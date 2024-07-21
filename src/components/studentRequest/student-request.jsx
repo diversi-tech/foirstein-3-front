@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
 import DialogContentText from "@mui/material/DialogContentText";
-import Grid from '@mui/system/Unstable_Grid/Grid';
-import BeenhereOutlinedIcon from '@mui/icons-material/BeenhereOutlined';
-import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import BeenhereOutlinedIcon from "@mui/icons-material/BeenhereOutlined";
+import BackspaceOutlinedIcon from "@mui/icons-material/BackspaceOutlined";
+import CircularProgress from "@mui/material/CircularProgress";
+// import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import {
   Paper,
   TableRow,
@@ -30,32 +30,32 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DetailRequest from "./detail-request";
 import requestStore from "../../store/studentsRequest-store";
 import { observer } from "mobx-react-lite";
-import "./student-request.css"; // Import the CSS file
-
-const baseUrl = "https://localhost:7297/api/";
-
-const rowsPerPageOptions = [5, 10, 25];
+import "./student-request.css";
+import Swal from "sweetalert2";
 
 function Request(props) {
-  const { row } = props;
+  const { request } = props;
   const [detailRequest, setDetailRequest] = useState(null);
   const [open, setOpen] = useState(false);
-
   useEffect(() => {
-    const fetchRequest = async () => {
+    const getRequestDetails = async () => {
       try {
-        const res = await fetch(
-          `${baseUrl}BorrowApprovalRequest/details/${row.requestId}`
-        );
-        let data = await res.json();
-        const _detailRequest = extractRawData(data);
+        const _detailRequest = await requestStore.getById(request.requestId);
         setDetailRequest(_detailRequest);
+        if (!_detailRequest) {
+          Swal.fire({
+            icon: "Error",
+            title: "אין נתונים",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Failed to fetch request details:", error); // לוג שגיאות
       }
     };
-    fetchRequest();
-  }, [row.requestId]);
+    getRequestDetails();
+  }, [request.requestId]);
 
   return (
     <React.Fragment>
@@ -73,15 +73,23 @@ function Request(props) {
         </TableCell>
         <TableCell className="styled-table-cell">
           <Box className="center-content" justifyContent="space-around">
-            <AlertDialog option={"דחייה"} requestId={row.requestId} color="error" />
-            <AlertDialog option="אישור" requestId={row.requestId} color="success" />
+            <AlertDialog
+              option="דחיה"
+              requestId={request.requestId}
+              color="error"
+            />
+            <AlertDialog
+              option="אישור"
+              requestId={request.requestId}
+              color="error"
+            />
           </Box>
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {formatDate(row.approvalDate)}
+          {formatDate(request.approvalDate)}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {formatDate(row.requestDate)}
+          {formatDate(request.requestDate)}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
           {detailRequest && detailRequest.userName
@@ -94,7 +102,7 @@ function Request(props) {
             : "טוען..."}
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
-          {row.requestId}
+          {request.requestId}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -109,19 +117,6 @@ function Request(props) {
     </React.Fragment>
   );
 }
-
-
-
-function extractRawData(proxyObject) {
-  if (proxyObject && proxyObject.data) {
-    console.log("Extracting data from proxy object:", proxyObject.data);
-    return proxyObject.data;
-  } else {
-    console.log("Returning original object as it's not a proxy:", proxyObject);
-    return proxyObject;
-  }
-}
-
 function formatDate(dateString) {
   const dateObj = new Date(dateString);
   const day = dateObj.getDate().toString().padStart(2, "0");
@@ -132,26 +127,30 @@ function formatDate(dateString) {
   const seconds = dateObj.getSeconds().toString().padStart(2, "0");
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
-
 const StudentRequest = observer(() => {
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    const fetchRequest = async () => {
-      try {
-        const res = await fetch(baseUrl + `BorrowRequest`);
-        let data = await res.json();
-        const rows = extractRawData(data);
-        console.log(rows, "useEffect");
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
+    const getRequests = async () => {
+      const fetchedRows = await requestStore.fetchRequest();
+      setRows(fetchedRows);
+      setLoading(false);
+      if (!fetchedRows) {
+        Swal.fire({
+          icon: "Errror",
+          title: "אין נתונים",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     };
-    fetchRequest();
+    getRequests();
   }, []);
 
-  const rows = requestStore.getRequest;
+  const rowsToDisplay = rows.length > 0 ? rows : [];
 
   const handleChangePage = (event, newPage) => {
     setCurrentPage(newPage);
@@ -170,49 +169,77 @@ const StudentRequest = observer(() => {
             <b>בקשות התלמידות</b>
           </Typography>
         </Box>
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow className="table-header">
-              <TableCell />
-              <TableCell className="styled-table-cell" align="center"></TableCell>
-              <TableCell className="styled-table-cell" align="center">תאריך בקשה</TableCell>
-              <TableCell className="styled-table-cell" align="center">תאריך אישור</TableCell>
-              <TableCell className="styled-table-cell" align="center">שם משתמש</TableCell>
-              <TableCell className="styled-table-cell" align="center">שם פריט</TableCell>
-              <TableCell className="styled-table-cell" align="center">מספר בקשה</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(rowsPerPage > 0
-              ? rows.slice(
-                currentPage * rowsPerPage,
-                currentPage * rowsPerPage + rowsPerPage
-              )
-              : rows
-            ).map((row) => (
-              <Request key={row.requestId} row={row} requestId={row.requestId} />
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={rowsPerPageOptions}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={currentPage}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="50vh"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <Table aria-label="collapsible table">
+              <TableHead>
+                <TableRow className="table-header">
+                  <TableCell />
+                  <TableCell
+                    className="styled-table-cell"
+                    align="center"
+                  ></TableCell>
+                  <TableCell className="styled-table-cell" align="center">
+                    תאריך בקשה
+                  </TableCell>
+                  <TableCell className="styled-table-cell" align="center">
+                    תאריך אישור
+                  </TableCell>
+                  <TableCell className="styled-table-cell" align="center">
+                    שם משתמש
+                  </TableCell>
+                  <TableCell className="styled-table-cell" align="center">
+                    שם פריט
+                  </TableCell>
+                  <TableCell className="styled-table-cell" align="center">
+                    מספר בקשה
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rowsToDisplay.length > 0 &&
+                  (rowsPerPage > 0
+                    ? rowsToDisplay.slice(
+                        currentPage * rowsPerPage,
+                        currentPage * rowsPerPage + rowsPerPage
+                      )
+                    : rowsToDisplay
+                  ).map((row) => (
+                    <Request
+                      key={row.requestId}
+                      request={row}
+                      requestId={row.requestId}
+                    />
+                  ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={currentPage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
+        )}
       </TableContainer>
     </Box>
   );
 });
-
 export default StudentRequest;
-
 function AlertDialog({ option, requestId, color }) {
   const [open, setOpen] = useState(false);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -224,9 +251,39 @@ function AlertDialog({ option, requestId, color }) {
   const handleSumbit = () => {
     handleClickOpen();
     if (option === "אישור") {
-      requestStore.updateApproveRequest(requestId);
+      const res = requestStore.updateApproveRequest(requestId);
+      if (res.status === 200) {
+        Swal.fire({
+          title: "! הבקשה עודכנה בהצלחה ",
+          icon: "success",
+        });
+      } else {
+        Swal.fire({
+          icon: "Error",
+          title: "אופס..שגיאה.. ",
+          text: res.error,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     } else {
-      requestStore.updateDenyRequest(requestId);
+      const r = requestStore.updateDenyRequest(requestId);
+      if (r.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "הבקשה עודכנה הצלחה..! ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        Swal.fire({
+          icon: "Error",
+          title: "אופס..שגיאה.. ",
+          text: r.error,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     }
   };
 
@@ -234,8 +291,12 @@ function AlertDialog({ option, requestId, color }) {
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen} color={color}>
         {option}
-        {option==="אישור"&&(<BeenhereOutlinedIcon sx={{marginLeft:'5px'}}/>)}
-        {option==="דחייה"&&(<BackspaceOutlinedIcon sx={{marginLeft:'5px'}}/>)}
+        {option === "אישור" && (
+          <BeenhereOutlinedIcon sx={{ marginLeft: "5px" }} />
+        )}
+        {option === "דחייה" && (
+          <BackspaceOutlinedIcon sx={{ marginLeft: "5px" }} />
+        )}
       </Button>
       <Dialog
         open={open}
@@ -245,7 +306,10 @@ function AlertDialog({ option, requestId, color }) {
       >
         <DialogTitle id="alert-dialog-title"></DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" style={{ fontWeight: "bold" }}>
+          <DialogContentText
+            id="alert-dialog-description"
+            style={{ fontWeight: "bold" }}
+          >
             ? האם אתה רוצה לבצע {option}
           </DialogContentText>
         </DialogContent>
@@ -259,10 +323,10 @@ function AlertDialog({ option, requestId, color }) {
     </React.Fragment>
   );
 }
-
 AlertDialog.propTypes = {
   option: PropTypes.string.isRequired,
   requestId: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
 };
 DetailRequest.propTypes = {
   detailRequest: PropTypes.shape({
@@ -275,9 +339,8 @@ DetailRequest.propTypes = {
     numUserRequests: PropTypes.number.isRequired,
   }).isRequired,
 };
-
 Request.propTypes = {
-  row: PropTypes.shape({
+  request: PropTypes.shape({
     requestId: PropTypes.number.isRequired,
     itemId: PropTypes.number.isRequired,
     userId: PropTypes.number.isRequired,
