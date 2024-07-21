@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import itemStore from "../../store/item-store";
 import ItemSearch from "./item-search";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import theme from '../tag/fields_rtl'
+import { cacheRtl } from "../tag/fields_rtl";
+import { CacheProvider } from "@emotion/react";
+import { ThemeProvider } from "@emotion/react";
 import {
   Table,
   TableBody,
@@ -26,6 +32,7 @@ import {
   Radio,
   FormControlLabel,
   RadioGroup,
+  Box
 } from "@mui/material";
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
@@ -72,107 +79,107 @@ const useStyles = styled((theme) => ({
   tableCell: {
     [theme.breakpoints.down("sm")]: {
       padding: theme.spacing(0.5),
-      fontSize: "0.8rem", 
+      fontSize: "0.8rem",
     },
   },
-  
+
 }));
 
 const ItemList = observer(() => {
-   
-    const classes = useStyles(); // השתמש בסגנונות של useStyles
 
-    const [deleteItem, setDeleteItem] = useState(null);
-    const [deleteTag, setDeleteTag] = useState(null);
-    const [deleteOpen, setDeleteOpen] = useState(false);
-    const [editedItem, setEditedItem] = useState(null);
-    const [editOpen, setEditOpen] = useState(false);
-    const [selectedItems, setSelectedItems] = useState([]);
-    const [filteredItems, setFilteredItems] = useState([]);
-    const [filterType, setFilterType] = useState("all");
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const [sendItem, setSendItem] = useState(false);
-    const [sendTag, setSendTag] = useState(false);
-    const [deleteTagOpen, setDeleteTagOpen] = useState(false);
-    const [deleteMultieItems, setDeleteMultieItems] = useState(false);
+  const classes = useStyles(); // השתמש בסגנונות של useStyles
 
-    useEffect(() => {
-        itemStore.fetchMedia();
-    }, []);
+  const [deleteItem, setDeleteItem] = useState(null);
+  const [deleteTag, setDeleteTag] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editedItem, setEditedItem] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [filterType, setFilterType] = useState("all");
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [sendItem, setSendItem] = useState(false);
+  const [sendTag, setSendTag] = useState(false);
+  const [deleteTagOpen, setDeleteTagOpen] = useState(false);
+  const [deleteMultieItems, setDeleteMultieItems] = useState(false);
 
-    useEffect(() => {
-      setFilteredItems(filterItems(itemStore.mediaList));
-    }, [itemStore.mediaList, filterType]);
+  useEffect(() => {
+    itemStore.fetchMedia();
+  }, []);
 
-    const handleDelete = (item) => {
-        setDeleteItem(item);
-        setDeleteOpen(true);
-        
-    };
+  useEffect(() => {
+    setFilteredItems(filterItems(itemStore.mediaList));
+  }, [itemStore.mediaList, filterType]);
 
-    const handleDeleteTag = (item, tag) => {
-        setDeleteTag(tag);
-        setDeleteItem(item);
-        setDeleteTagOpen(true);
-    };
+  const handleDelete = (item) => {
+    setDeleteItem(item);
+    setDeleteOpen(true);
 
-    const confirmDelete = async () => {
-        if (deleteTag && deleteTag.id) {
-            await itemStore.deleteTag(deleteItem.id, deleteTag.id);
-            setSendTag(true);
-            setTimeout(() => {
-                handleClose();
-              }, 1000);
-        }
-    };
+  };
 
-    const deletee = async () => {
-        try {
-            await itemStore.deleteMedia(deleteItem.id);
-            setSendItem(true);
-            setTimeout(() => {
-                handleClose();
-              }, 1000);
-        } catch (error) {
-            console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
-        }
-    };
+  const handleDeleteTag = (item, tag) => {
+    setDeleteTag(tag);
+    setDeleteItem(item);
+    setDeleteTagOpen(true);
+  };
 
-    const handleClickAdd = () => {
-        itemStore.add = true;
-    };
+  const confirmDelete = async () => {
+    if (deleteTag && deleteTag.id) {
+      await itemStore.deleteTag(deleteItem.id, deleteTag.id);
+      setSendTag(true);
+      setTimeout(() => {
+        handleClose();
+      }, 1000);
+    }
+  };
 
-    const handleClickEdit = (item) => {
-        setEditedItem(item);
-        setEditOpen(true);
-    };
+  const deletee = async () => {
+    try {
+      await itemStore.deleteMedia(deleteItem.id);
+      setSendItem(true);
+      setTimeout(() => {
+        handleClose();
+      }, 1000);
+    } catch (error) {
+      console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
+    }
+  };
 
-    const handleClose = () => {
-        setSendItem(false);
-        setSendTag(false);
-        setDeleteOpen(false);
-        setDeleteItem(null);
-        setDeleteTag(null);
-        setEditOpen(false);
-        setEditedItem(null);
-        setDeleteTagOpen(false);
-    };
+  const handleClickAdd = () => {
+    itemStore.add = true;
+  };
 
-    const handleSelectItem = (item) => {
-        setSelectedItems((prevSelectedItems) => {
-            if (prevSelectedItems.includes(item.id)) {
-                return prevSelectedItems.filter((id) => id !== item.id);
-            } else {
-                return [...prevSelectedItems, item.id];
-            }
-        });
-    };
+  const handleClickEdit = (item) => {
+    setEditedItem(item);
+    setEditOpen(true);
+  };
 
-    const handleDeleteSelectedItems = async () => {
-        setDeleteOpen(true); // Open confirmation dialog for bulk delete
-        setDeleteMultieItems(true);
-    };
+  const handleClose = () => {
+    setSendItem(false);
+    setSendTag(false);
+    setDeleteOpen(false);
+    setDeleteItem(null);
+    setDeleteTag(null);
+    setEditOpen(false);
+    setEditedItem(null);
+    setDeleteTagOpen(false);
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItems((prevSelectedItems) => {
+      if (prevSelectedItems.includes(item.id)) {
+        return prevSelectedItems.filter((id) => id !== item.id);
+      } else {
+        return [...prevSelectedItems, item.id];
+      }
+    });
+  };
+
+  const handleDeleteSelectedItems = async () => {
+    setDeleteOpen(true); // Open confirmation dialog for bulk delete
+    setDeleteMultieItems(true);
+  };
 
   const handleConfirmBulkDelete = async () => {
     if (selectedItems.length > 1) {
@@ -201,47 +208,66 @@ const ItemList = observer(() => {
 
   const filterItems = (items) => {
     if (filterType === "all") {
-        console.log(items);
+      console.log(items);
       return items;
     }
-    if(filterType=="book"){
-        console.log("book");
+    if (filterType == "book") {
+      console.log("book");
 
-        return items.filter((item)=>!item.filePath.includes("https"))
+      return items.filter((item) => !item.filePath.includes("https"))
     }
     console.log("file");
-    const y1=items.filter((item)=>item.filePath.includes("https"));
+    const y1 = items.filter((item) => item.filePath.includes("https"));
     console.log(y1);
-    return items.filter((item)=>item.filePath.includes("https"));
+    return items.filter((item) => item.filePath.includes("https"));
   };
-
   return (
     <>
       <div className="itemListDiv">
         <h2 className={classes.title}>רשימת קבצים</h2>
-        <ItemSearch onSearch={handleSearch} />
-        <RadioGroup
-          aria-label="filter-type"
-          name="filter-type"
-          value={filterType}
-          onChange={(e) => {
-            if(e.target.value=="book"){
-                
-            }
-            setFilterType(e.target.value)}}
-            style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",  
-                justifyContent: "center", 
-                margin: "10px 0",
-                width: "100%",
-              }}
-        >
-          <FormControlLabel value="all" control={<Radio />} label="הכל" />
-          <FormControlLabel value="book" control={<Radio />} label="ספרים" />
-          <FormControlLabel value="file" control={<Radio />} label="קבצים" />
-        </RadioGroup>
+        <Grid container spacing={2} sx={{ backgroundColor: '#0D1E46', padding: 2 }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box sx={{
+              width: '100%',
+              maxWidth: 600,
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#FFD700',
+              },
+              '& .MuiTab-root': {
+                color: '#dcdcdc',
+                '&.Mui-selected': {
+                  color: '#FFD700',
+                }
+              },
+              display: 'flex',
+              justifyContent: 'center',  // מרכז אופקית
+              alignItems: 'center',      // מרכז אנכית
+              // height: '100vh', 
+            }}
+            >
+              <Tabs
+                onChange={(e, newValue) => {
+                  setFilterType(newValue);
+                }}
+                value={filterType}
+                aria-label="Tabs where selection follows focus"
+                selectionFollowsFocus
+              >
+                <Tab label="הכל" value="all" />
+                <Tab label="ספרים" value="book" />
+                <Tab label="קבצים" value="file" />
+              </Tabs>
+            </Box>
+          </Grid>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <CacheProvider value={cacheRtl}>
+              <ThemeProvider theme={theme}>
+                <ItemSearch onSearch={handleSearch} />
+              </ThemeProvider>
+            </CacheProvider>
+          </Grid>
+        </Grid>
+
 
         <Grid container justifyContent="center">
           <Grid item xs={12}>
@@ -272,7 +298,7 @@ const ItemList = observer(() => {
                         }}
                       />
                     </TableCell>
-                    <TableCell  align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       כותרת
@@ -280,7 +306,7 @@ const ItemList = observer(() => {
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       תיאור
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}style={{ wordWrap: "break-word" }}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       קטגוריה
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
@@ -339,7 +365,7 @@ const ItemList = observer(() => {
                         </TableCell>
                       ) : (
                         <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                         <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
+                          <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
                         </TableCell>
                       )}
                       <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
@@ -366,7 +392,7 @@ const ItemList = observer(() => {
                       <TableCell
                         align="right"
                         className={classes.tableCell}
-                        style={{ color: item.isApproved ? "green" : "red",wordWrap: "break-word" }}
+                        style={{ color: item.isApproved ? "#A52A2A" : "#800000", wordWrap: "break-word" }}
                       >
                         {item.isApproved ? "מאושר" : "ממתין לאישור"}
                       </TableCell>
@@ -384,12 +410,16 @@ const ItemList = observer(() => {
                         )}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                        <Tooltip title="עריכה" arrow>
                         <IconButton onClick={() => handleClickEdit(item)}>
-                          <EditIcon style={{ color: "#468585" }} />
+                          <EditIcon style={{ color: "#334970" }} />
                         </IconButton>
+                        </Tooltip>
+                        <Tooltip title="מחיקה" arrow>
                         <IconButton onClick={() => handleDelete(item)}>
-                          <DeleteIcon style={{ color: "#50B498" }} />
+                          <DeleteIcon style={{ color: "#334970" }} />
                         </IconButton>
+                        </Tooltip>
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         <Stack

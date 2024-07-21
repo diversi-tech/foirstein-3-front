@@ -125,6 +125,7 @@ const TagList = observer(() => {
     if (deleteItem) {
       await TagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
+      dialogClose("confirmDeleteOpen")
     }
   };
 
