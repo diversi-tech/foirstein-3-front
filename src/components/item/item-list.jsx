@@ -401,8 +401,10 @@ const useStyles = styled((theme) => ({
   tableCell: {
     [theme.breakpoints.down("sm")]: {
       padding: theme.spacing(0.5),
+      fontSize: "0.8rem", 
     },
   },
+  
 }));
 
 const ItemList = observer(() => {
@@ -575,10 +577,10 @@ const ItemList = observer(() => {
               component={Paper}
               className={classes.tableContainer}
             >
-              <Table stickyHeader>
+              <Table stickyHeader aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       <Checkbox
                         indeterminate={
                           selectedItems.length > 0 &&
@@ -598,36 +600,36 @@ const ItemList = observer(() => {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell  align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       כותרת
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       תיאור
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell}style={{ wordWrap: "break-word" }}>
                       קטגוריה
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       מחבר
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       שנת הוצאה
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       סטטוס
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       מדף/קובץ
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       פעולה
                     </TableCell>
-                    <TableCell align="right" className={classes.headerCell}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       תגית
                     </TableCell>
-                    <TableCell className={classes.headerCell}>
+                    <TableCell className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       <Button
                         onClick={
                           selectedItems.length > 0
@@ -652,7 +654,7 @@ const ItemList = observer(() => {
                 <TableBody>
                   {filteredItems.map((item) => (
                     <TableRow key={item.id} className={classes.tableRow}>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         <Checkbox
                           color="primary"
                           checked={selectedItems.includes(item.id)}
@@ -660,43 +662,43 @@ const ItemList = observer(() => {
                         />
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} >
+                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                           <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
                         </TableCell>
                       ) : (
-                        <TableCell align="center" className={classes.tableCell}>
+                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                          <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
                         </TableCell>
                       )}
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         {item.title}
                       </TableCell>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         {item.description}
                       </TableCell>
-                      <TableCell align="rifht" className={classes.tableCell}>
+                      <TableCell align="rifht" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         {item.category}
                       </TableCell>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         {item.author}
                       </TableCell>
                       {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} color="info">
+                        <TableCell align="center" className={classes.tableCell} color="info" style={{ wordWrap: "break-word" }}>
                           {item.publishingYear}
                         </TableCell>
                       ) : (
-                        <TableCell align="right" className={classes.tableCell}>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                           --
                         </TableCell>
                       )}
                       <TableCell
                         align="right"
                         className={classes.tableCell}
-                        style={{ color: item.isApproved ? "green" : "red" }}
+                        style={{ color: item.isApproved ? "green" : "red",wordWrap: "break-word" }}
                       >
                         {item.isApproved ? "מאושר" : "ממתין לאישור"}
                       </TableCell>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         {item.filePath.includes("https") ? (
                           <a
                             href={item.filePath}
@@ -709,7 +711,7 @@ const ItemList = observer(() => {
                           item.filePath
                         )}
                       </TableCell>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         <IconButton onClick={() => handleClickEdit(item)}>
                           <EditIcon style={{ color: "#468585" }} />
                         </IconButton>
@@ -717,7 +719,7 @@ const ItemList = observer(() => {
                           <DeleteIcon style={{ color: "#50B498" }} />
                         </IconButton>
                       </TableCell>
-                      <TableCell align="right" className={classes.tableCell}>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         <Stack
                           direction="row"
                           style={{

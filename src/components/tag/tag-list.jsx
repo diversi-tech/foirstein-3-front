@@ -16,12 +16,15 @@ import {
   Typography,
   Box,
   styled,
+  List,
+  ListItem,
 } from "@mui/material";
 import { observer } from "mobx-react-lite";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TagAdd from "./tag-add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import TagStore from "../../store/tag-store";
 import Fields_rtl from "./fields_rtl";
 
@@ -43,16 +46,30 @@ const TagList = observer(() => {
   const [showValidation, setShowValidation] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [itemsUsingTag, setItemsUsingTag] = useState([]);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
 
   useEffect(() => {
     TagStore.fetchTag();
   }, []);
+  useEffect(() => {
+    if (deleteItem !== null) {
+      dialogOpen("deleteOpen");
+    }
+  }, [deleteItem]);
 
-  const dialogOpen = (dialogType) => {
+  const dialogOpen = async (dialogType) => {
     switch (dialogType) {
       case "deleteOpen":
-        setDeleteOpen(true);
+          const itemsUsingTag = await TagStore.checkItemsUsingTag(deleteItem.id);
+          console.log(itemsUsingTag.length);
+          if (itemsUsingTag.length > 0) {
+            setItemsUsingTag(itemsUsingTag);
+            setConfirmDeleteOpen(true);
+          } else {
+            setDeleteOpen(true);
+          }
         break;
       case "editOpen":
         setEditOpen(true);
@@ -66,9 +83,13 @@ const TagList = observer(() => {
     switch (dialogType) {
       case "deleteOpen":
         setDeleteOpen(false);
+        setConfirmDeleteOpen(false);
         break;
       case "editOpen":
         setEditOpen(false);
+        break;
+      case "confirmDeleteOpen":
+        setConfirmDeleteOpen(false);
         break;
       default:
         break;
@@ -196,6 +217,30 @@ const TagList = observer(() => {
             ביטול
           </Button>
           <Button onClick={tagDelete}>מחיקה</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Confirmation dialog */}
+      <Dialog open={confirmDeleteOpen} maxWidth="xs" dir="rtl">
+        <DialogTitle>אישור מחיקה</DialogTitle>
+        <DialogContent>
+          <Typography>התג הזה משויך לפריטים הבאים:</Typography>
+          <Box sx={{ maxHeight: 200, overflow: 'auto', padding: 1, border: '1px solid #ddd' }}>
+          <List>
+            {itemsUsingTag.map((item) => (
+              <ListItem key={item.id}><ArrowLeftIcon/> {item.title}</ListItem>
+            ))}
+          </List>
+        </Box>
+          <Typography>האם אתה בטוח שברצונך למחוק את התג הזה?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteOpen(false)} color="primary">
+            ביטול
+          </Button>
+          <Button onClick={tagDelete} color="primary">
+            מחק בכל זאת
+          </Button>
         </DialogActions>
       </Dialog>
       {isAddTagOpen && <TagAdd onClose={() => setIsAddTagOpen(false)} />}
