@@ -22,6 +22,7 @@ import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
 import StudentRequest from './studentRequest/student-request';
+import { Tooltip } from '@mui/material';
 
 const CustomIconButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: '#f0f0f0', // רקע אפור בהיר בהיר
@@ -89,15 +90,17 @@ export default function SwipeableTemporaryDrawer() {
     <HashRouter>
       <div>
         <React.Fragment key={'right'}>
-          <CustomIconButton onClick={handleToggleDrawer}>
-            <ArrowDropDownCircleIcon
-              style={{
-                color: 'black',
-                transform: state.right ? 'rotate(0deg)' : 'rotate(-90deg)',
-                transition: 'transform 0.3s',
-              }}
-            />
-          </CustomIconButton>
+          <Tooltip title="תפריט" arrow>
+            <CustomIconButton onClick={handleToggleDrawer}>
+              <ArrowDropDownCircleIcon
+                style={{
+                  color: 'black',
+                  transform: state.right ? 'rotate(0deg)' : 'rotate(-90deg)',
+                  transition: 'transform 0.3s',
+                }}
+              />
+            </CustomIconButton>
+          </Tooltip>
           <SwipeableDrawer
             anchor={'right'}
             open={state['right']}
@@ -118,6 +121,7 @@ export default function SwipeableTemporaryDrawer() {
           >
             {list('right')}
           </SwipeableDrawer>
+
         </React.Fragment>
       </div>
       <Routes>
