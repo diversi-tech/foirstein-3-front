@@ -177,6 +177,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.title && formData.title.length < 2 && (
             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
           )}
+          
           <TextField
             margin="dense"
             label="תיאור"
@@ -190,6 +191,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
+           {formData.description === formData.title  &&(
+            <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
+           )}
           <TextField
             margin="dense"
             label="קטגוריה"
@@ -223,8 +227,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
            type="text"
            fullWidth
            name="publishingYear"
-           value={formData.publishingYear}
+           value={formData.publishingYear || ""}
            onChange={handleChange}
+           inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
            required
            />
           }
