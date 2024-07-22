@@ -55,12 +55,14 @@ const TagList = observer(() => {
   const [itemsUsingTag, setItemsUsingTag] = useState([]);
   const [isAddTagOpen, setIsAddTagOpen] = useState(false);
   const [sortDirection, setSortDirection] = useState("asc");
+  const [isSorted, setIsSorted] = useState(false);
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
       await TagStore.fetchTag();
+      setIsSorted(false);
     };
     fetchData();
   }, []);
@@ -68,14 +70,14 @@ const TagList = observer(() => {
   const toggleSort = () => {
     const newDirection = sortDirection === "asc" ? "desc" : "asc";
     setSortDirection(newDirection);
+    setIsSorted(newDirection === "desc");
     window.scrollTo(0, 0);
   };
 
-  const sortedTags = [...TagStore.tagList].sort((a, b) => {
-    return sortDirection === "desc"
-      ? b.name.localeCompare(a.name)
-      : a.name.localeCompare(b.name);
-  });
+  let displayedTags = [...TagStore.tagList];
+  if (isSorted) {
+    displayedTags.sort((a, b) => a.name.localeCompare(b.name));
+  }
 
   const handleChangePage = (event, value) => {
     setPage(value);
@@ -145,7 +147,7 @@ const TagList = observer(() => {
 
   const startIndex = (page - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const currentTags = sortedTags.slice(startIndex, endIndex);
+  const currentTags = displayedTags.slice(startIndex, endIndex);
 
   return (
     <Grid
@@ -219,7 +221,7 @@ const TagList = observer(() => {
               >
                 <Pagination
                   dir="ltr"
-                  count={Math.ceil(sortedTags.length / rowsPerPage)}
+                  count={Math.ceil(displayedTags.length / rowsPerPage)}
                   page={page}
                   onChange={handleChangePage}
                   variant="outlined"
