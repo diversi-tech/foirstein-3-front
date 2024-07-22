@@ -99,7 +99,7 @@ class ItemStore {
         }
     }
     async deniedItem(itemId) {
-        console.log(itemId)
+        console.log(`deney item : ${itemId}`)
         this.isDeind = false;
         try {
             const res = await fetch(`${baseURL}/deny/${itemId}`, {
