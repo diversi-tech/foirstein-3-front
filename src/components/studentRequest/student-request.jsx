@@ -6,6 +6,11 @@ import BeenhereOutlinedIcon from "@mui/icons-material/BeenhereOutlined";
 import BackspaceOutlinedIcon from "@mui/icons-material/BackspaceOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 // import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import {
   Paper,
   TableRow,
@@ -74,15 +79,13 @@ function Request(props) {
         <TableCell className="styled-table-cell">
           <Box className="center-content" justifyContent="space-around">
             <AlertDialog
-              option="דחיה"
               requestId={request.requestId}
-              color="error"
             />
-            <AlertDialog
+            {/* <AlertDialog
               option="אישור"
               requestId={request.requestId}
               color="error"
-            />
+            /> */}
           </Box>
         </TableCell>
         <TableCell className="styled-table-cell" align="right">
@@ -209,9 +212,9 @@ const StudentRequest = observer(() => {
                 {rowsToDisplay.length > 0 &&
                   (rowsPerPage > 0
                     ? rowsToDisplay.slice(
-                        currentPage * rowsPerPage,
-                        currentPage * rowsPerPage + rowsPerPage
-                      )
+                      currentPage * rowsPerPage,
+                      currentPage * rowsPerPage + rowsPerPage
+                    )
                     : rowsToDisplay
                   ).map((row) => (
                     <Request
@@ -238,10 +241,12 @@ const StudentRequest = observer(() => {
   );
 });
 export default StudentRequest;
-function AlertDialog({ option, requestId, color }) {
+function AlertDialog({ requestId }) {
   const [open, setOpen] = useState(false);
-  const handleClickOpen = () => {
+  const [option, setOption] = useState('');
+  const handleClickOpen = (buttonType) => {
     setOpen(true);
+    setOption(buttonType);
   };
 
   const handleClose = () => {
@@ -289,15 +294,64 @@ function AlertDialog({ option, requestId, color }) {
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen} color={color}>
-        {option}
-        {option === "אישור" && (
-          <BeenhereOutlinedIcon sx={{ marginLeft: "5px" }} />
-        )}
-        {option === "דחייה" && (
-          <BackspaceOutlinedIcon sx={{ marginLeft: "5px" }} />
-        )}
-      </Button>
+      <ButtonGroup
+        disableElevation
+        variant="contained"
+        aria-label="Disabled button group"
+      >
+        <Button onClick={() => { handleClickOpen("אישור") }}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#2C6B2F',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100px',
+            height: '40px',
+            margin: '0', // להסיר מרווח בין הכפתורים
+            borderRight: '1px solid gray',
+            border: 'none'
+          }}
+        >
+          <CheckCircleIcon style={{
+            marginBottom: '0',
+            fontSize: '20px',
+            alignSelf: 'center',
+            marginTop: '4px'
+          }} />
+          <span style={{
+            marginTop: '2px',
+            fontSize: '14px',
+            lineHeight: '16px'
+          }}>אישור</span>
+        </Button>
+        <Button onClick={() => { handleClickOpen("דחיה") }}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#E57373',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100px',
+            height: '40px',
+            margin: '0', // להסיר מרווח בין הכפתורים
+            borderLeft: '1px solid gray',
+            border: 'none'
+          }}
+        >
+          <CancelIcon style={{
+            marginBottom: '0',
+            fontSize: '20px',
+            alignSelf: 'center',
+            marginTop: '4px'
+          }} />
+          <span style={{
+            marginTop: '2px',
+            fontSize: '14px',
+            lineHeight: '16px'
+          }}>דחיה</span>
+        </Button>
+      </ButtonGroup>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -310,7 +364,7 @@ function AlertDialog({ option, requestId, color }) {
             id="alert-dialog-description"
             style={{ fontWeight: "bold" }}
           >
-            ? האם אתה רוצה לבצע {option}
+            {option === 'אישור' ? 'האם אתה רוצה לבצע אישור?' : 'האם אתה רוצה לבצע דחיה?'}
           </DialogContentText>
         </DialogContent>
         <DialogActions className="dialog-actions">
@@ -324,9 +378,7 @@ function AlertDialog({ option, requestId, color }) {
   );
 }
 AlertDialog.propTypes = {
-  option: PropTypes.string.isRequired,
   requestId: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
 };
 DetailRequest.propTypes = {
   detailRequest: PropTypes.shape({
