@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import itemStore from "../../store/item-store";
 import ItemSearch from "./item-search";
@@ -22,11 +22,14 @@ import {
   FormControlLabel,
   Radio,
   Chip,
+  Box,
   Stack,
   Checkbox,
   Grid,
   Tooltip,
-  PaginationItem
+  Collapse,
+  PaginationItem,
+  Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -39,10 +42,12 @@ import { styled } from "@mui/material/styles";
 import { blue, pink } from "@mui/material/colors";
 import './item.css';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
+// import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import Pagination from "@mui/material/Pagination"; // Import Pagination
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+// import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const useStyles = styled((theme) => ({
   title: {
@@ -97,6 +102,7 @@ const ItemList = observer(() => {
   const [filterType, setFilterType] = useState("all");
   const [page, setPage] = useState(1);
   const rowsPerPage = 5;
+  const [openRows, setOpenRows] = useState({});
 
   useEffect(() => {
     itemStore.fetchMedia();
@@ -243,6 +249,13 @@ const handleDeleteSelectedItems = async () => {
     setEditOpen(true);
   };
 
+  const handleExpandClick = (itemId) => {
+    setOpenRows((prevOpenRows) => ({
+      ...prevOpenRows,
+      [itemId]: !prevOpenRows[itemId]
+    }));
+  };
+
   const handleClose = () => {
     setSendItem(false);
     setSendTag(false);
@@ -295,6 +308,7 @@ const handleDeleteSelectedItems = async () => {
   const endIndex = startIndex + rowsPerPage;
   const currentItems = filteredItems.slice(startIndex, endIndex);
 
+
   return (
     <>
       <div className="itemListDiv">
@@ -319,7 +333,6 @@ const handleDeleteSelectedItems = async () => {
           <FormControlLabel value="book" control={<Radio />} label="ספרים" />
           <FormControlLabel value="file" control={<Radio />} label="קבצים" />
         </RadioGroup>
-
         <Grid container justifyContent="center">
           <Grid item xs={12}>
             <TableContainer
@@ -328,7 +341,7 @@ const handleDeleteSelectedItems = async () => {
             >
               <Table stickyHeader>
                 <TableHead>
-                  <TableRow>
+                  <TableRow>                    
                     <TableCell align="right" className={classes.headerCell}>
                       <Checkbox
                         indeterminate={
@@ -401,6 +414,7 @@ const handleDeleteSelectedItems = async () => {
                 </TableHead>
                 <TableBody>
                   {currentItems.map((item) => (
+                    <React.Fragment key={item.id}>
                     <TableRow key={item.id} className={classes.tableRow}>
                       <TableCell align="right" className={classes.tableCell}>
                         <Checkbox
@@ -409,6 +423,17 @@ const handleDeleteSelectedItems = async () => {
                           onChange={() => handleSelectItem(item)}
                         />
                       </TableCell>
+                      <TableCell className={classes.tableCell}>
+                      <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={() => handleExpandClick(item.id)}
+                        >
+                          {openRows[item.id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        </IconButton>
+                      </Tooltip>                  
+                    </TableCell>
                       {!item.filePath.includes("https") ? (
                         <TableCell align="center" className={classes.tableCell}>
                           <MenuBookRoundedIcon sx={{ color: "#468585" }} />
@@ -418,6 +443,7 @@ const handleDeleteSelectedItems = async () => {
                           <TextSnippetOutlinedIcon sx={{ color: "#468585" }} />
                         </TableCell>
                       )}
+                      
                       <TableCell align="right" className={classes.tableCell}>
                         {item.title}
                       </TableCell>
@@ -450,7 +476,6 @@ const handleDeleteSelectedItems = async () => {
                             rel="noopener noreferrer"
                           >
                             {item.title}
-
                           </a>
                         ) : (
                           item.filePath
@@ -493,8 +518,36 @@ const handleDeleteSelectedItems = async () => {
                           })}
                         </Stack>
                       </TableCell>
+                      </TableRow>
+                      <TableRow>
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={10}>
+                      <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+                        <Box display='flex' dir='rtl' margin={1}>
+                  { !item.filePath.includes('https') &&
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
+                        }
+                            {!item.filePath.includes('https') &&
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
+                            }
+                              {!item.filePath.includes('https') &&
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
+                              }
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מהדורה: {item.edition}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>סידרה: {item.series}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר בסידרה: {item.numOfSeries}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
                     </TableRow>
-                  ))}
+                    </React.Fragment>
+              ))}
+              
                 </TableBody>
               </Table>
             </TableContainer>
