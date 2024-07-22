@@ -317,6 +317,8 @@ const ItemList = observer(() => {
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                    </TableCell>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       כותרת
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
