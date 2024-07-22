@@ -20,4 +20,8 @@
     justify-content: flex-end;
     direction: rtl;
   }
-  
+  /* .table-header {
+  position:sticky;
+  top: 80px;
+  background-color: rgb(154, 39, 39); 
+  z-index: 0; } */

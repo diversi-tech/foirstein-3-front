@@ -8,6 +8,15 @@ import {
 import Swal from "sweetalert2";
 const baseUrl = "https://libererisas-backend.onrender.com/api/";
 
+// Utility function to extract raw data
+const extractRawData = (proxyObject) => {
+  if (proxyObject && proxyObject.data) {
+    return proxyObject.data;
+  } else {
+    return proxyObject;
+  }
+};
+
 class StudentsRequestStore {
   requestList = [];
   isUpdate = false;
@@ -25,32 +34,22 @@ class StudentsRequestStore {
     });
     this.fetchRequest();
   }
-
-  async fetchRequest() {
+  async fetchRequest(){
     try {
-      const res = await fetch(baseUrl + "BorrowRequest");
-      let data = await res.json();
-
-      runInAction(() => {
-        this.requestList = this.extractRawData(data);
-        // debugger
-      });
+      const res = await fetch(`${baseUrl}BorrowRequest`);
+      console.log("BorrowApprovalReques");
+      const data = await res.json();
+      // const rows = extractRawData(data.data); 
+      // return rows;
+      return data;
     } catch (error) {
-      console.error("Failed to fetch request:", error);
+      console.error("Failed to fetch data:", error);
+      console.log("!!!!!");
+      return [];
     }
   }
-
   get getRequest() {
-    // debugger
     return this.requestList;
-  }
-  //פונקציה שמחלצת מהפרוקסי
-  extractRawData(proxyObject) {
-    if (proxyObject && proxyObject.data) {
-      return proxyObject.data;
-    } else {
-      return proxyObject;
-    }
   }
   //עדכון שהבקשה אושרה
   async updateApproveRequest(requestId) {
@@ -61,22 +60,10 @@ class StudentsRequestStore {
           method: "PUT",
         }
       );
-      console.log(res);
-      if (res.status === 200) {
-        Swal.fire({
-          title:"! הבקשה עודכנה בהצלחה ",
-          icon: "success",
-        });
-        runInAction(() => {
-          this.fetchRequest();
-        });
-      } else {
-        Swal.fire({
-          title:  "... העדכון נכשל",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-      }
+      runInAction(() => {
+        this.fetchRequest();
+      });
+      return res;
     } catch (error) {
       console.error("Failed to fetch request:", error);
     }
@@ -90,48 +77,29 @@ class StudentsRequestStore {
           method: "PUT",
         }
       );
-      if (res.status === 200) {
-        Swal.fire({
-          title:"! הבקשה עודכנה בהצלחה ",
-          icon: "success",
-        });
-        runInAction(() => {
-          this.fetchRequest();
-        });
-      } else {
-        Swal.fire({
-          title:  "... העדכון נכשל",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-      }
+      runInAction(() => {
+        this.fetchRequest();
+      });
+      return res;
     } catch (error) {
       console.error("Failed to fetch request:", error);
     }
   }
-  //פונקציה שמחזירה את פרטי הסטודנט
-  async getDetailsOfUser(userId) {
+  async getById(requestId) {
     try {
-      const res = await fetch(
-        `${baseUrl}BorrowApprovalRequest/user/${userId}`,
-        {
-          method: "GET",
-        }
-      );
-      if (res.status === 200) {
-        Swal.fire({
-          title:"! הבקשה עודכנה בהצלחה ",
-          icon: "success",
-        });
-      } else {
-        Swal.fire({
-          title:  "... העדכון נכשל",
-          icon: "error",
-          confirmButtonText: "Cool",
-        });
-      }
+      const res = await fetch(`${baseUrl}BorrowApprovalRequest/details/${requestId}`);
+      let data = await res.json();
+      return extractRawData(data);
     } catch (error) {
-      console.error("Failed to fetch request:", error);
+      console.error("Failed to fetch data:", error);
+      Swal.fire({
+        icon: "Error",
+        title: " אופס,שגיאה בהבאת הנתונים.. ",
+        
+        showConfirmButton: false,
+        timer: 1500
+      });
+      throw error;
     }
   }
 }

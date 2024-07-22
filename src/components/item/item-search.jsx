@@ -17,12 +17,34 @@ const ItemSearch = ({ onSearch }) => {
       value={searchTerm}
       onChange={handleSearchChange}
       InputProps={{
-        startAdornment: (
-            <InputAdornment position="start">
-                <SearchIcon />
-            </InputAdornment>
+        endAdornment: (
+          <InputAdornment position="end">
+            <SearchIcon sx={{ color: 'gray' }} />
+          </InputAdornment>
         ),
-    }}
+      }}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          '& fieldset': {
+            borderColor: '#FFFFFF', // צבע המסגרת
+          },
+          '&:hover fieldset': {
+            borderColor: '#FFFFFF', // צבע המסגרת כאשר מרחפים
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: '#FFD700', // צבע המסגרת כאשר ממוקדים
+          },
+        },
+        '& .MuiInputLabel-root': {
+          color: '#FFFFFF', // צבע התווית
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+          color: '#FFD700', // צבע התווית כאשר ממוקדים
+        },
+        '& .MuiInputBase-input': {
+          color: '#dcdcdc', // צבע הכיתוב בתוך האינפוט
+        }
+      }}
     />
   );
 };

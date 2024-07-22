@@ -47,6 +47,12 @@ class TagStore {
 
     }
   }
+async checkItemsUsingTag(tagId) {
+  const response = await fetch(baseUrl+`/${tagId}/items`);
+  const items = await response.json();
+  return items;
+}
+
    
   async deleteTag(tagId) {
     try {
