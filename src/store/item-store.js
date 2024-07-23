@@ -1,7 +1,7 @@
 import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
-const baseURL='https://libererisas-backend.onrender.com/api/Item';
+const baseURL = 'https://libererisas-backend.onrender.com/api/Item';
 
 class ItemStore {
     pendingItemsList = []
@@ -34,7 +34,9 @@ class ItemStore {
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action,
-            deleteMedia: action
+            deleteMedia: action,
+            addItemTag: action,
+            isAddItemTag:observable
         });
         this.fetchPendingItems();
         this.fetchMedia();
@@ -228,6 +230,31 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
+    async addItemTag(itemId, tagId) {
+        try {
+            const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ itemId: itemId, tagId: tagId })
+            });
+            console.log("add item tag:");
+            if (res.status === 200) {
+                this.isAddItemTag = true;
+                // this.message = "התווסף בהצלחה ✅"
+            }
+            else {
+                this.isAddItemTag = false;
+                // this.message = "הוספה נכשלה"
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to add item tag:', error);
+        }
+    }
+
 }
+
 const itemStore = new ItemStore();
 export default itemStore;

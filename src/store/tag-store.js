@@ -146,6 +146,9 @@ async checkItemsUsingTag(tagId) {
       timer: 1700,
     });
   }
+  get getTagsList() {
+    return this.tagList;
+}
 }
 const tagStore = new TagStore();
 export default tagStore;

@@ -9,33 +9,9 @@ import { cacheRtl } from "../tag/fields_rtl";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@emotion/react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  useMediaQuery,
-  useTheme,
-  Chip,
-  Box,
-  Stack,
-  Checkbox,
-  Grid,
-  Tooltip,
-  Collapse,
-  PaginationItem,
-  Typography,
-  Radio,
-  FormControlLabel,
-  RadioGroup,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,
+  Dialog, DialogActions, DialogContent, DialogTitle, Button, useMediaQuery, useTheme, Chip, Box,
+  Stack, Checkbox, Grid, Tooltip, Collapse, PaginationItem, Typography,
 } from "@mui/material";
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 // import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
@@ -56,6 +32,8 @@ import './item.css';
 // import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+// import AddCircleIcon from "@mui/icons-material/AddCircle";
+import IconSelectTags from "./SelectTags";
 
 const useStyles = styled((theme) => ({
   title: {
@@ -91,7 +69,7 @@ const useStyles = styled((theme) => ({
     },
   },
 
-}));
+}))
 
 const ItemList = observer(() => {
 
@@ -113,13 +91,17 @@ const ItemList = observer(() => {
   const [deleteMultieItems, setDeleteMultieItems] = useState(false);
   const [openRows, setOpenRows] = useState({});
 
+
+
   useEffect(() => {
     itemStore.fetchMedia();
   }, []);
 
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
+    console.log("items:" + JSON.stringify(itemStore.mediaList))
   }, [itemStore.mediaList, filterType]);
+
 
   const handleDelete = (item) => {
     setDeleteItem(item);
@@ -180,6 +162,7 @@ const ItemList = observer(() => {
     setEditOpen(false);
     setEditedItem(null);
     setDeleteTagOpen(false);
+    setAddTagOpen(false);
   };
 
   const handleSelectItem = (item) => {
@@ -238,7 +221,22 @@ const ItemList = observer(() => {
     return items.filter((item) => item.filePath.includes("https"));
   };
 
-
+  const handleAddTagsToItems = (tags) => {
+    tags.map(async (tag) => {
+      selectedItems.map(async (item) => {
+        try {
+          await itemStore.addItemTag(item.id, tag.id);
+          if (itemStore.isAddItemTag === true)
+            console.log("success")
+          else
+            console.log("error add")
+        }
+        catch (error) {
+          console.log("fail in add itemtag: " + error)
+        }
+      })
+    })
+  }
   return (
     <>
       <div className="itemListDiv">
@@ -344,171 +342,181 @@ const ItemList = observer(() => {
                       תגית
                     </TableCell>
                     <TableCell className={classes.headerCell} style={{ wordWrap: "break-word" }}>
-                      <Button
-                        onClick={
-                          selectedItems.length > 0
-                            ? handleDeleteSelectedItems
-                            : handleClickAdd
-                        }
-                        className={classes.addButton}
-                      >
-                        {selectedItems.length > 0 ? (
-                          <Tooltip title="למחיקת פריטים מרובים">
-                            <DeleteIcon />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="להוספת פריט חדש" arrow>
-                            <AddIcon />
-                          </Tooltip>
+                      <Grid container>
+                        <Button
+                          onClick={
+                            selectedItems.length > 0
+                              ? handleDeleteSelectedItems
+                              : handleClickAdd
+                          }
+                          className={classes.addButton}
+                        >
+                          {selectedItems.length > 0 ? (
+                            <Tooltip title="למחיקת פריטים מרובים" arrow>
+                              <DeleteIcon />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="להוספת פריט חדש" arrow>
+                              <AddIcon />
+                            </Tooltip>
+                          )}
+                        </Button>
+                        {selectedItems.length > 0 && (
+                          <IconSelectTags handleAddItemTag={handleAddTagsToItems} />
                         )}
-                      </Button>
+                      </Grid>
+
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-
                   {filteredItems.map((item) => (
                     <React.Fragment key={item.id}>
-                    <TableRow key={item.id} className={classes.tableRow}>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Checkbox
-                          color="primary"
-                          checked={selectedItems.includes(item.id)}
-                          onChange={() => handleSelectItem(item)}
-                        />
-                      </TableCell>
-                      <TableCell className={classes.tableCell}>
-                      <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
-                        <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={() => handleExpandClick(item.id)}
-                        >
-                          {openRows[item.id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                      </Tooltip>                  
-                    </TableCell>
-                      {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
-                        </TableCell>
-                      ) : (
-                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
-                        </TableCell>
-                      )}
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.title}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.description}
-                      </TableCell>
-                      <TableCell align="rifht" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.category}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.author}
-                      </TableCell>
-                      {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} color="info" style={{ wordWrap: "break-word" }}>
-                          {item.publishingYear}
-                        </TableCell>
-                      ) : (
+                      <TableRow key={item.id} className={classes.tableRow}>
                         <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          --
+                          <Checkbox
+                            color="primary"
+                            checked={selectedItems.includes(item.id)}
+                            onChange={() => handleSelectItem(item)}
+                          />
                         </TableCell>
-                      )}
-                      <TableCell
-                        align="right"
-                        className={classes.tableCell}
-                        style={{ color: item.isApproved ? "#2C6B2F" : "#E57373", wordWrap: "break-word" }}
-                      >
-                        {item.isApproved ? "מאושר" : "ממתין לאישור"}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.filePath.includes("https") ? (
-                          <a
-                            href={item.filePath}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.title}
-                          </a>
+                        <TableCell className={classes.tableCell}>
+                          <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={() => handleExpandClick(item.id)}
+                            >
+                              {openRows[item.id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                        {!item.filePath.includes("https") ? (
+                          <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
+                          </TableCell>
                         ) : (
-                          item.filePath
+                          <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
+                          </TableCell>
                         )}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Tooltip title="עריכה" arrow>
-                        <IconButton onClick={() => handleClickEdit(item)}>
-                          <EditIcon style={{ color: "#334970" }} />
-                        </IconButton>
-                        </Tooltip>
-                        <Tooltip title="מחיקה" arrow>
-                        <IconButton onClick={() => handleDelete(item)}>
-                          <DeleteIcon style={{ color: "#334970" }} />
-                        </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Stack
-                          direction="row"
-                          style={{
-                            flexWrap: "nowrap",
-                            overflowX: "auto",
-                            width: "200px",
-                            color: "#A80B8BD",
-                          }}
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.title}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.description}
+                        </TableCell>
+                        <TableCell align="rifht" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.category}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.author}
+                        </TableCell>
+                        {!item.filePath.includes("https") ? (
+                          <TableCell align="center" className={classes.tableCell} color="info" style={{ wordWrap: "break-word" }}>
+                            {item.publishingYear}
+                          </TableCell>
+                        ) : (
+                          <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            --
+                          </TableCell>
+                        )}
+                        <TableCell
+                          align="right"
+                          className={classes.tableCell}
+                          style={{ color: item.isApproved ? "#2C6B2F" : "#E57373", wordWrap: "break-word" }}
                         >
-                          {item.tags.map((tagId) => {
-                            const tag = tagStore.tagList.find(
-                              (tag) => tag.id === tagId
-                            );
-                            if (tag) {
-                              return (
-                                <Chip
-                                  key={tag.id}
-                                  label={tag.name}
-                                  style={{ color: "#9CDBA6" }}
-                                  variant="outlined"
-                                  onDelete={() => handleDeleteTag(item, tag)}
-                                />
+                          {item.isApproved ? "מאושר" : "ממתין לאישור"}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.filePath.includes("https") ? (
+                            <a
+                              href={item.filePath}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {item.title}
+                            </a>
+                          ) : (
+                            item.filePath
+                          )}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          <Tooltip title="עריכה" arrow>
+                            <IconButton onClick={() => handleClickEdit(item)}>
+                              <EditIcon style={{ color: "#334970" }} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="מחיקה" arrow>
+                            <IconButton onClick={() => handleDelete(item)}>
+                              <DeleteIcon style={{ color: "#334970" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          <Stack
+                            direction="row"
+                            style={{
+                              flexWrap: "nowrap",
+                              overflowX: "auto",
+                              width: "200px",
+                              color: "#A80B8BD",
+                            }}
+                          >
+                            {item.tags.map((tagId) => {
+                              const tag = tagStore.tagList.find(
+                                (tag) => tag.id === tagId
                               );
-                            }
-                            return null;
-                          })}
-                        </Stack>
-                      </TableCell>
+                              if (tag) {
+                                return (
+                                  <Chip
+                                    key={tag.id}
+                                    label={tag.name}
+                                    style={{ color: "#9CDBA6" }}
+                                    variant="outlined"
+                                    onDelete={() => handleDeleteTag(item, tag)}
+                                    sx={{
+                                      '& .MuiChip-deleteIcon': {
+                                        marginLeft: '5px', // לדחוף את האייקון לימין
+                                      },
+                                    }}
+                                  />
+                                );
+                              }
+                              return null;
+                            })}
+                          </Stack>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={10}>
-                      <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-                        <Box display='flex' dir='rtl' margin={1}>
-                  { !item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
-                        }
-                            {!item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
-                            }
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+                          <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+                            <Box display='flex' dir='rtl' margin={1}>
                               {!item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
                               }
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מהדורה: {item.edition}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>סידרה: {item.series}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר בסידרה: {item.numOfSeries}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                    </TableRow>
+                              {!item.filePath.includes('https') &&
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
+                              }
+                              {!item.filePath.includes('https') &&
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
+                              }
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מהדורה: {item.edition}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>סידרה: {item.series}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר בסידרה: {item.numOfSeries}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
                     </React.Fragment>
-              ))}
-              
+                  ))}
+
                 </TableBody>
               </Table>
             </TableContainer>
@@ -571,3 +579,4 @@ const ItemList = observer(() => {
 });
 
 export default ItemList;
+
