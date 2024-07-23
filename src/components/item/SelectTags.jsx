@@ -36,18 +36,18 @@ const rtlTheme = createTheme({
     direction: 'rtl', // Set text direction to right-to-left
 });
 
-function getStyles(name, personName, theme) {
+function getStyles(id, selectedTags, theme) {
     return {
         fontWeight:
-            personName.indexOf(name) === -1
+            selectedTags.indexOf(id) === -1
                 ? theme.typography.fontWeightRegular
                 : theme.typography.fontWeightMedium,
     };
 }
 
-export default function IconSelectTags({handleAddItemTag}) {
+export default function IconSelectTags({ handleAddItemTag }) {
     const theme = useTheme();
-    const [personName, setPersonName] = React.useState([]);
+    const [selectedTags, setSelectedTags] = React.useState([]);
     const [tags, setTags] = useState([]);
     const [addTagOpen, setAddTagOpen] = useState(false);
     const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -55,6 +55,7 @@ export default function IconSelectTags({handleAddItemTag}) {
     const handleOpenTagClick = () => {
         setAddTagOpen(true);
     };
+
     const handleCloseTagClick = () => {
         setAddTagOpen(false);
     };
@@ -63,17 +64,19 @@ export default function IconSelectTags({handleAddItemTag}) {
         const {
             target: { value },
         } = event;
-        setPersonName(
-            typeof value === 'string' ? value.split(',') : value,
+        setSelectedTags(
+            typeof value === 'string' ? value.split(',') : value
         );
     };
-    const handleAddTags=()=>{
+
+    const handleAddTags = () => {
         handleCloseTagClick();
-        handleAddItemTag()
-    }
+        handleAddItemTag(selectedTags);
+        setSelectedTags([])
+    };
+
     useEffect(() => {
         setTags(tagStore.getTagsList); // Make sure this returns an array of objects
-        console.log('tags:' + JSON.stringify(tags));
     }, [tagStore.tagList]);
 
     useEffect(() => {
@@ -114,15 +117,15 @@ export default function IconSelectTags({handleAddItemTag}) {
                             labelId="demo-multiple-chip-label"
                             id="demo-multiple-chip"
                             multiple
-                            value={personName}
+                            value={selectedTags}
                             onChange={handleChange}
                             input={<OutlinedInput id="select-multiple-chip" label="תגיות" />}
                             renderValue={(selected) => (
                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
+                                    {selected.map((id) => (
                                         <Chip
-                                            key={value}
-                                            label={tags.find((tag) => tag.name === value)?.name || value}
+                                            key={id}
+                                            label={tags.find((tag) => tag.id === id)?.name || id}
                                         />
                                     ))}
                                 </Box>
@@ -132,8 +135,8 @@ export default function IconSelectTags({handleAddItemTag}) {
                             {tags.map((tag) => (
                                 <MenuItem
                                     key={tag.id}
-                                    value={tag.name}
-                                    style={getStyles(tag.name, personName, theme)}
+                                    value={tag.id} // שמור את ה-ID בתור הערך של MenuItem
+                                    style={getStyles(tag.id, selectedTags, theme)}
                                 >
                                     {tag.name}
                                 </MenuItem>
@@ -153,6 +156,7 @@ export default function IconSelectTags({handleAddItemTag}) {
         </>
     );
 }
+
 IconSelectTags.propTypes = {
-    handleAddItemTag: PropTypes.func.isRequired
-  };
+    handleAddItemTag: PropTypes.func.isRequired,
+};

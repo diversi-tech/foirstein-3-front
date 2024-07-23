@@ -27,22 +27,19 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
-            // add: observable,
             pendingItemsList: observable,
-            // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action,
             deleteMedia: action,
             addItemTag: action,
-            isAddItemTag:observable
+            isAddItemTag: observable
         });
         this.fetchPendingItems();
         this.fetchMedia();
     }
 
     async deleteTag(itemId, tagId) {
-        console.log("hiiDeleteTag");
         try {
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'DELETE'
@@ -70,8 +67,6 @@ class ItemStore {
             const obj = await res.json();
             let list = toJS(obj);
             this.pendingItemsList = list;
-            console.log(list);
-            console.log(toJS(obj));
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -79,17 +74,14 @@ class ItemStore {
     }
     async approvalItem(itemId) {
         console.log(itemId)
-        // this.isApprov = false;
         try {
             const res = await fetch(`${baseURL}/approvItem/${itemId}`, { method: 'PUT' });
             console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
-                // this.message = " הפריט אושר";
                 await itemStore.fetchPendingItems();
             }
             else {
-                // this.message = "אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
@@ -105,11 +97,9 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isDeind = true;
-                // this.message = " הפריט נדחה ✅";
             }
             else {
                 this.isUpdate = false;
-                // this.message = "!אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
@@ -122,7 +112,6 @@ class ItemStore {
             const res = await fetch(`${baseURL}`);
             const obj = await res.json();
             this.mediaList = obj.data;
-            console.log("list media: ", this.mediaList);
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -185,15 +174,11 @@ class ItemStore {
 
     async updateMediaBook(mediaId, mediaData) {
         try {
-
-            console.log("formData: ", mediaData, "beforeFetch");
             const res = await fetch(`${baseURL}/book/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });
-            console.log("formData: ", mediaData, "afterFetch");
             this.fetchMedia();
-
             if (res.status === 200) {
                 this.isUpdate = true;
             }
@@ -228,6 +213,7 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
+            debugger
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {
@@ -235,14 +221,12 @@ class ItemStore {
                 },
                 body: JSON.stringify({ itemId: itemId, tagId: tagId })
             });
-            console.log("add item tag:");
+            console.log("add item tag:" + res.status);
             if (res.status === 200) {
                 this.isAddItemTag = true;
-                // this.message = "התווסף בהצלחה ✅"
             }
             else {
                 this.isAddItemTag = false;
-                // this.message = "הוספה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
