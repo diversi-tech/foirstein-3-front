@@ -143,7 +143,86 @@ Row.propTypes = {
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
 };
+async function approval(itemId) {
+  Swal.fire({
+    title: "?האם לאשר את הפריט",
+    text: "פריט מאושר ייכנס למאגר",
+    showDenyButton: true,
+    //showCancelButton: true,
+    confirmButtonText: "לאשר",
+    denyButtonText: `ביטול`
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await itemStore.approvalItem(itemId);
+      if (itemStore.isApprov)
+      {
+        await itemStore.fetchPendingItems();
+        Swal.fire({
+          icon: "success",
+          title: "הפריט אושר",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+        
 
+      else
+        Swal.fire({
+          icon: "error",
+          title: "אופס... תקלה בעת שמירת הנתונים",
+          showConfirmButton: false,
+          timer: 1500
+        });
+    }
+    else if (result.isDenied) {
+      Swal.fire({
+        icon: "info",
+        title: "לא נשמרו שינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  });
+}
+async function deny(itemId) {
+  Swal.fire({
+    title: "?האם לא לאשר את הפריט",
+    text: "פריט לא מאושר יימחק מהמאגר",
+    showDenyButton: true,
+    //showCancelButton: true,
+    confirmButtonText: "דחיית פריט",
+    denyButtonText: `ביטול`
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      await itemStore.deniedItem(itemId);
+      if (itemStore.isDeind)
+      {
+        await itemStore.fetchPendingItems();
+        Swal.fire({
+          icon: "success",
+          title: "הפריט נמחק",
+          showConfirmButton: false,
+          timer: 1500
+        }
+      );
+    }
+      else
+        Swal.fire({
+          icon: "error",
+          title: "אופס... תקלה בעת שמירת הנתונים",
+          showConfirmButton: false,
+          timer: 1500
+        });
+    }
+    else if (result.isDenied) {
+      Swal.fire({
+        icon: "info",
+        title: "לא נשמרו שינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  });}
 export const PendingItems = observer(() => {
   const [editedItem, setEditedItem] = useState(null);
   const [editOpen, setEditOpen] = useState(false);

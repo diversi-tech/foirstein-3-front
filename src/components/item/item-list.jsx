@@ -8,6 +8,7 @@ import theme from '../tag/fields_rtl'
 import { cacheRtl } from "../tag/fields_rtl";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@emotion/react";
+import Swal from 'sweetalert2'
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,
   Dialog, DialogActions, DialogContent, DialogTitle, Button, useMediaQuery, useTheme, Chip, Box,
@@ -22,8 +23,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ItemEdit from "./item-edit";
 import tagStore from "../../store/tag-store";
 import ItemAdd from "./item-add";
-import Success from "../message/success";
-import Failure from "../message/failure";
 import { styled } from "@mui/material/styles";
 import "./item.css";
 import { blue, pink } from "@mui/material/colors";
@@ -105,37 +104,84 @@ const ItemList = observer(() => {
 
   const handleDelete = (item) => {
     setDeleteItem(item);
-    setDeleteOpen(true);
-
+    Swal.fire({
+        title: "האם אתה בטוח שברצונך למחוק",
+        text: "לא תוכל לשחזר",
+        icon: "warning",
+        showDenyButton: true,
+        denyButtonText: `ביטול`,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "כן, מחק"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await itemStore.deleteMedia(item.id);
+                Swal.fire({
+                    title: "נמחק בהצלחה",
+                    text: "הפריט נמחק בהצלחה",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                // עדכן את רשימת הפריטים אחרי מחיקה
+                itemStore.fetchMedia();
+            } catch (error) {
+                Swal.fire({
+                    title: "שגיאה",
+                    text: "התרחשה שגיאה בעת מחיקת הפריט",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                console.error("Error deleting item:", error);
+            }
+        } else if (result.isDenied) {
+            Swal.fire({
+                title: "בוטל",
+                text: "הפריט לא נמחק",
+                icon: "info",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
   };
 
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
-    setDeleteTagOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (deleteTag && deleteTag.id) {
-      await itemStore.deleteTag(deleteItem.id, deleteTag.id);
-      setSendTag(true);
-      setTimeout(() => {
-        handleClose();
-      }, 1000);
-    }
-  };
-
-  const deletee = async () => {
-    try {
-      await itemStore.deleteMedia(deleteItem.id);
-      setSendItem(true);
-      setTimeout(() => {
-        handleClose();
-      }, 1000);
-    } catch (error) {
-      console.error(`Error deleting item with ID ${deleteItem.id}:`, error);
-    }
-  };
+    Swal.fire({
+        title: "האם אתה בטוח שברצונך למחוק את התג",
+        text: "התג יימחק",
+        icon: "warning",
+        showDenyButton: true,
+        denyButtonText: `ביטול`,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "כן, מחק"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await itemStore.deleteTag(item.id, tag.id);
+            setDeleteTagOpen(false);
+            Swal.fire({
+                title: "נמחק בהצלחה",
+                text: "התג נמחק בהצלחה",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } else if (result.isDenied) {
+            Swal.fire({
+                title: "בוטל",
+                text: "התג לא נמחק",
+                icon: "info",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
+};
 
   const handleClickAdd = () => {
     itemStore.add = true;
@@ -176,27 +222,69 @@ const ItemList = observer(() => {
   };
 
   const handleDeleteSelectedItems = async () => {
-    setDeleteOpen(true); // Open confirmation dialog for bulk delete
-    setDeleteMultieItems(true);
+    Swal.fire({
+        title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
+        text: "לא תוכל לשחזר אותם",
+        icon: "warning",
+        showDenyButton: true,
+        denyButtonText: `ביטול`,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "כן, מחק"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await Promise.all(selectedItems.map(async (itemId) => {
+                    await itemStore.deleteMedia(itemId);
+                }));
+                Swal.fire({
+                    title: "נמחק בהצלחה",
+                    text: "הפריטים נמחקו בהצלחה",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                setSelectedItems([]);
+                itemStore.fetchMedia();
+            } catch (error) {
+                Swal.fire({
+                    title: "שגיאה",
+                    text: "התרחשה שגיאה בעת מחיקת הפריטים",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                console.error('Error deleting selected items:', error);
+            }
+        } else if (result.isDenied) {
+            Swal.fire({
+                title: "בוטל",
+                text: "הפריטים לא נמחקו",
+                icon: "info",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    });
   };
 
-  const handleConfirmBulkDelete = async () => {
-    if (selectedItems.length > 1) {
-      try {
-        await Promise.all(
-          selectedItems.map(async (itemId) => {
-            await itemStore.deleteMedia(itemId);
-          })
-        );
-        setSendItem(true);
-        setSelectedItems([]);
-      } catch (error) {
-        console.error("Error deleting selected items:", error);
-      }
-    } else {
-      deletee();
-    }
-  };
+  // const handleConfirmBulkDelete = async () => {
+  //   if (selectedItems.length > 1) {
+  //     try {
+  //       await Promise.all(
+  //         selectedItems.map(async (itemId) => {
+  //           await itemStore.deleteMedia(itemId);
+  //         })
+  //       );
+  //       setSendItem(true);
+  //       setSelectedItems([]);
+  //     } catch (error) {
+  //       console.error("Error deleting selected items:", error);
+  //     }
+  //   } else {
+  //     deletee();
+  //   }
+  // };
 
   const handleSearch = (searchTerm) => {
     const filtered = itemStore.mediaList.filter((item) =>
@@ -311,6 +399,8 @@ const ItemList = observer(() => {
                           }
                         }}
                       />
+                    </TableCell>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                     </TableCell>
@@ -523,7 +613,7 @@ const ItemList = observer(() => {
           </Grid>
         </Grid>
       </div>
-      <Dialog
+      {/* <Dialog
         open={deleteOpen}
         onClose={handleClose}
         fullScreen={fullScreen}
@@ -551,10 +641,10 @@ const ItemList = observer(() => {
           </Button>
         </DialogActions>
         {sendItem && (itemStore.isDeleteItem ? <Success /> : <Failure />)}
-      </Dialog>
+      </Dialog> */}
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
-      <Dialog
+      {/* <Dialog
         open={deleteTagOpen}
         onClose={handleClose}
         fullScreen={fullScreen}
@@ -573,7 +663,7 @@ const ItemList = observer(() => {
           </Button>
         </DialogActions>
         {sendTag && (itemStore.isDeleteTag ? <Success /> : <Failure />)}
-      </Dialog>
+      </Dialog> */}
     </>
   );
 });

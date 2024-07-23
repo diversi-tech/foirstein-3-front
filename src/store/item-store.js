@@ -11,7 +11,6 @@ class ItemStore {
     isDeleteItem;
     isDeleteTag;
     isError;
-    message = "נכשל";
     isApprov = false;
 
     constructor() {
@@ -51,12 +50,9 @@ class ItemStore {
             console.log("delete tag:");
             if (res.status === 200) {
                 this.isDeleteTag = true;
-                // this.message = " נמחק בהצלחה ✅"
-
             }
             else {
                 this.isDeleteTag = false;
-                // this.message = "מחיקה נכשלה"
             }
             this.fetchMedia();
         } catch (error) {
@@ -89,11 +85,11 @@ class ItemStore {
             console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
-                this.message = " הפריט אושר";
+                // this.message = " הפריט אושר";
                 await itemStore.fetchPendingItems();
             }
             else {
-                this.message = "אישור פריט לא הצליח"
+                // this.message = "אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
@@ -101,7 +97,7 @@ class ItemStore {
         }
     }
     async deniedItem(itemId) {
-        console.log(itemId)
+        console.log(`deney item : ${itemId}`)
         this.isDeind = false;
         try {
             const res = await fetch(`${baseURL}/deny/${itemId}`, {
@@ -109,11 +105,11 @@ class ItemStore {
             });
             if (res.status === 200) {
                 this.isDeind = true;
-                this.message = " הפריט נדחה ✅";
+                // this.message = " הפריט נדחה ✅";
             }
             else {
                 this.isUpdate = false;
-                this.message = "!אישור פריט לא הצליח"
+                // this.message = "!אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
