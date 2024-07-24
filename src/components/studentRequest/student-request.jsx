@@ -140,7 +140,7 @@ const StudentRequest = observer(() => {
       setLoading(false);
       if (!fetchedRows) {
         Swal.fire({
-          icon: "Errror",
+          icon: "errror",
           title: "אין נתונים",
           showConfirmButton: false,
           timer: 1500,
@@ -148,7 +148,7 @@ const StudentRequest = observer(() => {
       }
     };
     getRequests();
-  }, []);
+  }, rows);
 
   const rowsToDisplay = rows.length > 0 ? rows : [];
 
@@ -252,14 +252,18 @@ function AlertDialog({ option, requestId, color }) {
     handleClickOpen();
     if (option === "אישור") {
       const res = requestStore.updateApproveRequest(requestId);
-      if (res.status === 200) {
+      if (res!= 'null') {
+        handleClose();
         Swal.fire({
-          title: "! הבקשה עודכנה בהצלחה ",
           icon: "success",
+          title: "! הבקשה עודכנה בהצלחה ",   
         });
       } else {
+        console.log(res);
+        handleClose();
         Swal.fire({
-          icon: "Error",
+          
+          icon: "error",
           title: "אופס..שגיאה.. ",
           text: res.error,
           showConfirmButton: false,
@@ -269,6 +273,7 @@ function AlertDialog({ option, requestId, color }) {
     } else {
       const r = requestStore.updateDenyRequest(requestId);
       if (r.status === 200) {
+        handleClose();
         Swal.fire({
           icon: "success",
           title: "הבקשה עודכנה הצלחה..! ",
@@ -276,8 +281,9 @@ function AlertDialog({ option, requestId, color }) {
           timer: 1500,
         });
       } else {
+        handleClose();
         Swal.fire({
-          icon: "Error",
+          icon: "error",
           title: "אופס..שגיאה.. ",
           text: r.error,
           showConfirmButton: false,
