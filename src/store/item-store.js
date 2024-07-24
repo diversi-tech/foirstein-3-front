@@ -2,6 +2,7 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
 const baseURL='https://libererisas-backend.onrender.com/api/Item';
+const url = 'https://librerisas-bafkend.onrender.com/api/Object';
 
 class ItemStore {
     pendingItemsList = []
@@ -95,7 +96,7 @@ class ItemStore {
         }
     }
     async deniedItem(itemId) {
-        console.log(`deney item : ${itemId}`)
+        console.log(itemId)
         this.isDeind = false;
         try {
             const res = await fetch(`${baseURL}/deny/${itemId}`, {
@@ -121,6 +122,8 @@ class ItemStore {
             const obj = await res.json();
             this.mediaList = obj.data;
             console.log("list media: ", this.mediaList);
+            const res2 = await fetch(`${url}`);
+            const obj2 = await res2.data;
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
