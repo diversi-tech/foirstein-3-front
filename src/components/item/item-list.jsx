@@ -441,7 +441,7 @@ const ItemList = observer(() => {
                             : handleClickAdd
                         }
                         className={classes.addButton}
-                      >
+                      >                        
                         {selectedItems.length > 0 ? (
                           <Tooltip title="למחיקת פריטים מרובים">
                             <DeleteIcon />
