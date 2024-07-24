@@ -213,7 +213,6 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
-            debugger
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {
