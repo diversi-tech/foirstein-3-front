@@ -19,6 +19,7 @@ import { useMediaQuery } from '@mui/material';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import tagStore from '../../store/tag-store';
 import PropTypes from 'prop-types';
+import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -89,16 +90,19 @@ export default function IconSelectTags({ handleAddItemTag }) {
                 <IconButton
                     onClick={handleOpenTagClick}
                     sx={{
-                        marginRight: '3%',
-                        backgroundColor: "black",
-                        color: "white",
+                        backgroundColor: "#0D1E46",
+                        color: "#FFD700",
+                        padding: '4px 8px',
+                        minWidth: '40px',
+                        minHeight: '40px',
+                        borderRadius: '5px',
                         "&:hover": {
-                            backgroundColor: "black",
-                            color: "white",
+                            backgroundColor: "#0D1E46",
+                            color: "#FFD700",
                         },
                     }}
                 >
-                    <AddCommentOutlinedIcon />
+                    <MapsUgcOutlinedIcon style={{ transform: 'scaleX(-1)', fontSize: '25px' }} />
                 </IconButton>
             </Tooltip>
             <Dialog
