@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import LevelEnum from '../LevelEum';
+import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import {
-  TextField, Button, Dialog, DialogActions, DialogContent,
+  TextField, Button, Dialog, DialogActions, DialogContent, 
   DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
 
@@ -27,6 +29,17 @@ export default function ItemEdit({ mediaItem, onClose }) {
     isApproved: mediaItem.isApproved,
     tags: initialTagIds,
     filePath: mediaItem.filePath || '',
+    edition: mediaItem.edition,
+    series: mediaItem.series,
+    numOfSeries: mediaItem.numOfSeries,
+    language: mediaItem.language,
+    note: mediaItem.note,
+    accompanyingMaterial: mediaItem.accompanyingMaterial,
+    itemLevel: mediaItem.itemLevel,
+    hebrewPublicationYear: mediaItem.hebrewPublicationYear,
+    numberOfCopies: mediaItem.numberOfCopies,
+    numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
+    copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
   });
 
   const [send, setSend] = useState(false);
@@ -94,6 +107,18 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
     formDataToSend.append('author', formData.author);
+    formDataToSend.append('edition', formData.edition);
+    formDataToSend.append('series', formData.series);
+    formDataToSend.append('numOfSeries', formData.numOfSeries);
+    formDataToSend.append('language', formData.language);
+    formDataToSend.append('note', formData.note);
+    formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
+    formDataToSend.append('itemLevel', formData.itemLevel);
+    formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
+    formDataToSend.append('numberOfCopies', formData.numberOfCopies);
+    formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
+    formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
+
     formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
@@ -151,7 +176,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
     const filePath = formData.filePath;
     setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
   };
+
+  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
     
+  const handleChangeSelect = (event) => {
+    setSelectedLevel(event.target.value);
+  };
   return (
     <Dialog
       open={openI}
@@ -220,22 +250,37 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
+         
           {!formData.filePath.includes('https') &&
            <TextField
            margin="dense"
-           label="שנת הוצאה"
+           label="שנת הוצאה לועזית"
            type="text"
            fullWidth
            name="publishingYear"
-           value={formData.publishingYear || ""}
+           value={formData.publishingYear}
            onChange={handleChange}
            inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-           required
+          //  required
            />
           }
         {formData.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
           <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
         )}
+         {!formData.filePath.includes('https') &&
+                  <TextField
+            margin="dense"
+            label="שנה הוצאה עברית"
+            type="text"
+            fullWidth
+            name="hebrewPublicationYear"
+            value={formData.hebrewPublicationYear}
+            onChange={handleChange}
+            required
+            />}
+          {formData.hebrewPublicationYear && formData.hebrewPublicationYear.length < 1 && (
+            <Typography color="error">שנת הוצאה חייב להכיל 4 תווים </Typography>
+          )}
           <FormControl fullWidth>
             <InputLabel id="demo-multiple-chip-label">תגית</InputLabel>
             <Select
@@ -271,23 +316,178 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="filePath"
             value={formData.filePath}
             onChange={handleChange}
-            style={{ marginRight: '1rem' }}
             disabled={link}
           />
-          {link && (
-            <input
-              type="file"
-              name="filePath"
-              onChange={handleFileChange}
-              style={{ marginTop: '1rem' }}
+         {link && (
+            <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
+              <input
+                accept="*"
+                id="upload-file"
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              <label htmlFor="upload-file">
+                <IconButton color="primary" component="span">
+                  <CloudUploadIcon />
+                </IconButton>
+              </label>
+              <Typography variant="body2" style={{ marginLeft: '8px' }}>
+                {formData.filePath}
+              </Typography>
+            </Box>
+          )}
+           <TextField
+            margin="dense"
+            label="מהודרה"
+            type="text"
+            fullWidth
+            name="edition"
+            value={formData.edition}
+            onChange={handleChange}
+            required
             />
-          )} 
+          {formData.edition && formData.edition.length < 1 && (
+            <Typography color="error">המהדורה חייבת להכיל לפחות תו אחד</Typography>
+          )}
+           <TextField
+            margin="dense"
+            label="סידרה"
+            type="text"
+            fullWidth
+            name="series"
+            value={formData.series}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
+            />
+          {formData.series && formData.series.length < 1 && (
+            <Typography color="error">סידרה חייבת להכיל לפחות 3 תווים</Typography>
+          )}
+          <TextField
+            margin="dense"
+            label="מספר בסידרה"
+            type="number"
+            fullWidth
+            name="numOfSeries"
+            value={formData.numOfSeries}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
+            />
+          {formData.numOfSeries && formData.numOfSeries.length < 1 && (
+            <Typography color="error">מספר בסידרה חייבת להכיל לפחות מספר אחד</Typography>
+          )}
+           <TextField
+            margin="dense"
+            label="שפה"
+            type="text"
+            fullWidth
+            name="language"
+            value={formData.language}
+            onChange={handleChange}
+            required
+            />
+          {formData.language && formData.language.length < 3 && (
+            <Typography color="error">שפה חייבת להכיל לפחות 3 תווים </Typography>
+          )}
+          
+            <TextField
+            margin="dense"
+            label="חומר נלווה"
+            type="text"
+            fullWidth
+            name="accompanyingMaterial"
+            value={formData.accompanyingMaterial}
+            onChange={handleChange}
+            required
+            />
+          {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
+            <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
+          )}
+          {/* <Grid item xs={12}> */}
+              <FormControl fullWidth margin="dense">
+                <InputLabel id="level-select-label">רמה</InputLabel>
+                <Select
+                  labelId="level-select-label"
+                  id="level-select"
+                  name="itemLevel"
+                  value={formData.itemLevel}
+                  onChange={handleChangeSelect}
+                  input={<OutlinedInput label="רמה" />}
+                >
+                  {Object.values(LevelEnum).map((level) => (
+                    <MenuItem key={level} value={level}>
+                      {level}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            {/* </Grid> */}
+          {!formData.filePath.includes('https') &&
+          <TextField
+            margin="dense"
+            label="מספר עותקים"
+            type="number"
+            fullWidth
+            name="numberOfCopies"
+            value={formData.numberOfCopies}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
+          />}
+          {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
+            <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
+          )}
+           {!formData.filePath.includes('https') &&
+           <TextField
+            margin="dense"
+            label="מספר ימי השאלה"
+            type="number"
+            fullWidth
+            name="numberOfDaysOfQuestion"
+            value={formData.numberOfDaysOfQuestion}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
+            />}
+          {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
+            <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
+          )}
+           {!formData.filePath.includes('https') &&
+            <TextField
+            margin="dense"
+            label="מספר עותקים שניתן להשאיל"
+            type="number"
+            fullWidth
+            name="copiesThatCanBeBorrowed"
+            value={formData.copiesThatCanBeBorrowed}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
+            />}
+          {formData.copiesThatCanBeBorrowed && formData.copiesThatCanBeBorrowed.length < 1 && (
+            <Typography color="error">מספר עותקים שניתן להשאיל חייב להכיל לפחות מספר אחד </Typography>
+          )}
+            <TextField
+            margin="dense"
+            label="הערות"
+            type="text"
+            fullWidth
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+            required
+            />
+          {formData.note && formData.note.length < 3 && (
+            <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
+          )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} style={{ color: '#468585' }}>
+        <DialogActions style={{ position: 'sticky', bottom: 0, background: '#fff', zIndex: 1 }}>
+          <Button onClick={onClose} style={{ color: '#468585'}}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585' }} >
+          <Button type="submit" style={{ color: '#468585'}} >
             שמירה
           </Button>
         </DialogActions>
