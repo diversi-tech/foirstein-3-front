@@ -48,6 +48,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
   const [res, setRes] = useState(false);
+  const [availability, setAvailability] = useState('');
+
+  const handleChangeAvailable = (event) => {
+    setAvailability(event.target.value);
+  };
 
   useEffect(() => {
     checkLink();
@@ -181,6 +186,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
     
   const handleChangeSelect = (event) => {
     setSelectedLevel(event.target.value);
+
+  
   };
   return (
     <Dialog
@@ -424,18 +431,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Select>
               </FormControl>
             {/* </Grid> */}
-          {!formData.filePath.includes('https') &&
-          <TextField
-            margin="dense"
-            label="מספר עותקים"
-            type="number"
-            fullWidth
-            name="numberOfCopies"
-            value={formData.numberOfCopies}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
-          />}
           {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
             <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
           )}
@@ -454,21 +449,23 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-           {!formData.filePath.includes('https') &&
-            <TextField
+
+          
+              <FormControl fullWidth margin="dense">
+
+           <InputLabel id="availability-label">זמינות</InputLabel>
+          <Select
             margin="dense"
-            label="מספר עותקים שניתן להשאיל"
-            type="number"
-            fullWidth
-            name="copiesThatCanBeBorrowed"
-            value={formData.copiesThatCanBeBorrowed}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
-            />}
-          {formData.copiesThatCanBeBorrowed && formData.copiesThatCanBeBorrowed.length < 1 && (
-            <Typography color="error">מספר עותקים שניתן להשאיל חייב להכיל לפחות מספר אחד </Typography>
-          )}
+        labelId="availability-label"
+        id="availability-select"
+        value={availability}
+        label="זמינות"
+        onChange={handleChangeAvailable}
+      >
+        <MenuItem value="available">זמין</MenuItem>
+        <MenuItem value="notAvailable">לא זמין</MenuItem>
+      </Select>
+      </FormControl>
             <TextField
             margin="dense"
             label="הערות"

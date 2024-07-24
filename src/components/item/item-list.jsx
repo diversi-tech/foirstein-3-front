@@ -4,7 +4,6 @@ import itemStore from "../../store/item-store";
 import ItemSearch from "./item-search";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import theme from '../tag/fields_rtl'
 import { cacheRtl } from "../tag/fields_rtl";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@emotion/react";
@@ -18,10 +17,6 @@ import {
   TableRow,
   Paper,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Button,
   useMediaQuery,
   useTheme,
@@ -32,14 +27,9 @@ import {
   Grid,
   Tooltip,
   Collapse,
-  PaginationItem,
   Typography,
-  Radio,
-  FormControlLabel,
-  RadioGroup,
 } from "@mui/material";
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-// import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -48,11 +38,7 @@ import ItemEdit from "./item-edit";
 import tagStore from "../../store/tag-store";
 import ItemAdd from "./item-add";
 import { styled } from "@mui/material/styles";
-import "./item.css";
-import { blue, pink } from "@mui/material/colors";
 import './item.css';
-// import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-// import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
@@ -285,24 +271,6 @@ const ItemList = observer(() => {
     });
   };
 
-  // const handleConfirmBulkDelete = async () => {
-  //   if (selectedItems.length > 1) {
-  //     try {
-  //       await Promise.all(
-  //         selectedItems.map(async (itemId) => {
-  //           await itemStore.deleteMedia(itemId);
-  //         })
-  //       );
-  //       setSendItem(true);
-  //       setSelectedItems([]);
-  //     } catch (error) {
-  //       console.error("Error deleting selected items:", error);
-  //     }
-  //   } else {
-  //     deletee();
-  //   }
-  // };
-
   const handleSearch = (searchTerm) => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -310,17 +278,29 @@ const ItemList = observer(() => {
     setFilteredItems(filterItems(filtered));
   };
 
+  const [typeTab, setTypeTab] = useState('all');
+
   const filterItems = (items) => {
     if (filterType === "all") {
+        setTypeTab('all')
       console.log(items);
       return items;
     }
     if (filterType == "book") {
+      setTypeTab('book');
       console.log("book");
 
       return items.filter((item) => !item.filePath.includes("https"))
     }
+    if(filterType == 'object'){
+      setTypeTab('object');
+
+      console.log('object');
+      return items.filter((item) => item.author == null)
+    }
     console.log("file");
+    setTypeTab('file');
+
     const y1 = items.filter((item) => item.filePath.includes("https"));
     console.log(y1);
     return items.filter((item) => item.filePath.includes("https"));
@@ -362,6 +342,7 @@ const ItemList = observer(() => {
                 <Tab label="הכל" value="all" />
                 <Tab label="ספרים" value="book" />
                 <Tab label="קבצים" value="file" />
+                <Tab label="חפצים" value="object" />
               </Tabs>
             </Box>
           </Grid>
@@ -381,8 +362,8 @@ const ItemList = observer(() => {
             >
               <Table stickyHeader aria-label="simple table">
                 <TableHead>
-                  <TableRow>
-                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                  <TableRow style={{position: 'sticky'}}>
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word", position: 'sticky' }}>
                       <Checkbox
                         indeterminate={
                           selectedItems.length > 0 &&
@@ -424,8 +405,27 @@ const ItemList = observer(() => {
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       סטטוס
                     </TableCell>
+                    {typeTab === 'all'&&
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       מדף/קובץ
+                    </TableCell>
+                    }
+                      {typeTab === 'book'&&
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                      מדף
+                    </TableCell>
+                    }
+                      {typeTab === 'file'&&
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                      קובץ
+                    </TableCell>
+                    }
+                      {typeTab === 'object'&&
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                      כמות                 </TableCell>
+                    }
+                    <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
+                      זמינות
                     </TableCell>
                     <TableCell align="right" className={classes.headerCell} style={{ wordWrap: "break-word" }}>
                       פעולה
@@ -529,6 +529,9 @@ const ItemList = observer(() => {
                         )}
                       </TableCell>
                       <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                        {item.available}
+                      </TableCell>
+                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
                         <Tooltip title="עריכה" arrow>
                         <IconButton onClick={() => handleClickEdit(item)}>
                           <EditIcon style={{ color: "#334970" }} />
@@ -571,15 +574,9 @@ const ItemList = observer(() => {
                       </TableCell>
                       </TableRow>
                       <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={10}>
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={13}>
                       <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
                         <Box display='flex' dir='rtl' margin={1}>
-                  { !item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
-                        }
-                            {!item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
-                            }
                               {!item.filePath.includes('https') &&
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
                               }
@@ -589,7 +586,8 @@ const ItemList = observer(() => {
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
+
+                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>הערות: {item.note}</Typography>
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
                           <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
                         </Box>
