@@ -10,36 +10,11 @@ import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@emotion/react";
 import Swal from 'sweetalert2'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  useMediaQuery,
-  useTheme,
-  Chip,
-  Box,
-  Stack,
-  Checkbox,
-  Grid,
-  Tooltip,
-  Collapse,
-  PaginationItem,
-  Typography,
-  Radio,
-  FormControlLabel,
-  RadioGroup,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton,
+  Dialog, DialogActions, DialogContent, DialogTitle, Button, useMediaQuery, useTheme, Chip, Box,
+  Stack, Checkbox, Grid, Tooltip, Collapse, PaginationItem, Typography,
 } from "@mui/material";
-import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-// import TextSnippetRoundedIcon from '@mui/icons-material/TextSnippetRounded';
+import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded'
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -51,10 +26,10 @@ import { styled } from "@mui/material/styles";
 import "./item.css";
 import { blue, pink } from "@mui/material/colors";
 import './item.css';
-// import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
-// import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import IconSelectTags from "./SelectTags";
+
 
 const useStyles = styled((theme) => ({
   title: {
@@ -90,7 +65,7 @@ const useStyles = styled((theme) => ({
     },
   },
 
-}));
+}))
 
 const ItemList = observer(() => {
 
@@ -111,58 +86,66 @@ const ItemList = observer(() => {
   const [deleteTagOpen, setDeleteTagOpen] = useState(false);
   const [deleteMultieItems, setDeleteMultieItems] = useState(false);
   const [openRows, setOpenRows] = useState({});
+  const [tagsList, setTagsList] = useState([]);
+
 
   useEffect(() => {
     itemStore.fetchMedia();
+    tagStore.fetchTag();
   }, []);
+
+  useEffect(() => {
+    setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
+  }, [tagStore.tagList]);
 
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
 
-  const handleDelete = async (item) => {
+
+  const handleDelete = (item) => {
     setDeleteItem(item);
     Swal.fire({
-        title: "האם אתה בטוח שברצונך למחוק",
-        text: "לא תוכל לשחזר",
-        icon: "warning",
-        showDenyButton: true,
-        denyButtonText: `ביטול`,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "כן, מחק"
+      title: "האם אתה בטוח שברצונך למחוק",
+      text: "לא תוכל לשחזר",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק"
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                await itemStore.deleteMedia(item.id);
-                Swal.fire({
-                    title: "נמחק בהצלחה",
-                    text: "הפריט נמחק בהצלחה",
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                // עדכן את רשימת הפריטים אחרי מחיקה
-                itemStore.fetchMedia();
-            } catch (error) {
-                Swal.fire({
-                    title: "שגיאה",
-                    text: "התרחשה שגיאה בעת מחיקת הפריט",
-                    icon: "error",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                console.error("Error deleting item:", error);
-            }
-        } else if (result.isDenied) {
-            Swal.fire({
-                title: "בוטל",
-                text: "הפריט לא נמחק",
-                icon: "info",
-                showConfirmButton: false,
-                timer: 1500
-            });
+      if (result.isConfirmed) {
+        try {
+          await itemStore.deleteMedia(item.id);
+          Swal.fire({
+            title: "נמחק בהצלחה",
+            text: "הפריט נמחק בהצלחה",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          // עדכן את רשימת הפריטים אחרי מחיקה
+          itemStore.fetchMedia();
+        } catch (error) {
+          Swal.fire({
+            title: "שגיאה",
+            text: "התרחשה שגיאה בעת מחיקת הפריט",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          console.error("Error deleting item:", error);
         }
+      } else if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "הפריט לא נמחק",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     });
   };
 
@@ -170,36 +153,36 @@ const ItemList = observer(() => {
     setDeleteTag(tag);
     setDeleteItem(item);
     Swal.fire({
-        title: "האם אתה בטוח שברצונך למחוק את התג",
-        text: "התג יימחק",
-        icon: "warning",
-        showDenyButton: true,
-        denyButtonText: `ביטול`,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "כן, מחק"
+      title: "האם אתה בטוח שברצונך למחוק את התג",
+      text: "התג יימחק",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק"
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            await itemStore.deleteTag(item.id, tag.id);
-            setDeleteTagOpen(false);
-            Swal.fire({
-                title: "נמחק בהצלחה",
-                text: "התג נמחק בהצלחה",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500
-            });
-        } else if (result.isDenied) {
-            Swal.fire({
-                title: "בוטל",
-                text: "התג לא נמחק",
-                icon: "info",
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
+      if (result.isConfirmed) {
+        await itemStore.deleteTag(item.id, tag.id);
+        setDeleteTagOpen(false);
+        Swal.fire({
+          title: "נמחק בהצלחה",
+          text: "התג נמחק בהצלחה",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      } else if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "התג לא נמחק",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     });
-};
+  };
 
   const handleClickAdd = () => {
     itemStore.add = true;
@@ -226,6 +209,7 @@ const ItemList = observer(() => {
     setEditOpen(false);
     setEditedItem(null);
     setDeleteTagOpen(false);
+    setAddTagOpen(false);
   };
 
   const handleSelectItem = (item) => {
@@ -240,68 +224,50 @@ const ItemList = observer(() => {
 
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
-        title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
-        text: "לא תוכל לשחזר אותם",
-        icon: "warning",
-        showDenyButton: true,
-        denyButtonText: `ביטול`,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "כן, מחק"
+      title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
+      text: "לא תוכל לשחזר אותם",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק"
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                await Promise.all(selectedItems.map(async (itemId) => {
-                    await itemStore.deleteMedia(itemId);
-                }));
-                Swal.fire({
-                    title: "נמחק בהצלחה",
-                    text: "הפריטים נמחקו בהצלחה",
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                setSelectedItems([]);
-                itemStore.fetchMedia();
-            } catch (error) {
-                Swal.fire({
-                    title: "שגיאה",
-                    text: "התרחשה שגיאה בעת מחיקת הפריטים",
-                    icon: "error",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                console.error('Error deleting selected items:', error);
-            }
-        } else if (result.isDenied) {
-            Swal.fire({
-                title: "בוטל",
-                text: "הפריטים לא נמחקו",
-                icon: "info",
-                showConfirmButton: false,
-                timer: 1500
-            });
+      if (result.isConfirmed) {
+        try {
+          await Promise.all(selectedItems.map(async (itemId) => {
+            await itemStore.deleteMedia(itemId);
+          }));
+          Swal.fire({
+            title: "נמחק בהצלחה",
+            text: "הפריטים נמחקו בהצלחה",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          setSelectedItems([]);
+          itemStore.fetchMedia();
+        } catch (error) {
+          Swal.fire({
+            title: "שגיאה",
+            text: "התרחשה שגיאה בעת מחיקת הפריטים",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          console.error('Error deleting selected items:', error);
         }
+      } else if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "הפריטים לא נמחקו",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
     });
   };
-
-  // const handleConfirmBulkDelete = async () => {
-  //   if (selectedItems.length > 1) {
-  //     try {
-  //       await Promise.all(
-  //         selectedItems.map(async (itemId) => {
-  //           await itemStore.deleteMedia(itemId);
-  //         })
-  //       );
-  //       setSendItem(true);
-  //       setSelectedItems([]);
-  //     } catch (error) {
-  //       console.error("Error deleting selected items:", error);
-  //     }
-  //   } else {
-  //     deletee();
-  //   }
-  // };
 
   const handleSearch = (searchTerm) => {
     const filtered = itemStore.mediaList.filter((item) =>
@@ -312,20 +278,112 @@ const ItemList = observer(() => {
 
   const filterItems = (items) => {
     if (filterType === "all") {
-      console.log(items);
       return items;
     }
     if (filterType == "book") {
-      console.log("book");
-
       return items.filter((item) => !item.filePath.includes("https"))
     }
     console.log("file");
     const y1 = items.filter((item) => item.filePath.includes("https"));
-    console.log(y1);
     return items.filter((item) => item.filePath.includes("https"));
   };
 
+  // const handleAddTagsToItems = (tags) => {
+  //   tags.map(async (tagId) => {
+  //     selectedItems.map(async (itemId) => {
+  //       try {
+  //         debugger
+  //         await itemStore.addItemTag(itemId, tagId);
+  //         console.log("is add: "+itemStore.isAddItemTag)
+  //         Swal.fire({
+  //           title: "נוסף בהצלחה",
+  //           text: "התג.ים נוסף בהצלחה",
+  //           icon: "success",
+  //           showConfirmButton: false,
+  //           timer: 1500
+  //         });
+  //         // if (itemStore.isAddItemTag === true) {
+
+  //         // }
+  //         // else
+  //         // console.log("error add")
+  //         setSelectedItems([]);
+  //       }
+  //       catch (error) {
+  //         console.log("fail in add itemtag: " + error)
+  //         Swal.fire({
+  //           title: "שגיאה",
+  //           text: "התרחשה שגיאה בעת מחיקת הפריט",
+  //           icon: "error",
+  //           showConfirmButton: false,
+  //           timer: 1500
+  //         });
+  //       }
+  //     })
+  //   })
+  // }
+
+  const handleAddTagsToItems = async (tags) => {
+    // משתנים לשמירה על תוצאות ההוספות
+    let successfulAdds = [];
+    let failedAdds = [];
+
+    const promises = tags.flatMap((tagId) =>
+      selectedItems.map(async (itemId) => {
+        const item = filteredItems.find(item => item.id === itemId);
+        const tag = tagsList.find(tag => tag.id === tagId);
+        console.log("item: "+JSON.stringify(item))
+        console.log("tag"+JSON.stringify(tag))
+        console.log("tags: "+JSON.stringify(tagsList))
+        try {
+          debugger;
+          // קריאה לפונקציה addItemTag
+          await itemStore.addItemTag(itemId, tagId);
+          console.log("is add: " + itemStore.isAddItemTag);
+
+          if (itemStore.isAddItemTag) {
+            successfulAdds.push({ item, tag });
+          } else {
+            failedAdds.push({ item, tag });
+          }
+          console.log("suc: "+successfulAdds)
+          console.log("fail: "+failedAdds)
+        } catch (error) {
+          console.log("fail in add itemtag: " + error);
+          failedAdds.push({ item, tag });
+        }
+      })
+    );
+
+    try {
+      // המתן לסיום כל ההבטחות
+      await Promise.all(promises);
+      const successMessages = successfulAdds.map(({ item, tag }) =>
+          `<p>התג "${tag.name}" נוסף לפריט "${item.title}" בהצלחה</p>`
+      ).join('');
+
+      // בניית הודעת שגיאה
+      const errorMessages = failedAdds.map(({ item, tag }) =>
+          `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
+      ).join('');
+
+      // בניית הטקסט לדיאלוג
+      const finalMessage = `${successMessages}${successMessages && errorMessages ? '<br><br>' : ''}${errorMessages}`;
+
+      // הצגת הודעת הצלחה או שגיאה
+      Swal.fire({
+          title: "תוצאות ההוספות",
+          html: finalMessage || "לא היו שינויים.",
+          icon: successfulAdds.length > 0 ? "success" : "error",
+          showConfirmButton: true
+      });
+
+      // ניקוי הרשימה שנבחרה
+      setSelectedItems([]);
+  } catch (error) {
+      console.log("fail in handleAddTagsToItems: " + error);
+  }
+};
 
   return (
     <>
@@ -347,8 +405,7 @@ const ItemList = observer(() => {
               },
               display: 'flex',
               justifyContent: 'center',  // מרכז אופקית
-              alignItems: 'center',      // מרכז אנכית
-              // height: '100vh', 
+              alignItems: 'center',      // מרכז אנכית 
             }}
             >
               <Tabs
@@ -434,230 +491,192 @@ const ItemList = observer(() => {
                       תגית
                     </TableCell>
                     <TableCell className={classes.headerCell} style={{ wordWrap: "break-word" }}>
-                      <Button
-                        onClick={
-                          selectedItems.length > 0
-                            ? handleDeleteSelectedItems
-                            : handleClickAdd
-                        }
-                        className={classes.addButton}
-                      >
-                        {selectedItems.length > 0 ? (
-                          <Tooltip title="למחיקת פריטים מרובים">
-                            <DeleteIcon />
-                          </Tooltip>
-                        ) : (
-                          <Tooltip title="להוספת פריט חדש" arrow>
-                            <AddIcon />
-                          </Tooltip>
+                      <Grid container>
+                        <Button
+                          onClick={
+                            selectedItems.length > 0
+                              ? handleDeleteSelectedItems
+                              : handleClickAdd
+                          }
+                          className={classes.addButton}
+                        >
+                          {selectedItems.length > 0 ? (
+                            <Tooltip title="למחיקת פריטים מרובים" arrow>
+                              <DeleteIcon />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="להוספת פריט חדש" arrow>
+                              <AddIcon />
+                            </Tooltip>
+                          )}
+                        </Button>
+                        {selectedItems.length > 0 && (
+                          <IconSelectTags handleAddItemTag={handleAddTagsToItems} />
                         )}
-                      </Button>
+                      </Grid>
+
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-
                   {filteredItems.map((item) => (
                     <React.Fragment key={item.id}>
-                    <TableRow key={item.id} className={classes.tableRow}>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Checkbox
-                          color="primary"
-                          checked={selectedItems.includes(item.id)}
-                          onChange={() => handleSelectItem(item)}
-                        />
-                      </TableCell>
-                      <TableCell className={classes.tableCell}>
-                      <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
-                        <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={() => handleExpandClick(item.id)}
-                        >
-                          {openRows[item.id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                      </Tooltip>                  
-                    </TableCell>
-                      {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
-                        </TableCell>
-                      ) : (
-                        <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
-                        </TableCell>
-                      )}
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.title}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.description}
-                      </TableCell>
-                      <TableCell align="rifht" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.category}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.author}
-                      </TableCell>
-                      {!item.filePath.includes("https") ? (
-                        <TableCell align="center" className={classes.tableCell} color="info" style={{ wordWrap: "break-word" }}>
-                          {item.publishingYear}
-                        </TableCell>
-                      ) : (
+                      <TableRow key={item.id} className={classes.tableRow}>
                         <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                          --
+                          <Checkbox
+                            color="primary"
+                            checked={selectedItems.includes(item.id)}
+                            onChange={() => handleSelectItem(item)}
+                          />
                         </TableCell>
-                      )}
-                      <TableCell
-                        align="right"
-                        className={classes.tableCell}
-                        style={{ color: item.isApproved ? "#2C6B2F" : "#E57373", wordWrap: "break-word" }}
-                      >
-                        {item.isApproved ? "מאושר" : "ממתין לאישור"}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        {item.filePath.includes("https") ? (
-                          <a
-                            href={item.filePath}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.title}
-                          </a>
+                        <TableCell className={classes.tableCell}>
+                          <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={() => handleExpandClick(item.id)}
+                            >
+                              {openRows[item.id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                        {!item.filePath.includes("https") ? (
+                          <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            <MenuBookRoundedIcon sx={{ color: '#468585' }} ></MenuBookRoundedIcon>
+                          </TableCell>
                         ) : (
-                          item.filePath
+                          <TableCell align="center" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            <TextSnippetOutlinedIcon sx={{ color: '#468585' }}></TextSnippetOutlinedIcon>
+                          </TableCell>
                         )}
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Tooltip title="עריכה" arrow>
-                        <IconButton onClick={() => handleClickEdit(item)}>
-                          <EditIcon style={{ color: "#334970" }} />
-                        </IconButton>
-                        </Tooltip>
-                        <Tooltip title="מחיקה" arrow>
-                        <IconButton onClick={() => handleDelete(item)}>
-                          <DeleteIcon style={{ color: "#334970" }} />
-                        </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
-                        <Stack
-                          direction="row"
-                          style={{
-                            flexWrap: "nowrap",
-                            overflowX: "auto",
-                            width: "200px",
-                            color: "#A80B8BD",
-                          }}
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.title}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.description}
+                        </TableCell>
+                        <TableCell align="rifht" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.category}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.author}
+                        </TableCell>
+                        {!item.filePath.includes("https") ? (
+                          <TableCell align="center" className={classes.tableCell} color="info" style={{ wordWrap: "break-word" }}>
+                            {item.publishingYear}
+                          </TableCell>
+                        ) : (
+                          <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                            --
+                          </TableCell>
+                        )}
+                        <TableCell
+                          align="right"
+                          className={classes.tableCell}
+                          style={{ color: item.isApproved ? "#2C6B2F" : "#E57373", wordWrap: "break-word" }}
                         >
-                          {item.tags.map((tagId) => {
-                            const tag = tagStore.tagList.find(
-                              (tag) => tag.id === tagId
-                            );
-                            if (tag) {
-                              return (
-                                <Chip
-                                  key={tag.id}
-                                  label={tag.name}
-                                  style={{ color: "#9CDBA6" }}
-                                  variant="outlined"
-                                  onDelete={() => handleDeleteTag(item, tag)}
-                                />
+                          {item.isApproved ? "מאושר" : "ממתין לאישור"}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          {item.filePath.includes("https") ? (
+                            <a
+                              href={item.filePath}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {item.title}
+                            </a>
+                          ) : (
+                            item.filePath
+                          )}
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          <Tooltip title="עריכה" arrow>
+                            <IconButton onClick={() => handleClickEdit(item)}>
+                              <EditIcon style={{ color: "#334970" }} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="מחיקה" arrow>
+                            <IconButton onClick={() => handleDelete(item)}>
+                              <DeleteIcon style={{ color: "#334970" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="right" className={classes.tableCell} style={{ wordWrap: "break-word" }}>
+                          <Stack
+                            direction="row"
+                            style={{
+                              flexWrap: "nowrap",
+                              overflowX: "auto",
+                              width: "200px",
+                              color: "#A80B8BD",
+                            }}
+                          >
+                            {item.tags.map((tagId) => {
+                              const tag = tagStore.tagList.find(
+                                (tag) => tag.id === tagId
                               );
-                            }
-                            return null;
-                          })}
-                        </Stack>
-                      </TableCell>
+                              if (tag) {
+                                return (
+                                  <Chip
+                                    key={tag.id}
+                                    label={tag.name}
+                                    style={{ color: "#9CDBA6" }}
+                                    variant="outlined"
+                                    onDelete={() => handleDeleteTag(item, tag)}
+                                    sx={{
+                                      '& .MuiChip-deleteIcon': {
+                                        marginLeft: '5px',
+                                      },
+                                    }}
+                                  />
+                                );
+                              }
+                              return null;
+                            })}
+                          </Stack>
+                        </TableCell>
                       </TableRow>
                       <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={10}>
-                      <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-                        <Box display='flex' dir='rtl' margin={1}>
-                  { !item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
-                        }
-                            {!item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
-                            }
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
+                          <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+                            <Box display='flex' dir='rtl' margin={1}>
                               {!item.filePath.includes('https') &&
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר עותקים: {item.numOfCopy}</Typography>
                               }
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מהדורה: {item.edition}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>סידרה: {item.series}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מספר בסידרה: {item.numOfSeries}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
-                          <Typography variant="body1"  style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                    </TableRow>
+                              {!item.filePath.includes('https') &&
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}</Typography>
+                              }
+                              {!item.filePath.includes('https') &&
+                                <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר ימי השאלה:{item.numberOfDaysOfQuestion}</Typography>
+                              }
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מהדורה: {item.edition}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>סידרה: {item.series}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מספר בסידרה: {item.numOfSeries}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>מוציא לאור: {item.publisher}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>שנה עברית: {item.hebrewPublicationYear}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>שפה: {item.language}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>הערה: {item.note}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>רמה: {item.itemLevel}</Typography>
+                              <Typography variant="body1" style={{ marginRight: "10px" }} dir='rtl'>חומר נלווה: {item.accompanyingMaterial}</Typography>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
                     </React.Fragment>
-              ))}
-              
+                  ))}
+
                 </TableBody>
               </Table>
             </TableContainer>
           </Grid>
         </Grid>
       </div>
-      {/* <Dialog
-        open={deleteOpen}
-        onClose={handleClose}
-        fullScreen={fullScreen}
-        style={{ direction: "rtl" }}
-      >
-        <DialogTitle>אישור מחיקה</DialogTitle>
-        {selectedItems.length === 0 ? (
-          <DialogContent>
-            <p> האם אתה בטוח שברצונך למחוק פריט זה?</p>
-          </DialogContent>
-        ) : (
-          <DialogContent>
-            <p>האם אתה בטוח שברצונך למחוק {selectedItems.length} פריטים?</p>
-          </DialogContent>
-        )}
-        <DialogActions>
-          <Button onClick={handleClose} style={{ color: "#468585" }}>
-            ביטול
-          </Button>
-          <Button
-            onClick={handleConfirmBulkDelete}
-            style={{ color: "#468585" }}
-          >
-            מחיקה
-          </Button>
-        </DialogActions>
-        {sendItem && (itemStore.isDeleteItem ? <Success /> : <Failure />)}
-      </Dialog> */}
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
-      {/* <Dialog
-        open={deleteTagOpen}
-        onClose={handleClose}
-        fullScreen={fullScreen}
-        style={{ direction: "rtl" }}
-      >
-        <DialogTitle>אישור מחיקה</DialogTitle>
-        <DialogContent>
-          <p>האם אתה בטוח שברצונך למחוק את התג הזה?</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} style={{ color: "#468585" }}>
-            ביטול
-          </Button>
-          <Button onClick={confirmDelete} style={{ color: "#468585" }}>
-            מחיקה
-          </Button>
-        </DialogActions>
-        {sendTag && (itemStore.isDeleteTag ? <Success /> : <Failure />)}
-      </Dialog> */}
     </>
   );
 });
 
 export default ItemList;
+
