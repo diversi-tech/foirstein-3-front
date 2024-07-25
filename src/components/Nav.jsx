@@ -102,11 +102,11 @@ export const Nav = () => {
   }, [isLoggedIn, location.pathname, navigate]);
 
   useEffect(() => {
-    setIsLoggedIn(!!sessionStorage.getItem('jwt'));
+    setIsLoggedIn(!!getCookie('jwt'));
   }, [location.pathname]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('jwt');
+    document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
     setIsLoggedIn(false);
     navigate('/home');
     console.log('Logging out...');
@@ -211,11 +211,51 @@ export const Nav = () => {
               </Popper>
             </>
           )}
-                              {(role === 'Librarian'||role === 'Admin'|| 1==1) && (
+        {(role === 'Librarian'||role === 'Admin'|| 1==1) && (
                       <>
                         <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                              ניהול משתמשים
                        </StyledLink>
+                       <>
+              <AdminButton
+                onMouseEnter={handleAdminMenuOpen}
+                onMouseLeave={handleAdminMenuClose}
+                active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
+                ref={(node) => {
+                  setAdminAnchorEl(node);
+                }}
+              >
+                הרשאות מנהל
+              </AdminButton>
+              <Popper
+                open={isAdminMenuOpen}
+                anchorEl={adminAnchorEl}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                    }}
+                  >
+                    <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
+                      <ClickAwayListener onClickAway={handleAdminMenuClose}>
+                        <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
+                          <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
+                          <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
+                          <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
+                          <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </>
+         
                          <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
                          הרשאות ספרנית
                       </StyledLink></>
