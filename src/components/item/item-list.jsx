@@ -80,22 +80,11 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-<<<<<<< HEAD
           if (item.author == null) {
             await itemStore.deleteObject(item.id);
           } else {
             await itemStore.deleteMedia(item.id);
           }
-=======
-          itemStore.mediaList.map(async (item) => {
-            if (item.author == null) {
-              await itemStore.deleteObject(item.id);
-            }
-            else {
-              await itemStore.deleteMedia(item.id);
-            }
-          })
->>>>>>> master
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
