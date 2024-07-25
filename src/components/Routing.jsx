@@ -67,7 +67,7 @@ export const Routing = () => {
             {/* <AccessibilityOptions /> */}
           </div>
           <Routes>
-          {/* <Route path='/homePage' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/" />} /> */}
+          <Route path='/homePage' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/" />} />
 
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
         <Route path="/" element={<div><ItemList /></div>} />

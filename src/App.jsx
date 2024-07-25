@@ -10,9 +10,10 @@ function App() {
   useEffect(() => {
     // האזנה להודעות postMessage
     const handleMessage = (event) => {
+      console.log('Received message:', event)
       const allowedOrigins = [
         'https://login.foirstein.diversitech.co.il',  // דומיין הפרויקט הראשי
-        'https://diversi-tech.github.io/foirstein-3-front'     // דומיין נוסף המותר
+        'https://diversi-tech.github.io'     // דומיין נוסף המותר
       ];
       if (allowedOrigins.includes(event.origin)) {
         const token = event.data.token;

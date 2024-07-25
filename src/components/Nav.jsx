@@ -5,6 +5,16 @@ import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography, Button
 import { styled } from '@mui/system';
 // import { getRoleFromToken, getUserNameFromToken } from './decipheringToken';
 
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+const jwt = getCookie('jwt');
+console.log(jwt);  
+
+
 const Root = styled('div')(({ theme }) => ({
   flexGrow: 1,
   direction: 'rtl',
