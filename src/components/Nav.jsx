@@ -3,16 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography, Button, Popper, Paper, ClickAwayListener, Grow, MenuList } from '@mui/material';
 import { styled } from '@mui/system';
-// import { getRoleFromToken, getUserNameFromToken } from './decipheringToken';
+import { getRoleFromToken, getUserNameFromToken, getCookie } from './decipheringToken';
 
 
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
-const jwt = getCookie('jwt');
-console.log(jwt);  
+// function getCookie(name) {
+//   const value = `; ${document.cookie}`;
+//   const parts = value.split(`; ${name}=`);
+//   if (parts.length === 2) return parts.pop().split(';').shift();
+// }
+// const jwt = getCookie('jwt');
+// console.log(jwt);  
 
 
 const Root = styled('div')(({ theme }) => ({
