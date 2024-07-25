@@ -211,7 +211,7 @@ export const Nav = () => {
               </Popper>
             </>
           )}
-        {(role === 'Librarian'||role === 'Admin'|| 1==1) && (
+        {(role === 'Librarian'||role === 'Admin') && (
                       <>
                         <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                              ניהול משתמשים
@@ -225,7 +225,7 @@ export const Nav = () => {
                   setAdminAnchorEl(node);
                 }}
               >
-                הרשאות מנהל
+                 אזור ספרנית
               </AdminButton>
               <Popper
                 open={isAdminMenuOpen}
@@ -256,9 +256,10 @@ export const Nav = () => {
               </Popper>
             </>
          
-                         <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
+                         {/* <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
                          הרשאות ספרנית
-                      </StyledLink></>
+                      </StyledLink> */}
+             </>            
                     )}
           <LeftSection>
             {isLoggedIn ? (
