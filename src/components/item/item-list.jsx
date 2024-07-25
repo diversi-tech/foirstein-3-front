@@ -10,7 +10,7 @@ import ItemSearch from "./item-search";
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
-  Chip, TableRow, TableCell, Collapse, Typography,
+  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/ControlPoint";
@@ -23,7 +23,8 @@ import { cacheRtl } from "../tag/fields_rtl";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
-import MapsUgcOutlinedIcon from '@mui/icons-material/MapsUgcOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -43,10 +44,17 @@ const DataTable = observer(() => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 6;
   const [openRows, setOpenRows] = useState({});
+  const [tagsList, setTagsList] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     itemStore.fetchMedia();
+    tagStore.fetchTag();
   }, []);
+
+  useEffect(() => {
+    setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
+  }, [tagStore.tagList]);
 
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
@@ -252,27 +260,23 @@ const DataTable = observer(() => {
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-
+    debugger
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
         const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item))
-        console.log("tag" + JSON.stringify(tag))
-        console.log("tags: " + JSON.stringify(tagsList))
+        console.log("item: " + item.data)
+        console.log("tag: " + tag)
         try {
+          debugger
           await itemStore.addItemTag(itemId, tagId);
-          console.log("is add: " + itemStore.isAddItemTag);
-
+          debugger
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
             failedAdds.push({ item, tag });
           }
-          console.log("suc: " + successfulAdds)
-          console.log("fail: " + failedAdds)
         } catch (error) {
-          console.log("fail in add itemtag: " + error);
           failedAdds.push({ item, tag });
         }
       })
@@ -459,29 +463,68 @@ const DataTable = observer(() => {
         const item = params.row;
         return (
           <Stack
-            direction="row"
+            direction="column"
             style={{
-              flexWrap: "nowrap",
-              overflowX: "auto",
-              width: "200px",
-              color: "#0D1E46",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%'
             }}
           >
-            {item.tags.map((tagId) => {
-              const tag = tagStore.tagList.find((tag) => tag.id === tagId);
-              if (tag) {
-                return (
-                  <Chip
-                    key={tag.id}
-                    label={tag.name}
-                    style={{ color: "#0D1E46" }}
-                    variant="outlined"
-                    onDelete={() => handleDeleteTag(item, tag)}
-                  />
-                );
-              }
-              return null;
-            })}
+            <Button
+              aria-controls="tag-menu"
+              aria-haspopup="true"
+              onClick={(event) => { setAnchorEl(event.currentTarget); }}
+              style={{ width: '100px',backgroundColor:'#b0b0b0',color:'#0D1E46' }} // שינוי רוחב הכפתור
+            >
+              {"כל התגיות"}
+            </Button>
+            <Menu
+              id="tag-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={() => { setAnchorEl(null) }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+            >
+              {item.tags.map((tagId) => {
+                const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                if (tag) {
+                  return (
+                    <Typography key={tag.id}
+                      style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
+                      <Chip
+                        label={tag.name}
+                        style={{
+                          color: "#0D1E46",
+                          width: '145px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '0 8px',
+                          textAlign: 'center'
+                        }}
+                        variant="outlined"
+                        onDelete={() => handleDeleteTag(item, tag)}
+                        deleteIcon={
+                          <IconButton aria-label="delete">
+                            <CancelIcon style={{ marginRight: '7px' }} />
+                          </IconButton>
+                        }
+                      />
+                    </Typography>
+                  );
+                }
+                return null;
+              })}
+            </Menu>
           </Stack>
         );
       },
@@ -561,9 +604,7 @@ const DataTable = observer(() => {
           </Grid>
           {selectedItems.length > 0 && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-              {/* <Button style={{ backgroundColor: "#0D1E46", color: "#FFD700", padding: '4px 8px', minWidth: '40px', minHeight: '40px' }}> */}
               <IconSelectTags handleAddItemTag={handleAddTagsToItems} style={{ fontSize: '20px' }} />
-              {/* </Button> */}
             </Grid>
           )}
         </Grid>
