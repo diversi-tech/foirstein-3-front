@@ -41,13 +41,13 @@ import User from './components/user/User.jsx'
     //]
  // }
 //])
+import CssBaseline from '@mui/material/CssBaseline';
 
 import './index.css'
 import ReactDOM from 'react-dom/client'
 import React from 'react'
 import App from './App'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 
 const theme = createTheme({
   typography: {
