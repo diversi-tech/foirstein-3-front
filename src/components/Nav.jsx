@@ -87,7 +87,7 @@ const getGreetingMessage = () => {
 export const Nav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('jwt'));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
   const [anchorEl, setAnchorEl] = useState(null);
   const [adminAnchorEl, setAdminAnchorEl] = useState(null);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
