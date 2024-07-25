@@ -519,24 +519,19 @@ const DataTable = observer(() => {
           <Stack
             direction="column"
             style={{
-              // flexWrap: "wrap",
-              // overflowX: "auto",
-              // width: "200px",
-              // color: "#0D1E46",
-              // display: 'flex',
+              display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center'
+              alignItems: 'center',
+              height: '100%'
             }}
           >
             <Button
               aria-controls="tag-menu"
               aria-haspopup="true"
               onClick={(event) => { setAnchorEl(event.currentTarget); }}
-              variant="contained"
-              style={{ width: '120px' }} // שינוי רוחב הכפתור
-
+              style={{ width: '100px',backgroundColor:'#b0b0b0',color:'#0D1E46' }} // שינוי רוחב הכפתור
             >
-              כל התגיות
+              {"כל התגיות"}
             </Button>
             <Menu
               id="tag-menu"
@@ -544,21 +539,37 @@ const DataTable = observer(() => {
               keepMounted
               open={Boolean(anchorEl)}
               onClose={() => { setAnchorEl(null) }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
             >
               {item.tags.map((tagId) => {
                 const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
                 if (tag) {
                   return (
                     <Typography key={tag.id}
-                      style={{ display: 'flex', justifyContent: 'center',padding:'5px' }}>
+                      style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
                       <Chip
                         label={tag.name}
-                        style={{ color: "#0D1E46",width: '150px'}}
+                        style={{
+                          color: "#0D1E46",
+                          width: '145px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '0 8px',
+                          textAlign: 'center'
+                        }}
                         variant="outlined"
                         onDelete={() => handleDeleteTag(item, tag)}
                         deleteIcon={
                           <IconButton aria-label="delete">
-                            <CancelIcon style={{ marginRight: '7px' }}/>
+                            <CancelIcon style={{ marginRight: '7px' }} />
                           </IconButton>
                         }
                       />
@@ -647,9 +658,7 @@ const DataTable = observer(() => {
           </Grid>
           {selectedItems.length > 0 && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-              {/* <Button style={{ backgroundColor: "#0D1E46", color: "#FFD700", padding: '4px 8px', minWidth: '40px', minHeight: '40px' }}> */}
               <IconSelectTags handleAddItemTag={handleAddTagsToItems} style={{ fontSize: '20px' }} />
-              {/* </Button> */}
             </Grid>
           )}
         </Grid>
