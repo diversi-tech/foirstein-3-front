@@ -29,13 +29,13 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
-            // add: observable,
             pendingItemsList: observable,
-            // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action,
-            deleteMedia: action
+            deleteMedia: action,
+            isAddItemTag:observable,
+            addItemTag:action
         });
         this.fetchPendingItems();
         this.fetchMedia();
@@ -294,6 +294,34 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
+    async addItemTag(itemId, tagId) {
+        try {
+            debugger
+            const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ itemId: itemId, tagId: tagId })
+            });
+            console.log("add item tag:" + res.status);
+            if (res.status === 200) {
+                this.isAddItemTag = true;
+            }
+            else {
+                this.isAddItemTag = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to add item tag:', error);
+        }
+    }
+    updateItem(updatedItem) {
+        const index = this.mediaList.findIndex(item => item.id === updatedItem.id);
+        if (index > -1) {
+          this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
+        }
+      }
 }
 const itemStore = new ItemStore();
 export default itemStore;

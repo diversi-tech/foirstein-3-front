@@ -80,11 +80,11 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          itemStore.mediaList.map(async(item)=>{
-            if(item.author == null){
-             await itemStore.deleteObject(item.id);
+          itemStore.mediaList.map(async (item) => {
+            if (item.author == null) {
+              await itemStore.deleteObject(item.id);
             }
-            else{
+            else {
               await itemStore.deleteMedia(item.id);
             }
           })
@@ -119,6 +119,7 @@ const DataTable = observer(() => {
     });
   };
 
+
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
@@ -134,6 +135,8 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await itemStore.deleteTag(item.id, tag.id);
+        const updatedItem = { ...item, tags: item.tags.filter(t => t !== tag.id) };
+        itemStore.updateItem(updatedItem);
         setDeleteTagOpen(false);
         Swal.fire({
           title: "נמחק בהצלחה",
@@ -208,12 +211,12 @@ const DataTable = observer(() => {
           await Promise.all(
             selectedItems.map(async (itemId) => {
               const item = itemStore.mediaList.find(itemId);
-              if(item.author == null){
-              await itemStore.deleteObject(itemId);
+              if (item.author == null) {
+                await itemStore.deleteObject(itemId);
 
               }
               else
-              await itemStore.deleteMedia(itemId);
+                await itemStore.deleteMedia(itemId);
             })
           );
           Swal.fire({
@@ -259,12 +262,12 @@ const DataTable = observer(() => {
       return "מדף ";
     } else if (typeTab === 'object') {
       return "כמות";
-    } else if(typeTab === 'file'){
+    } else if (typeTab === 'file') {
       return "קובץ";
     }
-   else if(typeTab === 'all'){
-    return "מדף/קובץ/כמות";
-  }
+    else if (typeTab === 'all') {
+      return "מדף/קובץ/כמות";
+    }
   };
 
   const [typeTab, setTypeTab] = useState('all');
@@ -272,32 +275,32 @@ const DataTable = observer(() => {
     if (!items) {
       return [];
     }
-  
+
     if (filterType === "all") {
       setTypeTab('all');
       console.log(items);
       return items;
     }
-  
+
     if (filterType === "book") {
       setTypeTab('book');
       console.log("book");
       return items.filter((item) => !item.filePath.includes("https"));
     }
-  
+
     if (filterType === 'object') {
       setTypeTab('object');
       console.log('object');
       return items.filter((item) => item.author == null);
     }
-  
+
     console.log("file");
     setTypeTab('file');
     const y1 = items.filter((item) => item.filePath.includes("https"));
     console.log(y1);
     return items.filter((item) => item.filePath.includes("https"));
   };
-  
+
 
   const totalItems = filteredItems ? filteredItems.length : 0;
 
@@ -310,8 +313,8 @@ const DataTable = observer(() => {
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
         const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + item.data)
-        console.log("tag: " + tag)
+        console.log("item: " + JSON.stringify(item))
+        console.log("tag: " + JSON.stringify(tag))
         try {
           debugger
           await itemStore.addItemTag(itemId, tagId);
@@ -351,7 +354,38 @@ const DataTable = observer(() => {
       console.log("fail in handleAddTagsToItems: " + error);
     }
   };
-
+  const localeText = {
+    // תרגום של אפשרויות המיון והפילטור לעברית
+    columnMenuSortAsc: "מיון לפי סדר עולה",
+    columnMenuSortDesc: "מיון לפי סדר יורד",
+    columnMenuFilter: "סינון",
+    columnMenuHideColumn: "הסתר עמודה",
+    columnMenuUnsort: "בטל מיון",
+    noRowsLabel: "אין פריטים להצגה",
+    columnMenuManageColumns: "ניהול עמודות",
+    filterPanelAddFilter: "הוסף מסנן",
+    filterPanelDeleteIconLabel: "מחק",
+    filterPanelLinkOperator: "אופרטור לוגי",
+    filterPanelOperators: "אופרטור",
+    filterPanelOperatorAnd: "וגם",
+    filterPanelOperatorOr: "או",
+    filterPanelColumns: "עמודות",
+    filterPanelInputLabel: "ערך",
+    filterPanelInputPlaceholder: "סנן ערך",
+    filterOperatorContains: "מכיל",
+    filterOperatorEquals: "שווה",
+    filterOperatorStartsWith: "מתחיל ב",
+    filterOperatorEndsWith: "מסתיים ב",
+    filterOperatorIs: "הוא",
+    filterOperatorNot: "אינו",
+    filterOperatorAfter: "אחרי",
+    filterOperatorOnOrAfter: "ב או אחרי",
+    filterOperatorBefore: "לפני",
+    filterOperatorOnOrBefore: "ב או לפני",
+    filterOperatorIsEmpty: "ריק",
+    filterOperatorIsNotEmpty: "אינו ריק",
+    filterOperatorIsAnyOf: "הוא אחד מ",
+  };
   const columns = [
     {
       field: "checkbox",
@@ -380,9 +414,9 @@ const DataTable = observer(() => {
           }}
         />
       ),
-    
-  
-  
+
+
+
       renderCell: (params) => (
         <Checkbox
           color="primary"
@@ -485,8 +519,8 @@ const DataTable = observer(() => {
       flex: 1,
       align: "right",
       renderCell: (params) => (
-       
-        
+
+
         <div
           style={{
             textAlign: "right",
@@ -515,70 +549,89 @@ const DataTable = observer(() => {
       sortable: false,
       renderCell: (params) => {
         const item = params.row;
+        const hasTags = item.tags.length > 0;
         return (
           <Stack
             direction="column"
             style={{
               display: 'flex',
               justifyContent: 'center',
-              alignItems: 'center',
+              alignItems: hasTags === false ? 'flex-start' : 'flex-end',
               height: '100%'
             }}
           >
-            <Button
-              aria-controls="tag-menu"
-              aria-haspopup="true"
-              onClick={(event) => { setAnchorEl(event.currentTarget); }}
-              style={{ width: '100px',backgroundColor:'#b0b0b0',color:'#0D1E46' }} // שינוי רוחב הכפתור
-            >
-              {"כל התגיות"}
-            </Button>
-            <Menu
-              id="tag-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={() => { setAnchorEl(null) }}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              {item.tags.map((tagId) => {
-                const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
-                if (tag) {
-                  return (
-                    <Typography key={tag.id}
-                      style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
-                      <Chip
-                        label={tag.name}
-                        style={{
-                          color: "#0D1E46",
-                          width: '145px',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '0 8px',
-                          textAlign: 'center'
-                        }}
-                        variant="outlined"
-                        onDelete={() => handleDeleteTag(item, tag)}
-                        deleteIcon={
-                          <IconButton aria-label="delete">
-                            <CancelIcon style={{ marginRight: '7px' }} />
-                          </IconButton>
-                        }
-                      />
-                    </Typography>
-                  );
-                }
-                return null;
-              })}
-            </Menu>
+            {hasTags && (
+              <>
+                <Button
+                  aria-controls="tag-menu"
+                  aria-haspopup="true"
+                  onClick={(event) => { setAnchorEl(event.currentTarget); }}
+                  style={{
+                    width: '100px',
+                    backgroundColor: '#b0b0b0',
+                    color: '#0D1E46',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // הוספת צל
+                    marginRight: 0
+                  }} // שינוי רוחב הכפתור
+                >
+                  {"כל התגיות"}
+                </Button>
+                <Menu
+                  id="tag-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={() => { setAnchorEl(null) }}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {item.tags.map((tagId) => {
+                    const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                    if (tag) {
+                      return (
+                        <Typography key={tag.id}
+                          style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
+                          <Chip
+                            label={tag.name}
+                            style={{
+                              color: "#0D1E46",
+                              width: '145px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '0 8px',
+                              textAlign: 'center'
+                            }}
+                            variant="outlined"
+                            onDelete={() => handleDeleteTag(item, tag)}
+                            deleteIcon={
+                              <IconButton aria-label="delete" style={{
+                                padding: '2px',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                                }
+                              }}>
+                                <CancelIcon style={{ marginRight: '7px' }} />
+                              </IconButton>
+                            }
+                          />
+                        </Typography>
+                      );
+                    }
+                    return null;
+                  })}
+                </Menu>
+              </>
+            )}
+            {!hasTags && (
+              <h5>{"לא מוגדרות תגיות"}</h5>
+            )}
           </Stack>
         );
       },
@@ -670,7 +723,7 @@ const DataTable = observer(() => {
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   ) : [];
-  
+
   return (
     <>
       <div className="itemListDiv" dir="rtl">
@@ -741,6 +794,7 @@ const DataTable = observer(() => {
           columns={columns}
           pageSize={rowsPerPage}
           disableSelectionOnClick
+          localeText={localeText}
           autoHeight
           style={{ overflow: "hidden" }}
           pagination={false} // Disable DataGrid pagination
@@ -748,25 +802,25 @@ const DataTable = observer(() => {
           position="sticky"
           hideFooter
         />
-       <Box textAlign="center" marginTop={2}>
-  <Stack
-    direction="row"
-    spacing={1}
-    alignItems="center"
-    justifyContent="center"
-  >
-    <Pagination
-      dir="ltr"
-      count={Math.ceil(totalItems / rowsPerPage)}
-      page={page}
-      onChange={handleChangePage}
-      variant="outlined"
-      color="primary"
-      shape="rounded"
-      renderItem={(item) => <PaginationItem {...item} />}
-    />
-  </Stack>
-</Box>
+        <Box textAlign="center" marginTop={2}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Pagination
+              dir="ltr"
+              count={Math.ceil(totalItems / rowsPerPage)}
+              page={page}
+              onChange={handleChangePage}
+              variant="outlined"
+              color="primary"
+              shape="rounded"
+              renderItem={(item) => <PaginationItem {...item} />}
+            />
+          </Stack>
+        </Box>
         {paginatedItems.map((item) => (
           <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
             <Box display="flex" dir="rtl" margin={1}>
