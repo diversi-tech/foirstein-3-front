@@ -80,14 +80,11 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          itemStore.mediaList.map(async (item) => {
-            if (item.author == null) {
-              await itemStore.deleteObject(item.id);
-            }
-            else {
-              await itemStore.deleteMedia(item.id);
-            }
-          })
+          if (item.author == null) {
+            await itemStore.deleteObject(item.id);
+          } else {
+            await itemStore.deleteMedia(item.id);
+          }
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
@@ -118,8 +115,61 @@ const DataTable = observer(() => {
       }
     });
   };
-
-
+  
+  const handleDeleteSelectedItems = async () => {
+    Swal.fire({
+      title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
+      text: "לא תוכל לשחזר אותם",
+      icon: "warning",
+      showDenyButton: true,
+      denyButtonText: `ביטול`,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "כן, מחק",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await Promise.all(
+            selectedItems.map(async (itemId) => {
+              const item = itemStore.mediaList.find(item => item.id === itemId);
+              if (item.author == null) {
+                await itemStore.deleteObject(itemId);
+              } else {
+                await itemStore.deleteMedia(itemId);
+              }
+            })
+          );
+          Swal.fire({
+            title: "נמחק בהצלחה",
+            text: "הפריטים נמחקו בהצלחה",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          setSelectedItems([]);
+          itemStore.fetchMedia();
+        } catch (error) {
+          Swal.fire({
+            title: "שגיאה",
+            text: "התרחשה שגיאה בעת מחיקת הפריטים",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          console.error("Error deleting selected items:", error);
+        }
+      } else if (result.isDenied) {
+        Swal.fire({
+          title: "בוטל",
+          text: "הפריטים לא נמחקו",
+          icon: "info",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
+  
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
@@ -191,61 +241,6 @@ const DataTable = observer(() => {
         return prevSelectedItems.filter((id) => id !== item.id);
       } else {
         return [...prevSelectedItems, item.id];
-      }
-    });
-  };
-
-  const handleDeleteSelectedItems = async () => {
-    Swal.fire({
-      title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
-      text: "לא תוכל לשחזר אותם",
-      icon: "warning",
-      showDenyButton: true,
-      denyButtonText: `ביטול`,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "כן, מחק",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await Promise.all(
-            selectedItems.map(async (itemId) => {
-              const item = itemStore.mediaList.find(itemId);
-              if (item.author == null) {
-                await itemStore.deleteObject(itemId);
-
-              }
-              else
-                await itemStore.deleteMedia(itemId);
-            })
-          );
-          Swal.fire({
-            title: "נמחק בהצלחה",
-            text: "הפריטים נמחקו בהצלחה",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          setSelectedItems([]);
-          itemStore.fetchMedia();
-        } catch (error) {
-          Swal.fire({
-            title: "שגיאה",
-            text: "התרחשה שגיאה בעת מחיקת הפריטים",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          console.error("Error deleting selected items:", error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire({
-          title: "בוטל",
-          text: "הפריטים לא נמחקו",
-          icon: "info",
-          showConfirmButton: false,
-          timer: 1500,
-        });
       }
     });
   };
@@ -414,8 +409,6 @@ const DataTable = observer(() => {
           }}
         />
       ),
-
-
 
       renderCell: (params) => (
         <Checkbox

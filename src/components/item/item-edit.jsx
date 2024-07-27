@@ -365,7 +365,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="series"
             value={formData.series}
             onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
             required
             />
           {formData.series && formData.series.length < 1 && (
