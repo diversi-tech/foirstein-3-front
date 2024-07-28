@@ -108,7 +108,7 @@ export const Nav = () => {
   const handleLogout = () => {
     document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
     setIsLoggedIn(false);
-    navigate('/');
+    navigate('/homePage');
     console.log('Logging out...');
   };
 
@@ -168,7 +168,7 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin' && (
+          {role === 'Admin'  || 1===1 &&  (
             <>
               <AdminButton
                 onMouseEnter={handleAdminMenuOpen}
@@ -211,7 +211,7 @@ export const Nav = () => {
               </Popper>
             </>
           )}
-        {(role === 'Librarian'||role === 'Admin') && (
+        {(role === 'Librarian'||role === 'Admin' || 1==1) && (
                       <>
                         <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                              ניהול משתמשים
