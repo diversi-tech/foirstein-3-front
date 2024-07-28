@@ -32,7 +32,8 @@ function App() {
   useEffect(() => {
     // פונקציה למחיקת הטוקן מהקוקי
     function deleteTokenCookie() {
-      document.cookie = 'token=; path=/; SameSite=None; Secure; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+
     }
 
     // מחיקת הקוקי בעת סגירת הכרטיסייה
