@@ -180,7 +180,7 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'  || 1===1 &&  (
+          {role === 'Admin'  (
           <>
           <AdminButton
             onMouseEnter={handleAdminMenuOpen}
@@ -221,7 +221,7 @@ export const Nav = () => {
           </Popper>
         </>
           )}
-        {(role === 'Librarian'||role === 'Admin' || 1==1) && (
+        {(role === 'Librarian'||role === 'Admin' ) && (
                       <>
                         <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                              ניהול משתמשים
