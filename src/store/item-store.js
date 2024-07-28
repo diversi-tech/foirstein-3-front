@@ -159,6 +159,7 @@ class ItemStore {
     }
 
     async uploadMediaBook(mediaData) {
+        console.log("mediaData" );
         try {
             const res = await fetch(`${baseURL}/book`, {
                 method: 'POST',

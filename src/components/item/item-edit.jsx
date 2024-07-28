@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import LevelEnum from '../LevelEum';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import {
-  TextField, Button, Dialog, DialogActions, DialogContent, 
+  TextField, Button, Dialog, DialogActions, DialogContent,
   DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
 
@@ -103,7 +103,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
-  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
@@ -131,35 +131,35 @@ export default function ItemEdit({ mediaItem, onClose }) {
       formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
     } else {
       formDataToSend.append('filePath', formData.filePath); // Use existing filePath
-    } 
+    }
     onClose();
     Swal.fire({
       title: "?האם ברצונך לעדכן את הנתונים",
       showDenyButton: true,
       confirmButtonText: "אישור",
       denyButtonText: `ביטול`
-    }).then(async(result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         if (link) {
-        await itemStore.updateMediaFile(formData.id, formDataToSend);
-           Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-      }
-       else {
-         await itemStore.updateMediaBook(formData.id, formDataToSend);
+          await itemStore.updateMediaFile(formData.id, formDataToSend);
           Swal.fire({
             icon: "success",
             title: "השינויים נשמרו בהצלחה",
             showConfirmButton: false,
             timer: 1500
           });
-      }    
+        }
+        else {
+          await itemStore.updateMediaBook(formData.id, formDataToSend);
+          Swal.fire({
+            icon: "success",
+            title: "השינויים נשמרו בהצלחה",
+            showConfirmButton: false,
+            timer: 1500
+          });
+        }
       }
-       else if (result.isDenied) {
+      else if (result.isDenied) {
         Swal.fire({
           icon: "info",
           title: "לא נשמרו שינויים",
@@ -168,14 +168,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
         });
       }
       else
-      Swal.fire({
-        icon: "error",
-        title: "אופס... תקלה בעת שמירת השינויים",
-        showConfirmButton: false,
-        timer: 1500
-      });
+        Swal.fire({
+          icon: "error",
+          title: "אופס... תקלה בעת שמירת השינויים",
+          showConfirmButton: false,
+          timer: 1500
+        });
     });
-  };  
+  };
 
   const checkLink = () => {
     const filePath = formData.filePath;
@@ -183,11 +183,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
   };
 
   const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
-    
+
   const handleChangeSelect = (event) => {
     setSelectedLevel(event.target.value);
 
-  
+
   };
   return (
     <Dialog
@@ -210,11 +210,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.title}
             onChange={handleChange}
             required
-            />
+          />
           {formData.title && formData.title.length < 2 && (
             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
           )}
-          
+
           <TextField
             margin="dense"
             label="תיאור"
@@ -224,13 +224,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.description}
             onChange={handleChange}
             required
-            />
+          />
           {formData.description && formData.description.length < 5 && (
             <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
           )}
-           {formData.description === formData.title  &&(
+          {formData.description === formData.title && (
             <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
-           )}
+          )}
           <TextField
             margin="dense"
             label="קטגוריה"
@@ -240,7 +240,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.category}
             onChange={handleChange}
             required
-            />
+          />
           {formData.category && formData.category.length < 2 && (
             <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
           )}
@@ -253,37 +253,37 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.author}
             onChange={handleChange}
             required
-            />
+          />
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-         
+
           {!formData.filePath.includes('https') &&
-           <TextField
-           margin="dense"
-           label="שנת הוצאה לועזית"
-           type="text"
-           fullWidth
-           name="publishingYear"
-           value={formData.publishingYear}
-           onChange={handleChange}
-           inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-          //  required
-           />
+            <TextField
+              margin="dense"
+              label="שנת הוצאה לועזית"
+              type="text"
+              fullWidth
+              name="publishingYear"
+              value={formData.publishingYear}
+              onChange={handleChange}
+              inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+            //  required
+            />
           }
-        {formData.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
-          <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
-        )}
-         {!formData.filePath.includes('https') &&
-                  <TextField
-            margin="dense"
-            label="שנה הוצאה עברית"
-            type="text"
-            fullWidth
-            name="hebrewPublicationYear"
-            value={formData.hebrewPublicationYear}
-            onChange={handleChange}
-            required
+          {formData.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
+            <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
+          )}
+          {!formData.filePath.includes('https') &&
+            <TextField
+              margin="dense"
+              label="שנה הוצאה עברית"
+              type="text"
+              fullWidth
+              name="hebrewPublicationYear"
+              value={formData.hebrewPublicationYear}
+              onChange={handleChange}
+              required
             />}
           {formData.hebrewPublicationYear && formData.hebrewPublicationYear.length < 1 && (
             <Typography color="error">שנת הוצאה חייב להכיל 4 תווים </Typography>
@@ -306,7 +306,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Box>
               )}
               MenuProps={MenuProps}
-              >
+            >
               {tagStore.tagList.map((tag) => (
                 <MenuItem key={tag.id} value={tag.id}>
                   <Checkbox checked={formData.tags.indexOf(tag.id) > -1} />
@@ -325,7 +325,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             onChange={handleChange}
             disabled={link}
           />
-         {link && (
+          {link && (
             <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
               <input
                 accept="*"
@@ -344,20 +344,20 @@ export default function ItemEdit({ mediaItem, onClose }) {
               </Typography>
             </Box>
           )}
-           <TextField
+          <TextField
             margin="dense"
-            label="מהודרה"
+            label="מהדורה"
             type="text"
             fullWidth
             name="edition"
             value={formData.edition}
             onChange={handleChange}
             required
-            />
+          />
           {formData.edition && formData.edition.length < 1 && (
             <Typography color="error">המהדורה חייבת להכיל לפחות תו אחד</Typography>
           )}
-           <TextField
+          <TextField
             margin="dense"
             label="סידרה"
             type="text"
@@ -367,7 +367,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             onChange={handleChange}
             // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
             required
-            />
+          />
           {formData.series && formData.series.length < 1 && (
             <Typography color="error">סידרה חייבת להכיל לפחות 3 תווים</Typography>
           )}
@@ -379,13 +379,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="numOfSeries"
             value={formData.numOfSeries}
             onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            inputProps={{ minLength: 1, inputMode: 'numeric', pattern: '[0-9]*' }}
             required
-            />
+          />
           {formData.numOfSeries && formData.numOfSeries.length < 1 && (
             <Typography color="error">מספר בסידרה חייבת להכיל לפחות מספר אחד</Typography>
           )}
-           <TextField
+          <TextField
             margin="dense"
             label="שפה"
             type="text"
@@ -394,12 +394,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.language}
             onChange={handleChange}
             required
-            />
+          />
           {formData.language && formData.language.length < 3 && (
             <Typography color="error">שפה חייבת להכיל לפחות 3 תווים </Typography>
           )}
-          
-            <TextField
+
+          <TextField
             margin="dense"
             label="חומר נלווה"
             type="text"
@@ -408,65 +408,65 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.accompanyingMaterial}
             onChange={handleChange}
             required
-            />
+          />
           {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
           )}
           {/* <Grid item xs={12}> */}
-              <FormControl fullWidth margin="dense">
-                <InputLabel id="level-select-label">רמה</InputLabel>
-                <Select
-                  labelId="level-select-label"
-                  id="level-select"
-                  name="itemLevel"
-                  value={formData.itemLevel}
-                  onChange={handleChangeSelect}
-                  input={<OutlinedInput label="רמה" />}
-                >
-                  {Object.values(LevelEnum).map((level) => (
-                    <MenuItem key={level} value={level}>
-                      {level}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            {/* </Grid> */}
+          <FormControl fullWidth margin="dense">
+            <InputLabel id="level-select-label">רמה</InputLabel>
+            <Select
+              labelId="level-select-label"
+              id="level-select"
+              name="itemLevel"
+              value={formData.itemLevel}
+              onChange={handleChangeSelect}
+              input={<OutlinedInput label="רמה" />}
+            >
+              {Object.values(LevelEnum).map((level) => (
+                <MenuItem key={level} value={level}>
+                  {level}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          {/* </Grid> */}
           {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
             <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
           )}
-           {!formData.filePath.includes('https') &&
-           <TextField
-            margin="dense"
-            label="מספר ימי השאלה"
-            type="number"
-            fullWidth
-            name="numberOfDaysOfQuestion"
-            value={formData.numberOfDaysOfQuestion}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
+          {!formData.filePath.includes('https') &&
+            <TextField
+              margin="dense"
+              label="מספר ימי השאלה"
+              type="number"
+              fullWidth
+              name="numberOfDaysOfQuestion"
+              value={formData.numberOfDaysOfQuestion}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, inputMode: 'numeric', pattern: '[0-9]*' }}
+              required
             />}
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
 
-          
-              <FormControl fullWidth margin="dense">
 
-           <InputLabel id="availability-label">זמינות</InputLabel>
-          <Select
-            margin="dense"
-        labelId="availability-label"
-        id="availability-select"
-        value={availability}
-        label="זמינות"
-        onChange={handleChangeAvailable}
-      >
-        <MenuItem value="available">זמין</MenuItem>
-        <MenuItem value="notAvailable">לא זמין</MenuItem>
-      </Select>
-      </FormControl>
-            <TextField
+          <FormControl fullWidth margin="dense">
+
+            <InputLabel id="availability-label">זמינות</InputLabel>
+            <Select
+              margin="dense"
+              labelId="availability-label"
+              id="availability-select"
+              value={availability}
+              label="זמינות"
+              onChange={handleChangeAvailable}
+            >
+              <MenuItem value="available">זמין</MenuItem>
+              <MenuItem value="notAvailable">לא זמין</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
             margin="dense"
             label="הערות"
             type="text"
@@ -475,16 +475,16 @@ export default function ItemEdit({ mediaItem, onClose }) {
             value={formData.note}
             onChange={handleChange}
             required
-            />
+          />
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}
         </DialogContent>
         <DialogActions style={{ position: 'sticky', bottom: 0, background: '#fff', zIndex: 1 }}>
-          <Button onClick={onClose} style={{ color: '#468585'}}>
+          <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585'}} >
+          <Button type="submit" style={{ color: '#468585' }} >
             שמירה
           </Button>
         </DialogActions>

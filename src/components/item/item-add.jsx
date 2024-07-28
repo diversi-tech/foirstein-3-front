@@ -27,6 +27,7 @@ import itemStore from '../../store/item-store';
 import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
+import LevelEnum from '../LevelEum';
 // import { useTheme } from '@mui/material/styles';
 
 const ITEM_HEIGHT = 48;
@@ -62,6 +63,17 @@ const ItemDdd = observer(() => {
         publishingYear: '',
         tag: [],
         filePath: '',
+        edition: '',
+        series: '',
+        numOfSeries: 0,
+        language: '',
+        note: '',
+        accompanyingMaterial: '',
+        itemLevel: 0,
+        hebrewPublicationYear: '',
+        numberOfCopies: 0,
+        numberOfDaysOfQuestion: 0,
+        copiesThatCanBeBorrowed: 0
     });
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
@@ -78,6 +90,17 @@ const ItemDdd = observer(() => {
             publishingYear: '',
             tag: [],
             filePath: '',
+            edition: '',
+            series: '',
+            numOfSeries: 0,
+            language: '',
+            note: '',
+            accompanyingMaterial: '',
+            itemLevel: 0,
+            hebrewPublicationYear: '',
+            numberOfCopies: 0,
+            numberOfDaysOfQuestion: 0,
+            copiesThatCanBeBorrowed: 0
         });
         setIsHndleUpload(false);
         setSelectedValue('');
@@ -153,81 +176,87 @@ const ItemDdd = observer(() => {
             );
         setIsFormValid(isValid);
     }, [formData, selectedValue, fileExtension]);
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const dataToSend = { ...formData };
+        console.log("formData.series", formData.series);
+
         const formDataToSend = new FormData();
-        for (const key in dataToSend) {
+
+        for (const key in formData) {
             if (key === 'tag') {
-                const tagIds = dataToSend[key].map(tagName => {
+                const tagIds = formData[key].map(tagName => {
                     const tag = tagStore.tagList.find(t => t.name === tagName);
                     return tag ? tag.id : tagName;
                 });
                 tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId));
+            } else if (key === 'filePath' && formData[key] instanceof File) {
+                formDataToSend.append(key, formData[key]);
             } else {
-                formDataToSend.append(key, dataToSend[key]);
+                formDataToSend.append(key, formData[key]);
             }
         }
+
         handleClose();
+
         Swal.fire({
-          title: "?האם ברצונך לשמור את הפריט",
-          showDenyButton: true,
-          confirmButtonText: "אישור",
-          denyButtonText: `ביטול`
-        }).then(async(result) => {
-          if (result.isConfirmed) {
-            if (selectedValue === 'file') {
-                await itemStore.uploadMediaFile(formDataToSend);
+            title: "?האם ברצונך לשמור את הפריט",
+            showDenyButton: true,
+            confirmButtonText: "אישור",
+            denyButtonText: `ביטול`
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                if (selectedValue === 'file') {
+                    const fileToSend = new FormData();
+
+                    for (const key in formData) {
+                        if (key === 'tag') {
+                            const tagIds = formData[key].map(tagName => {
+                                const tag = tagStore.tagList.find(t => t.name === tagName);
+                                return tag ? tag.id : tagName;
+                            });
+                            tagIds.forEach(tagId => fileToSend.append('tags[]', tagId));
+                        } if (key === 'filePath' && formData[key] instanceof File) {
+                            fileToSend.append(key, formData[key]);
+                        } if (key === 'title' || key === 'author' || key === 'description' || key === 'category') {
+                            fileToSend.append(key, formData[key]);
+                        }
+                    }
+
+                    await itemStore.uploadMediaFile(fileToSend);
+                    Swal.fire({
+                        icon: "success",
+                        title: "הפריט נשמר בהצלחה",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    await itemStore.uploadMediaBook(formDataToSend);
+                    Swal.fire({
+                        icon: "success",
+                        title: "הפריט נשמר בהצלחה",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            } else if (result.isDenied) {
                 Swal.fire({
-                    icon: "success",
-                    title: "הפריט נשמר בהצלחה",
+                    icon: "info",
+                    title: "הפריט לא נשמר",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "אופס... תקלה בעת שמירת הפריט",
                     showConfirmButton: false,
                     timer: 1500
                 });
             }
-            else {
-                 await itemStore.uploadMediaBook(formDataToSend); 
-               Swal.fire({
-                icon: "success",
-                title: "הפריט נשמר בהצלחה",
-                showConfirmButton: false,
-                timer: 1500
-            });
-            }
-        }   
-           else if (result.isDenied) {
-            Swal.fire({
-              icon: "info",
-              title: "הפריט לא נשמר",
-              showConfirmButton: false,
-              timer: 1500
-            });
-          }
-          else{
-
-              Swal.fire({
-                  icon: "error",
-                  title: "אופס... תקלה בעת שמירת הפריט",
-                  showConfirmButton: false,
-                  timer: 1500
-                });
-            }
         });
-            setFormData({
-                title: '',
-                description: '',
-                category: '',
-                author: '',
-                publishingYear: '',
-                tag: [],
-                filePath: '',
-            });
-            setIsHndleUpload(true);
-            setSelectedValue('');
-            setIsUpload(true);
-            // handleClose();
-        }
+    };
+
+
 
 
     return (
@@ -330,30 +359,213 @@ const ItemDdd = observer(() => {
                                 </FormControl>
                             </Grid>
                             {selectedValue === 'book' && (
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
+                                <>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="publishingYearId"
+                                                label=" שנת הוצאה לועזית"
+                                                variant="outlined"
+                                                name="publishingYear"
+                                                value={formData.publishingYear}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                            />
+                                            {touchedFields.publishingYear && !formData.publishingYear && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
+                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                            )}
+                                        </FormControl>
+                                    </Grid>
+
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="hebrewPublishingYearId"
+                                                label="שנת הוצאה עברית"
+                                                variant="outlined"
+                                                name="hebrewPublicationYear"
+                                                value={formData.hebrewPublicationYear}
+                                                // type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, hebrewPublicationYear: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+
+                                            <TextField
+                                                margin="dense"
+                                                label="מהדורה"
+                                                type="text"
+                                                fullWidth
+                                                name="edition"
+                                                value={formData.edition}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, edition: true }))}
+                                            />
+
+                                        </FormControl>
+                                    </Grid>
+
+
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="series"
+                                                label="סידרה"
+                                                variant="outlined"
+                                                name="series"
+                                                value={formData.series}
+
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, series: true }))}
+                                            />
+                                            {/* {touchedFields.publishingYear && !formData.publishingYear && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
+                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                            )} */}
+
+
+                                        </FormControl>
+                                    </Grid>
+
+
+
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="numOfSeriesId"
+                                                label="מס בסידרה"
+                                                variant="outlined"
+                                                name="numOfSeries"
+                                                value={formData.numOfSeries}
+                                                type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, numOfSeries: true }))}
+
+                                            />
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="languageId"
+                                                label="שפה"
+                                                variant="outlined"
+                                                name="language"
+                                                value={formData.language}
+
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, language: true }))}
+
+                                            />
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                margin="dense"
+                                                label="חומר נלווה"
+                                                type="text"
+                                                fullWidth
+                                                name="accompanyingMaterial"
+                                                value={formData.accompanyingMaterial}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, accompanyingMaterial: true }))}
+
+                                            />
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="numberOfDaysOfQuestionId"
+                                                label="מספר ימי השאלה"
+                                                variant="outlined"
+                                                name="numberOfDaysOfQuestion"
+                                                value={formData.numberOfDaysOfQuestion}
+                                                type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, numberOfDaysOfQuestion: true }))}
+
+                                            />
+                                        </FormControl>
+
+
+                                        <FormControl fullWidth margin="dense">
+
+                                            <InputLabel id="availability-label">זמינות</InputLabel>
+                                            <Select
+                                                margin="dense"
+                                                labelId="availability-label"
+                                                id="availability-select"
+                                                // value={availability}
+                                                label="זמינות"
+                                            // onChange={handleChangeAvailable}
+                                            >
+                                                <MenuItem value="available">זמין</MenuItem>
+                                                <MenuItem value="notAvailable">לא זמין</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth margin="dense">
+                                            <InputLabel id="level-select-label">רמה</InputLabel>
+                                            <Select
+                                                labelId="level-select-label"
+                                                id="level-select"
+                                                name="itemLevel"
+                                                // value={formData.itemLevel}
+
+                                                input={<OutlinedInput label="רמה" />}
+                                            >
+                                                {Object.values(LevelEnum).map((level) => (
+                                                    <MenuItem key={level} value={level}>
+                                                        {level}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
                                         <TextField
-                                            id="publishingYearId"
-                                            label="שנת הוצאה"
-                                            variant="outlined"
-                                            name="publishingYear"
-                                            value={formData.publishingYear}
+                                            margin="dense"
+                                            label="הערות"
+                                            type="text"
+                                            fullWidth
+                                            name="note"
+                                            value={formData.note}
                                             onChange={handleChange}
-                                            // required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                            required
                                         />
-                                        {touchedFields.publishingYear && !formData.publishingYear && (
-                                            <Typography color="error">שדה חובה</Typography>
-                                        )}
-                                        {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                            <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid>
+                                    </Grid>
+                                </>
+
+
                             )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="tagId">תגיות</InputLabel>
+                                    <InputLabel id="tagId">תגית</InputLabel>
                                     <Select
                                         labelId="tagId"
                                         id="tagId"
