@@ -232,7 +232,7 @@ const DataTable = observer(() => {
     setEditOpen(false);
     setEditedItem(null);
     setDeleteTagOpen(false);
-    setAddTagOpen(false);
+    // setAddTagOpen(false);
   };
 
   const handleSelectItem = (item) => {
@@ -823,24 +823,6 @@ const DataTable = observer(() => {
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  מספר עותקים: {item.numOfCopy}
-                </Typography>
-              )}
-              {!item.filePath.includes("https") && (
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  עותקים שניתנים להשאלה: {item.copiesThatCanBeBorrowed}
-                </Typography>
-              )}
-              {!item.filePath.includes("https") && (
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
                   מספר ימי השאלה:{item.numberOfDaysOfQuestion}
                 </Typography>
               )}
@@ -870,13 +852,13 @@ const DataTable = observer(() => {
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                מוציא לאור: {item.publisher}
+                {/* מוציא לאור: {item.publisher}
               </Typography>
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
-              >
+              > */}
                 שנה עברית: {item.hebrewPublicationYear}
               </Typography>
               <Typography
