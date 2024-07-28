@@ -69,3 +69,30 @@ export const getRoleFromToken = () => {
       return false;
     }
   };
+  export const getUserIdNumFromToken = () => {
+    debugger
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode(token);
+      console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
+      return decoded['UserId'];
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
+
+  export const getPermissionsFromToken = () => {
+    if (!token) return null;
+    try {
+      const decoded = jwtDecode(token);
+      console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
+      const permissions = decoded['permissions']; // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
+      return {
+        permissions: permissions || []
+      };
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
