@@ -37,9 +37,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     accompanyingMaterial: mediaItem.accompanyingMaterial,
     itemLevel: mediaItem.itemLevel,
     hebrewPublicationYear: mediaItem.hebrewPublicationYear,
-    numberOfCopies: mediaItem.numberOfCopies,
+    // numberOfCopies: mediaItem.numberOfCopies,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
-    copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
+    // copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
   });
 
   const [send, setSend] = useState(false);
@@ -48,6 +48,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
   const [res, setRes] = useState(false);
+  const [availability, setAvailability] = useState('');
+
+  const handleChangeAvailable = (event) => {
+    setAvailability(event.target.value);
+  };
 
   useEffect(() => {
     checkLink();
@@ -98,6 +103,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
+  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
+  // const [addTagOpen, SetAddTagOpen] = useState(false);
+    
+  const handleChangeSelect = (event) => {
+    setSelectedLevel(event.target.value);
+  };
   
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -115,9 +126,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
-    formDataToSend.append('numberOfCopies', formData.numberOfCopies);
+    // formDataToSend.append('numberOfCopies', formData.numberOfCopies);
     formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
-    formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
+    // formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
 
     formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
@@ -135,24 +146,21 @@ export default function ItemEdit({ mediaItem, onClose }) {
       denyButtonText: `ביטול`
     }).then(async(result) => {
       if (result.isConfirmed) {
-        if (link) {
-        await itemStore.updateMediaFile(formData.id, formDataToSend);
-           Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-      }
+        if (link){
+          await itemStore.updateMediaFile(formData.id, formDataToSend);
+          console.log("id: ",formData.id);
+        } 
        else {
          await itemStore.updateMediaBook(formData.id, formDataToSend);
+         console.log("id: ",formData.id);
+       }
           Swal.fire({
             icon: "success",
             title: "השינויים נשמרו בהצלחה",
             showConfirmButton: false,
             timer: 1500
           });
-      }    
+         
       }
        else if (result.isDenied) {
         Swal.fire({
@@ -177,11 +185,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
     setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
   };
 
-  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
-    
-  const handleChangeSelect = (event) => {
-    setSelectedLevel(event.target.value);
-  };
   return (
     <Dialog
       open={openI}
@@ -358,7 +361,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="series"
             value={formData.series}
             onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
             required
             />
           {formData.series && formData.series.length < 1 && (
@@ -424,21 +427,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Select>
               </FormControl>
             {/* </Grid> */}
-          {!formData.filePath.includes('https') &&
-          <TextField
-            margin="dense"
-            label="מספר עותקים"
-            type="number"
-            fullWidth
-            name="numberOfCopies"
-            value={formData.numberOfCopies}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
-          />}
-          {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
-            <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
-          )}
            {!formData.filePath.includes('https') &&
            <TextField
             margin="dense"
@@ -454,21 +442,20 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-           {!formData.filePath.includes('https') &&
-            <TextField
+          <FormControl fullWidth margin="dense">
+           <InputLabel id="availability-label">זמינות</InputLabel>
+          <Select
             margin="dense"
-            label="מספר עותקים שניתן להשאיל"
-            type="number"
-            fullWidth
-            name="copiesThatCanBeBorrowed"
-            value={formData.copiesThatCanBeBorrowed}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
-            />}
-          {formData.copiesThatCanBeBorrowed && formData.copiesThatCanBeBorrowed.length < 1 && (
-            <Typography color="error">מספר עותקים שניתן להשאיל חייב להכיל לפחות מספר אחד </Typography>
-          )}
+        labelId="availability-label"
+        id="availability-select"
+        value={availability}
+        label="זמינות"
+        onChange={handleChangeAvailable}
+      >
+        <MenuItem value="available">זמין</MenuItem>
+        <MenuItem value="notAvailable">לא זמין</MenuItem>
+      </Select>
+      </FormControl>
             <TextField
             margin="dense"
             label="הערות"

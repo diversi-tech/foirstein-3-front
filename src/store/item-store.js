@@ -2,10 +2,12 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
 const baseURL='https://libererisas-backend.onrender.com/api/Item';
+const url = 'https://librerisas-bafkend.onrender.com/api/Object';
 
 class ItemStore {
     pendingItemsList = []
     mediaList = [];
+    mediaList2 = {};
     add = false;
     isUpdate;
     isDeleteItem;
@@ -27,13 +29,13 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
-            // add: observable,
             pendingItemsList: observable,
-            // getPendingList: computed,
             fetchPendingItems: action,
             approvalItem: action,
             deniedItem: action,
-            deleteMedia: action
+            deleteMedia: action,
+            isAddItemTag:observable,
+            addItemTag:action
         });
         this.fetchPendingItems();
         this.fetchMedia();
@@ -95,7 +97,7 @@ class ItemStore {
         }
     }
     async deniedItem(itemId) {
-        console.log(`deney item : ${itemId}`)
+        console.log(itemId)
         this.isDeind = false;
         try {
             const res = await fetch(`${baseURL}/deny/${itemId}`, {
@@ -119,8 +121,19 @@ class ItemStore {
         try {
             const res = await fetch(`${baseURL}`);
             const obj = await res.json();
+            // ככה לעשות
+            // this.mediaList = obj.data["item"];
+            // this.mediaList2 = obj.data["object"];
+
+            //////////
+
             this.mediaList = obj.data;
-            console.log("list media: ", this.mediaList);
+            // console.log("list media: ", this.mediaList);
+            // const res2 = await fetch(`${url}`);
+            // const obj2 = await res2.data;
+            // this.mediaList2 = obj2.res2;
+            // this.mediaList2=[...obj, ...obj2];
+
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -163,6 +176,42 @@ class ItemStore {
         }
     }
 
+    async uploadMediaObject(mediaData) {
+        try {
+            const res = await fetch(`${url}/book`, {
+                method: 'POST',
+                body: mediaData,
+            });
+            if (res.status === 200) {
+                this.isErrorObject = false;
+            } else {
+                this.isErrorObject = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to upload media:', error);
+            this.isError = true;
+        }
+    }
+
+    async deleteObject(mediaId) {
+        console.log("hiiDeleteMedia!!!!!!!!");
+        try {
+            const res = await fetch(`${url}/${mediaId}`, {
+                method: 'DELETE'
+            });
+            if (res.status === 200) {
+                this.isDeleteObject = true;
+            }
+            else {
+                this.isDeleteObject = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+    }
+
     async deleteMedia(mediaId) {
         console.log("hiiDeleteMedia!!!!!!!!");
         try {
@@ -178,6 +227,27 @@ class ItemStore {
             this.fetchMedia();
         } catch (error) {
             console.error('Failed to delete media:', error);
+        }
+    }
+
+    async updateMediaObject(mediaId, mediaData) {
+        try {
+            console.log("formData: ", mediaData, "beforeFetch");
+            const res = await fetch(`${url}/book/${mediaId}`, {
+                method: 'PUT',
+                body: mediaData
+            });
+            console.log("formData: ", mediaData, "afterFetch");
+            this.fetchMedia();
+
+            if (res.status === 200) {
+                this.isUpdateObject = true;
+            }
+            else {
+                this.isUpdateObject = false;
+            }
+        } catch (error) {
+            console.error('Failed to update media:', error);
         }
     }
 
@@ -224,6 +294,34 @@ class ItemStore {
             console.error('Failed to update media:', error);
         }
     }
+    async addItemTag(itemId, tagId) {
+        try {
+            debugger
+            const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ itemId: itemId, tagId: tagId })
+            });
+            console.log("add item tag:" + res.status);
+            if (res.status === 200) {
+                this.isAddItemTag = true;
+            }
+            else {
+                this.isAddItemTag = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to add item tag:', error);
+        }
+    }
+    updateItem(updatedItem) {
+        const index = this.mediaList.findIndex(item => item.id === updatedItem.id);
+        if (index > -1) {
+          this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
+        }
+      }
 }
 const itemStore = new ItemStore();
 export default itemStore;
