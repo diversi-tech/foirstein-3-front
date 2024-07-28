@@ -37,9 +37,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     accompanyingMaterial: mediaItem.accompanyingMaterial,
     itemLevel: mediaItem.itemLevel,
     hebrewPublicationYear: mediaItem.hebrewPublicationYear,
-    numberOfCopies: mediaItem.numberOfCopies,
+    // numberOfCopies: mediaItem.numberOfCopies,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
-    copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
+    // copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
   });
 
   const [send, setSend] = useState(false);
@@ -103,6 +103,12 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
+  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
+  // const [addTagOpen, SetAddTagOpen] = useState(false);
+    
+  const handleChangeSelect = (event) => {
+    setSelectedLevel(event.target.value);
+  };
   
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -120,9 +126,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
-    formDataToSend.append('numberOfCopies', formData.numberOfCopies);
+    // formDataToSend.append('numberOfCopies', formData.numberOfCopies);
     formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
-    formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
+    // formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
 
     formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
@@ -140,24 +146,21 @@ export default function ItemEdit({ mediaItem, onClose }) {
       denyButtonText: `ביטול`
     }).then(async(result) => {
       if (result.isConfirmed) {
-        if (link) {
-        await itemStore.updateMediaFile(formData.id, formDataToSend);
-           Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-      }
+        if (link){
+          await itemStore.updateMediaFile(formData.id, formDataToSend);
+          console.log("id: ",formData.id);
+        } 
        else {
          await itemStore.updateMediaBook(formData.id, formDataToSend);
+         console.log("id: ",formData.id);
+       }
           Swal.fire({
             icon: "success",
             title: "השינויים נשמרו בהצלחה",
             showConfirmButton: false,
             timer: 1500
           });
-      }    
+         
       }
        else if (result.isDenied) {
         Swal.fire({
@@ -182,13 +185,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
     setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
   };
 
-  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
-    
-  const handleChangeSelect = (event) => {
-    setSelectedLevel(event.target.value);
-
-  
-  };
   return (
     <Dialog
       open={openI}
@@ -431,9 +427,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Select>
               </FormControl>
             {/* </Grid> */}
-          {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
-            <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
-          )}
            {!formData.filePath.includes('https') &&
            <TextField
             margin="dense"
@@ -449,10 +442,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-
-          
-              <FormControl fullWidth margin="dense">
-
+          <FormControl fullWidth margin="dense">
            <InputLabel id="availability-label">זמינות</InputLabel>
           <Select
             margin="dense"
