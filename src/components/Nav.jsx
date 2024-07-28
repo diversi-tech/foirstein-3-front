@@ -108,7 +108,7 @@ export const Nav = () => {
   const handleLogout = () => {
     document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
     setIsLoggedIn(false);
-    navigate('/home');
+    navigate('/');
     console.log('Logging out...');
   };
 
@@ -168,7 +168,7 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'|| 1==1 && (
+          {role === 'Admin' && (
             <>
               <AdminButton
                 onMouseEnter={handleAdminMenuOpen}
