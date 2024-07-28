@@ -37,9 +37,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     accompanyingMaterial: mediaItem.accompanyingMaterial,
     itemLevel: mediaItem.itemLevel,
     hebrewPublicationYear: mediaItem.hebrewPublicationYear,
-    numberOfCopies: mediaItem.numberOfCopies,
+    // numberOfCopies: mediaItem.numberOfCopies,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
-    copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
+    // copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
   });
 
   const [send, setSend] = useState(false);
@@ -103,7 +103,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
-
+  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
+  // const [addTagOpen, SetAddTagOpen] = useState(false);
+    
+  const handleChangeSelect = (event) => {
+    setSelectedLevel(event.target.value);
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
@@ -120,9 +126,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
-    formDataToSend.append('numberOfCopies', formData.numberOfCopies);
+    // formDataToSend.append('numberOfCopies', formData.numberOfCopies);
     formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
-    formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
+    // formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
 
     formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
@@ -140,24 +146,21 @@ export default function ItemEdit({ mediaItem, onClose }) {
       denyButtonText: `ביטול`
     }).then(async (result) => {
       if (result.isConfirmed) {
-        if (link) {
+        if (link){
           await itemStore.updateMediaFile(formData.id, formDataToSend);
+          console.log("id: ",formData.id);
+        } 
+       else {
+         await itemStore.updateMediaBook(formData.id, formDataToSend);
+         console.log("id: ",formData.id);
+       }
           Swal.fire({
             icon: "success",
             title: "השינויים נשמרו בהצלחה",
             showConfirmButton: false,
             timer: 1500
           });
-        }
-        else {
-          await itemStore.updateMediaBook(formData.id, formDataToSend);
-          Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-        }
+         
       }
       else if (result.isDenied) {
         Swal.fire({
@@ -182,13 +185,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
     setLink(filePath.includes('https') || /\.(pdf|jpg|jpeg|png|zip|mp3|mp4|docx)$/.test(filePath));
   };
 
-  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
-
-  const handleChangeSelect = (event) => {
-    setSelectedLevel(event.target.value);
-
-
-  };
   return (
     <Dialog
       open={openI}
@@ -413,60 +409,54 @@ export default function ItemEdit({ mediaItem, onClose }) {
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
           )}
           {/* <Grid item xs={12}> */}
-          <FormControl fullWidth margin="dense">
-            <InputLabel id="level-select-label">רמה</InputLabel>
-            <Select
-              labelId="level-select-label"
-              id="level-select"
-              name="itemLevel"
-              value={formData.itemLevel}
-              onChange={handleChangeSelect}
-              input={<OutlinedInput label="רמה" />}
-            >
-              {Object.values(LevelEnum).map((level) => (
-                <MenuItem key={level} value={level}>
-                  {level}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {/* </Grid> */}
-          {formData.numberOfCopies && formData.numberOfCopies.length < 1 && (
-            <Typography color="error">מספר עותקים חייב להכיל לפחות מספר אחד </Typography>
-          )}
-          {!formData.filePath.includes('https') &&
-            <TextField
-              margin="dense"
-              label="מספר ימי השאלה"
-              type="number"
-              fullWidth
-              name="numberOfDaysOfQuestion"
-              value={formData.numberOfDaysOfQuestion}
-              onChange={handleChange}
-              inputProps={{ minLength: 1, inputMode: 'numeric', pattern: '[0-9]*' }}
-              required
+              <FormControl fullWidth margin="dense">
+                <InputLabel id="level-select-label">רמה</InputLabel>
+                <Select
+                  labelId="level-select-label"
+                  id="level-select"
+                  name="itemLevel"
+                  value={formData.itemLevel}
+                  onChange={handleChangeSelect}
+                  input={<OutlinedInput label="רמה" />}
+                >
+                  {Object.values(LevelEnum).map((level) => (
+                    <MenuItem key={level} value={level}>
+                      {level}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            {/* </Grid> */}
+           {!formData.filePath.includes('https') &&
+           <TextField
+            margin="dense"
+            label="מספר ימי השאלה"
+            type="number"
+            fullWidth
+            name="numberOfDaysOfQuestion"
+            value={formData.numberOfDaysOfQuestion}
+            onChange={handleChange}
+            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            required
             />}
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-
-
           <FormControl fullWidth margin="dense">
-
-            <InputLabel id="availability-label">זמינות</InputLabel>
-            <Select
-              margin="dense"
-              labelId="availability-label"
-              id="availability-select"
-              value={availability}
-              label="זמינות"
-              onChange={handleChangeAvailable}
-            >
-              <MenuItem value="available">זמין</MenuItem>
-              <MenuItem value="notAvailable">לא זמין</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
+           <InputLabel id="availability-label">זמינות</InputLabel>
+          <Select
+            margin="dense"
+        labelId="availability-label"
+        id="availability-select"
+        value={availability}
+        label="זמינות"
+        onChange={handleChangeAvailable}
+      >
+        <MenuItem value="available">זמין</MenuItem>
+        <MenuItem value="notAvailable">לא זמין</MenuItem>
+      </Select>
+      </FormControl>
+            <TextField
             margin="dense"
             label="הערות"
             type="text"
