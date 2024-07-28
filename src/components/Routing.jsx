@@ -49,6 +49,9 @@ import TagAdd from './tag/tag-add';
 import StudentRequest from './studentRequest/student-request';
 import { Tooltip } from '@mui/material';
 
+const baseDomain='.foirstein.diversitech.co.il/#/'
+const loginDomain=`https://login${baseDomain}`
+
 function ExternalRedirect({ url }) {
   useEffect(() => {
     window.location.href = url;
@@ -67,7 +70,7 @@ export const Routing = () => {
             {/* <AccessibilityOptions /> */}
           </div>
           <Routes>
-          {/* <Route path='/homePage' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/" />} /> */}
+          <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
 
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
         <Route path="/" element={<div><ItemList /></div>} />
@@ -78,24 +81,24 @@ export const Routing = () => {
         <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
         <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
         <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest /></Box>} />
-        <Route path='/search' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/search" />} />
-        <Route path='/ActivityLog' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/ActivityLog" />} />
-        <Route path='/Charts' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/Charts" />} />
-        <Route path='/changePermission' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/changePermission" />} />
-        <Route path='/UserManagementComponent' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/UserManagementComponent" />} />
-        <Route path='/login' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='/profile' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/profile" />} />
-        <Route path='/profileform' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/profileform" />} />
-        <Route path='/ManagerDashboard' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/ManagerDashboard" />} />
-        <Route path='/view-reports' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/view-reports" />} />
-        <Route path='/report/:reportId' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/report/" />} />
-        <Route path='login/register' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='login/security-question' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='/reset-password' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='/password-reset-success' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
-        <Route path='/passwordRecovery' element={<ExternalRedirect url="https://login.foirstein.diversitech.co.il/#/login" />} />
+        <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
+        <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
+        <Route path='/Charts' element={<ExternalRedirect url={`${loginDomain}Charts`} />} />
+        <Route path='/changePermission' element={<ExternalRedirect url={`${loginDomain}changePermission`} />} />
+        <Route path='/UserManagementComponent' element={<ExternalRedirect url={`${loginDomain}UserManagementComponent`} />} />
+        <Route path='/login' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/profile' element={<ExternalRedirect url={`${loginDomain}profile"`} />} />
+        <Route path='/profileform' element={<ExternalRedirect url={`${loginDomain}profileform`} />} />
+        <Route path='/ManagerDashboard' element={<ExternalRedirect url={`${loginDomain}ManagerDashboard`} />} />
+        <Route path='/view-reports' element={<ExternalRedirect url={`${loginDomain}view-reports`} />} />
+        <Route path='/report/:reportId' element={<ExternalRedirect url={`${loginDomain}report/`} />} />
+        <Route path='login/register' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/reset-password' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/password-reset-success' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/passwordRecovery' element={<ExternalRedirect url={`${loginDomain}login`} />} />
 
         <Route path="*" element={<h1>Page Not Found</h1>} />
 

@@ -3,7 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography, Button, Popper, Paper, ClickAwayListener, Grow, MenuList } from '@mui/material';
 import { styled } from '@mui/system';
-// import { getRoleFromToken, getUserNameFromToken } from './decipheringToken';
+import { getRoleFromToken, getUserNameFromToken, getCookie } from './decipheringToken';
+
+
+// function getCookie(name) {
+//   const value = `; ${document.cookie}`;
+//   const parts = value.split(`; ${name}=`);
+//   if (parts.length === 2) return parts.pop().split(';').shift();
+// }
+// const jwt = getCookie('jwt');
+// console.log(jwt);  
+
 
 const Root = styled('div')(({ theme }) => ({
   flexGrow: 1,
@@ -77,7 +87,7 @@ const getGreetingMessage = () => {
 export const Nav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('jwt'));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
   const [anchorEl, setAnchorEl] = useState(null);
   const [adminAnchorEl, setAdminAnchorEl] = useState(null);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
@@ -92,13 +102,13 @@ export const Nav = () => {
   }, [isLoggedIn, location.pathname, navigate]);
 
   useEffect(() => {
-    setIsLoggedIn(!!sessionStorage.getItem('jwt'));
+    setIsLoggedIn(!!getCookie('jwt'));
   }, [location.pathname]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem('jwt');
+    document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
     setIsLoggedIn(false);
-    navigate('/home');
+    navigate('/');
     console.log('Logging out...');
   };
 
@@ -158,7 +168,7 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'|| 1==1 && (
+          {role === 'Admin' && (
             <>
               <AdminButton
                 onMouseEnter={handleAdminMenuOpen}
@@ -201,14 +211,55 @@ export const Nav = () => {
               </Popper>
             </>
           )}
-                              {(role === 'Librarian'||role === 'Admin'|| 1==1) && (
+        {(role === 'Librarian'||role === 'Admin') && (
                       <>
                         <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                              ניהול משתמשים
                        </StyledLink>
-                         <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
+                       <>
+              <AdminButton
+                onMouseEnter={handleAdminMenuOpen}
+                onMouseLeave={handleAdminMenuClose}
+                active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
+                ref={(node) => {
+                  setAdminAnchorEl(node);
+                }}
+              >
+                 אזור ספרנית
+              </AdminButton>
+              <Popper
+                open={isAdminMenuOpen}
+                anchorEl={adminAnchorEl}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                    }}
+                  >
+                    <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
+                      <ClickAwayListener onClickAway={handleAdminMenuClose}>
+                        <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
+                          <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
+                          <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
+                          <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
+                          <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </>
+         
+                         {/* <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
                          הרשאות ספרנית
-                      </StyledLink></>
+                      </StyledLink> */}
+             </>            
                     )}
           <LeftSection>
             {isLoggedIn ? (
