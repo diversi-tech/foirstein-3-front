@@ -180,7 +180,7 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'  (
+          {role === 'Admin'   &&  (
           <>
           <AdminButton
             onMouseEnter={handleAdminMenuOpen}
