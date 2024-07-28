@@ -21,6 +21,7 @@ import Footer from "./footer";
 // import AccessibilityOptions from "./Accessibility/AccessibilityOptions";
 // import { AccessibilityProvider } from "./Accessibility/AccessibilityContext";
 import { useEffect } from "react";
+import DataTable from "./item/BorrowingItemsList";
 
 
 import React from 'react';
@@ -80,6 +81,7 @@ export const Routing = () => {
         <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemAdd /></Box>} />
         <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
         <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
+        <Route path="/items/borrowingItems" element={<Box sx={{ pt: '7%' }}><DataTable /></Box>} /> 
         <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest /></Box>} />
         <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
         <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
