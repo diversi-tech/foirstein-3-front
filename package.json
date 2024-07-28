@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://diversi-tech.github.io/foirstein-3-front",
+  "homepage": "librarian.foirstein.diversitech.co.il",
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
