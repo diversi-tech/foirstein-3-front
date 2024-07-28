@@ -29,21 +29,21 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    // פונקציה למחיקת הטוקן מהקוקי
-    function deleteTokenCookie() {
-      document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+  // useEffect(() => {
+  //   // פונקציה למחיקת הטוקן מהקוקי
+  //   function deleteTokenCookie() {
+  //     document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
 
-    }
+  //   }
 
-    // מחיקת הקוקי בעת סגירת הכרטיסייה
-    window.addEventListener('beforeunload', deleteTokenCookie);
+  //   // מחיקת הקוקי בעת סגירת הכרטיסייה
+  //   window.addEventListener('beforeunload', deleteTokenCookie);
 
-    // ניקוי המאזין בעת הסרת הקומפוננטה מה-DOM
-    return () => {
-      window.removeEventListener('beforeunload', deleteTokenCookie);
-    };
-  }, []);
+  //   // ניקוי המאזין בעת הסרת הקומפוננטה מה-DOM
+  //   return () => {
+  //     window.removeEventListener('beforeunload', deleteTokenCookie);
+  //   };
+  // }, []);
   
   return (<>
     {/* <AppRoutes /> */}
