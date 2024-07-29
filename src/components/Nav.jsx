@@ -182,7 +182,7 @@ export const Nav = observer(() => {
       <NavBar position="fixed">
         <Toolbar>
           <RightSection>
-            <img src="/bookshelf.png" alt="Bookshelf Icon" style={{ height: '24px', marginRight: 'auto' }} />
+            <img src="/bookshelf.png" onClick={()=>navigate('/items')} alt="Bookshelf Icon" style={{ height: '24px', marginRight: 'auto' }} />
             <Typography
               variant="body1"
               style={{ color: '#FFFFFF', marginLeft: '4px', fontWeight: 'bold' }}
@@ -206,6 +206,7 @@ export const Nav = observer(() => {
           {role === 'Admin' && (
             <>
               <AdminButton
+              onClick={()=>navigate('/ActivityLog')}
                 onMouseEnter={handleAdminMenuOpen}
                 onMouseLeave={handleAdminMenuClose}
                 active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
@@ -251,6 +252,7 @@ export const Nav = observer(() => {
               </StyledLink>
               <>
                 <AdminButton
+                 onClick={()=>navigate('/items')}
                   onMouseEnter={handleLibreriansMenuOpen}
                   onMouseLeave={handleLibreriansMenuClose}
                   active={isLibrariansMenuOpen || ['/items', '/itemsPendingApproval', '/studentRequest', '/tag-list','/items/borrowingItems'].includes(location.pathname)}

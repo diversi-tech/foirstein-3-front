@@ -76,13 +76,13 @@ export const Routing = () => {
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
         <Route path="/" element={<div><ItemList /></div>} />
         <Route path="/Librarian" element={<div><ItemList /></div>} />
-        <Route path="/items" element={<Box sx={{ pt: '7%' }}><ItemList /></Box>} />
-        <Route path="/itemsPendingApproval" element={<Box sx={{ pt: '7%' }}><PendingItems /></Box>} />
-        <Route path="/items/add" element={<Box sx={{ pt: '7%' }}><ItemAdd /></Box>} />
-        <Route path="/tag-list" element={<Box sx={{ pt: '7%' }}><TagList /></Box>} />
-        <Route path="/tags/add" element={<Box sx={{ pt: '7%' }}><TagAdd /></Box>} />
-        <Route path="/items/borrowingItems" element={<Box sx={{ pt: '7%' }}><DataTable /></Box>} /> 
-        <Route path="/studentRequest" element={<Box sx={{ pt: '7%' }}><StudentRequest /></Box>} />
+        <Route path="/items" element={<Box ><ItemList /></Box>} />
+        <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
+        <Route path="/items/add" element={<Box ><ItemAdd /></Box>} />
+        <Route path="/tag-list" element={<Box><TagList /></Box>} />
+        <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
+        <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
+        <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
         <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
         <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
         <Route path='/Charts' element={<ExternalRedirect url={`${loginDomain}Charts`} />} />
