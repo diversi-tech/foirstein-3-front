@@ -190,9 +190,7 @@ export const Nav = observer(() => {
               מרחבית
             </Typography>
           </RightSection>
-          <StyledLink to="/homePage" active={location.pathname === '/homePage' || location.pathname === '/login/homePage' || location.pathname === '/homePage'}>
-            דף הבית
-          </StyledLink>
+        
           {!isLoggedIn && (
             <StyledLink to="/login" active={location.pathname === '/login' || location.pathname === '/login/security-question/reset-password/password-reset-success/login'}>
               התחברות
