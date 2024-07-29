@@ -182,15 +182,32 @@ export const Nav = observer(() => {
       <NavBar position="fixed">
         <Toolbar>
           <RightSection>
-            <img src="/bookshelf.png" onClick={()=>navigate('/items')} alt="Bookshelf Icon" style={{ height: '24px', marginRight: 'auto' }} />
-            <Typography
+          <button 
+      onClick={() => navigate('/items')} 
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        backgroundColor: 'transparent', 
+        border: 'none', 
+        cursor: 'pointer', 
+        color: '#FFFFFF', 
+        fontWeight: 'bold' 
+      }}
+    >
+      <img 
+        src="/bookshelf.png" 
+        alt="Bookshelf Icon" 
+        style={{ height: '24px', marginRight: '8px' }} 
+      />
+      <Typography
               variant="body1"
               style={{ color: '#FFFFFF', marginLeft: '4px', fontWeight: 'bold' }}
             >
               מרחבית
-            </Typography>
+            </Typography> 
+    </button>
           </RightSection>
-        
+          
           {!isLoggedIn && (
             <StyledLink to="/login" active={location.pathname === '/login' || location.pathname === '/login/security-question/reset-password/password-reset-success/login'}>
               התחברות

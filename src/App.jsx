@@ -5,7 +5,10 @@ import PendingItems from './components/pendingItemsList/pendingItems'
 import SideNav from "./components/side_nav"
 import { Routing } from './components/Routing'
 import { useEffect } from 'react'
+import CssBaseline from '@mui/material/CssBaseline';
 
+import React from 'react'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 function App() {
   useEffect(() => {
     // האזנה להודעות postMessage
@@ -44,12 +47,28 @@ function App() {
   //     window.removeEventListener('beforeunload', deleteTokenCookie);
   //   };
   // }, []);
+  const theme = createTheme({
+    typography: {
+      fontFamily: 'Rubik',
+    },
+  })
   
   return (<>
+  ReactDOM.createRoot(document.getElementById('root')).render(
+  
+  <React.StrictMode>
+    {/* <App /> */}
+    {/* <RouterProvider router={router} />  */}
+    <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <Routing></Routing>
+  </ThemeProvider>,
+  </React.StrictMode>,
+)
     {/* <AppRoutes /> */}
     {/* <SideNav></SideNav> */}
     {/* <PendingItems /> */}
-    <Routing></Routing>
+    {/* <Routing></Routing> */}
   </>
   )
 }
