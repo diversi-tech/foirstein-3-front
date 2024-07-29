@@ -239,13 +239,14 @@ const ItemDdd = observer(() => {
                     });
                 }
             } else if (result.isDenied) {
+
                 Swal.fire({
                     icon: "info",
                     title: "הפריט לא נשמר",
                     showConfirmButton: false,
                     timer: 1500
                 });
-            } else {
+            } if (itemStore.isError) {
                 Swal.fire({
                     icon: "error",
                     title: "אופס... תקלה בעת שמירת הפריט",
@@ -399,7 +400,6 @@ const ItemDdd = observer(() => {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
-
                                             <TextField
                                                 margin="dense"
                                                 label="מהדורה"
@@ -411,12 +411,8 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, edition: true }))}
                                             />
-
                                         </FormControl>
                                     </Grid>
-
-
-
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
@@ -440,10 +436,6 @@ const ItemDdd = observer(() => {
 
                                         </FormControl>
                                     </Grid>
-
-
-
-
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
@@ -456,11 +448,9 @@ const ItemDdd = observer(() => {
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, numOfSeries: true }))}
-
                                             />
                                         </FormControl>
                                     </Grid>
-
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
@@ -469,15 +459,12 @@ const ItemDdd = observer(() => {
                                                 variant="outlined"
                                                 name="language"
                                                 value={formData.language}
-
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, language: true }))}
-
                                             />
                                         </FormControl>
                                     </Grid>
-
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
@@ -490,11 +477,9 @@ const ItemDdd = observer(() => {
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, accompanyingMaterial: true }))}
-
                                             />
                                         </FormControl>
                                     </Grid>
-
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
                                             <TextField
@@ -507,11 +492,10 @@ const ItemDdd = observer(() => {
                                                 onChange={handleChange}
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, numberOfDaysOfQuestion: true }))}
-
                                             />
                                         </FormControl>
-
-
+                                    </Grid>
+                                    <Grid item xs={12}>
                                         <FormControl fullWidth margin="dense">
 
                                             <InputLabel id="availability-label">זמינות</InputLabel>
@@ -536,7 +520,6 @@ const ItemDdd = observer(() => {
                                                 id="level-select"
                                                 name="itemLevel"
                                                 // value={formData.itemLevel}
-
                                                 input={<OutlinedInput label="רמה" />}
                                             >
                                                 {Object.values(LevelEnum).map((level) => (
@@ -560,8 +543,6 @@ const ItemDdd = observer(() => {
                                         />
                                     </Grid>
                                 </>
-
-
                             )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
