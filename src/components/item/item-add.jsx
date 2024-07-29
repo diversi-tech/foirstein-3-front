@@ -91,7 +91,7 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            filePath: value === 'book' ? '' : null,
+            filePath: value === 'book' ? '' : value === 'object' ? '' : null,
         }));
         setSelectedValue(value);
     };
@@ -190,7 +190,8 @@ const ItemDdd = observer(() => {
                             tagIds.forEach(tagId => fileToSend.append('tags[]', tagId));
                         } if (key === 'filePath' && formData[key] instanceof File) {
                             fileToSend.append(key, formData[key]);
-                        } if (key === 'title' || key === 'author' || key === 'description' || key === 'category') {
+                        }
+                        if (key === 'title' || key === 'author' || key === 'description' || key === 'category' || key === 'note') {
                             fileToSend.append(key, formData[key]);
                         }
                     }
@@ -228,20 +229,20 @@ const ItemDdd = observer(() => {
                 });
             }
         });
-            setFormData({
-                title: '',
-                description: '',
-                category: '',
-                author: '',
-                publishingYear: '',
-                tag: [],
-                filePath: '',
-            });
-            setIsHndleUpload(true);
-            setSelectedValue('');
-            setIsUpload(true);
-            // handleClose();
-        }
+        setFormData({
+            title: '',
+            description: '',
+            category: '',
+            author: '',
+            publishingYear: '',
+            tag: [],
+            filePath: '',
+        });
+        setIsHndleUpload(true);
+        setSelectedValue('');
+        setIsUpload(true);
+        // handleClose();
+    }
 
 
     return (
@@ -255,8 +256,9 @@ const ItemDdd = observer(() => {
                         value={selectedValue}
                         onChange={handleRadioChange}
                     >
-                        <FormControlLabel value="book" control={<Radio style={{ color: '#DEF9C4' }} />} label="ספר" />
-                        <FormControlLabel value="file" control={<Radio style={{ color: '#DEF9C4' }} />} label="קובץ דיגיטלי" />
+                        <FormControlLabel value="book" control={<Radio style={{ color: '#0D1E46' }} />} label="ספר" />
+                        <FormControlLabel value="file" control={<Radio style={{ color: '#0D1E46' }} />} label="קובץ דיגיטלי" />
+                        <FormControlLabel value="object" control={<Radio style={{ color: '#0D1E46' }} />} label="חפץ" />
                     </RadioGroup>
                 </FormControl>
 
@@ -298,8 +300,8 @@ const ItemDdd = observer(() => {
                                     {touchedFields.description && !formData.description && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.description && formData.description.length < 5 && (
-                                        <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+                                    {formData.description && formData.description.length < 3 && (
+                                        <Typography color="error">התיאור חייב להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -338,8 +340,8 @@ const ItemDdd = observer(() => {
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.author && formData.author.length < 3 && (
-                                        <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
+                                    {formData.author && formData.author.length < 2 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -514,20 +516,20 @@ const ItemDdd = observer(() => {
                                             </Select>
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            margin="dense"
-                                            label="הערות"
-                                            type="text"
-                                            fullWidth
-                                            name="note"
-                                            value={formData.note}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </Grid>
                                 </>
                             )}
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="dense"
+                                    label="הערות"
+                                    type="text"
+                                    fullWidth
+                                    name="note"
+                                    value={formData.note}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <InputLabel id="tagId">תגיות</InputLabel>
@@ -582,7 +584,8 @@ const ItemDdd = observer(() => {
                                         <TextField
                                             id="fileId"
                                             type="file"
-                                            label="מיקום"
+                                            label="קובץ"
+
                                             name="filePath"
                                             onChange={handleChange}
                                             required
@@ -600,12 +603,30 @@ const ItemDdd = observer(() => {
                                     </FormControl>
                                 </Grid>
                             )}
+                            {selectedValue === 'object' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="amoundId"
+                                            label="כמות"
+                                            variant="outlined"
+                                            name="amount"
+                                            // value={formData.filePath}
+                                            onChange={handleChange}
+                                            required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, amount: true }))}
+                                            type='text'
+                                        />
+
+                                    </FormControl>
+                                </Grid>
+                            )}
                         </Grid>
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }}  >העלאה</Button>
-                    <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#0D1E46' }}  >העלאה</Button>
+                    <Button onClick={handleClose} style={{ color: '#0D1E46' }}>ביטול</Button>
                 </DialogActions>
             </Dialog>
         </>
