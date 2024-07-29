@@ -54,12 +54,37 @@ const DataTable = observer(() => {
   //   tagStore.fetchTag();
   // }, []);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await itemStore.fetchMedia();
+  //       await tagStore.fetchTag();
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
+  // }, [tagStore.tagList]);
+
+  // useEffect(() => {
+  //   setFilteredItems(filterItems(itemStore.mediaList));
+  //   setPage(1);
+  //   console.log("items:" + JSON.stringify(itemStore.mediaList));
+  // }, [itemStore.mediaList, filterType]);
+
+  // Fetch data and handle loading state
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      // setIsLoading(true); // Show loading spinner
       try {
-        await itemStore.fetchMedia();
-        await tagStore.fetchTag();
+        await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -68,17 +93,20 @@ const DataTable = observer(() => {
     };
 
     fetchData();
-  }, []);
+  }, [itemStore, tagStore]); // Dependencies: triggers fetchData when itemStore or tagStore changes
 
+  // Update tagsList when tagStore.tagList changes
   useEffect(() => {
     setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
   }, [tagStore.tagList]);
 
+  // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
-    setPage(1);
-    console.log("items:" + JSON.stringify(itemStore.mediaList));
-  }, [itemStore.mediaList, filterType]);
+    setPage(1); // Reset page when items or filterType changes
+    console.log("items:", JSON.stringify(itemStore.mediaList));
+  }, [itemStore.mediaList, filterType]); // Dependencies: triggers effect when mediaList or filterType changes
+
 
   const handleChangePage = (event, value) => {
     setPage(value);
