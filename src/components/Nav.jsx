@@ -255,7 +255,7 @@ export const Nav = observer(() => {
                   onMouseLeave={handleLibreriansMenuClose}
                   active={isLibrariansMenuOpen || ['/items', '/itemsPendingApproval', '/studentRequest', '/tag-list','/items/borrowingItems'].includes(location.pathname)}
                   ref={(node) => {
-                    setAdminAnchorEl(node);
+                    setLibreriansAnchorEl(node);
                   }}
                 >
                   אזור ספרנית
