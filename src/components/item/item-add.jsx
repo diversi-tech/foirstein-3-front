@@ -27,7 +27,6 @@ import itemStore from '../../store/item-store';
 import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
-import LevelEnum from '../LevelEum';
 // import { useTheme } from '@mui/material/styles';
 
 const ITEM_HEIGHT = 48;
@@ -63,17 +62,6 @@ const ItemDdd = observer(() => {
         publishingYear: '',
         tag: [],
         filePath: '',
-        edition: '',
-        series: '',
-        numOfSeries: 0,
-        language: '',
-        note: '',
-        accompanyingMaterial: '',
-        itemLevel: 0,
-        hebrewPublicationYear: '',
-        numberOfCopies: 0,
-        numberOfDaysOfQuestion: 0,
-        copiesThatCanBeBorrowed: 0
     });
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
@@ -90,17 +78,6 @@ const ItemDdd = observer(() => {
             publishingYear: '',
             tag: [],
             filePath: '',
-            edition: '',
-            series: '',
-            numOfSeries: 0,
-            language: '',
-            note: '',
-            accompanyingMaterial: '',
-            itemLevel: 0,
-            hebrewPublicationYear: '',
-            numberOfCopies: 0,
-            numberOfDaysOfQuestion: 0,
-            copiesThatCanBeBorrowed: 0
         });
         setIsHndleUpload(false);
         setSelectedValue('');
@@ -176,28 +153,23 @@ const ItemDdd = observer(() => {
             );
         setIsFormValid(isValid);
     }, [formData, selectedValue, fileExtension]);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("formData.series", formData.series);
-
+        const dataToSend = { ...formData };
         const formDataToSend = new FormData();
-
-        for (const key in formData) {
+        for (const key in dataToSend) {
             if (key === 'tag') {
-                const tagIds = formData[key].map(tagName => {
+                const tagIds = dataToSend[key].map(tagName => {
                     const tag = tagStore.tagList.find(t => t.name === tagName);
                     return tag ? tag.id : tagName;
                 });
                 tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId));
-            } else if (key === 'filePath' && formData[key] instanceof File) {
-                formDataToSend.append(key, formData[key]);
             } else {
-                formDataToSend.append(key, formData[key]);
+                formDataToSend.append(key, dataToSend[key]);
             }
         }
-
         handleClose();
-
         Swal.fire({
             title: "?האם ברצונך לשמור את הפריט",
             showDenyButton: true,
@@ -255,9 +227,20 @@ const ItemDdd = observer(() => {
                 });
             }
         });
-    };
-
-
+            setFormData({
+                title: '',
+                description: '',
+                category: '',
+                author: '',
+                publishingYear: '',
+                tag: [],
+                filePath: '',
+            });
+            setIsHndleUpload(true);
+            setSelectedValue('');
+            setIsUpload(true);
+            // handleClose();
+        }
 
 
     return (
@@ -546,7 +529,7 @@ const ItemDdd = observer(() => {
                             )}
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="tagId">תגית</InputLabel>
+                                    <InputLabel id="tagId">תגיות</InputLabel>
                                     <Select
                                         labelId="tagId"
                                         id="tagId"

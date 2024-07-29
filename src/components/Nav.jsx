@@ -1,11 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AppBar, Avatar, IconButton, Menu, MenuItem, Toolbar, Typography, Button, Popper, Paper, ClickAwayListener, Grow, MenuList } from '@mui/material';
+import { AppBar, Avatar, Menu, MenuItem, Toolbar, Typography, Button, Popper, Paper, ClickAwayListener, Grow, MenuList, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
+import Tooltip from '@mui/material/Tooltip'; // ייבוא נכון של Tooltip
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { getRoleFromToken, getUserNameFromToken, getCookie } from './decipheringToken';
-
-
+import Grid from '@mui/material/Grid'; // ייבוא נכון של Grid
+import Badge from '@mui/material/Badge';
+import requestStore from '../store/studentsRequest-store';
+import itemStore from '../store/item-store';
+import MailIcon from '@mui/icons-material/Mail';
+import { toJS } from 'mobx';
+import { observer } from 'mobx-react-lite';
 // function getCookie(name) {
 //   const value = `; ${document.cookie}`;
 //   const parts = value.split(`; ${name}=`);
@@ -84,7 +91,9 @@ const getGreetingMessage = () => {
   }
 };
 
-export const Nav = () => {
+export const Nav = observer(() => {
+  const [requestsCount, setRequestsCount] = React.useState(0);
+  const [itemsCount, setItemsCount] = React.useState(0)
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
@@ -97,6 +106,20 @@ export const Nav = () => {
   const greetingMessage = getGreetingMessage();
   const role = isLoggedIn ? getRoleFromToken() : null;
   const userName = isLoggedIn ? getUserNameFromToken() : null;
+
+  React.useEffect(() => {
+    try {
+      const countRequests = toJS(requestStore.getRequest).length
+      debugger
+      setRequestsCount(countRequests)
+      const countItems = toJS(itemStore.getPendingList).length
+      debugger
+      setItemsCount(countItems)
+    }
+    catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  }, [requestStore.getRequest, itemStore.getPendingList])
 
   useEffect(() => {
     if (!isLoggedIn && (location.pathname === '/UserManagementComponent' || location.pathname === '/ActivityLog' || location.pathname === '/changePermission' || location.pathname === '/Charts')) {
@@ -164,7 +187,7 @@ export const Nav = () => {
               variant="body1"
               style={{ color: '#FFFFFF', marginLeft: '4px', fontWeight: 'bold' }}
             >
-              מרחבית 
+              מרחבית
             </Typography>
           </RightSection>
           <StyledLink to="/homePage" active={location.pathname === '/homePage' || location.pathname === '/login/homePage' || location.pathname === '/homePage'}>
@@ -180,66 +203,21 @@ export const Nav = () => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'   &&  (
-          <>
-          <AdminButton
-            onMouseEnter={handleAdminMenuOpen}
-            onMouseLeave={handleAdminMenuClose}
-            active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
-            ref={(node) => {
-              setAdminAnchorEl(node);
-            }}
-          >
-            הרשאות מנהל
-          </AdminButton>
-          <Popper
-            open={isAdminMenuOpen}
-            anchorEl={adminAnchorEl}
-            role={undefined}
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                }}
-              >
-                <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
-                  <ClickAwayListener onClickAway={handleAdminMenuClose}>
-                    <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
-                      <MenuItem onClick={() => navigate('/ActivityLog')}>יומן פעילות</MenuItem>
-                      <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
-                      <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
-                      <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-        </>
-          )}
-        {(role === 'Librarian'||role === 'Admin' ) && (
-                      <>
-                        <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
-                             ניהול משתמשים
-                       </StyledLink>
-                       <>
+          {role === 'Admin' && (
+            <>
               <AdminButton
-                onMouseEnter={handleLibreriansMenuOpen}
-                onMouseLeave={handleLibreriansMenuClose}
-                active={isLibrariansMenuOpen || ['/items', '/itemsPendingApproval', '/studentRequest', '/tag-list'].includes(location.pathname)}
+                onMouseEnter={handleAdminMenuOpen}
+                onMouseLeave={handleAdminMenuClose}
+                active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
                 ref={(node) => {
-                  setLibreriansAnchorEl(node);
+                  setAdminAnchorEl(node);
                 }}
               >
-                 אזור ספרנית
+                הרשאות מנהל
               </AdminButton>
               <Popper
-                open={isLibrariansMenuOpen}
-                anchorEl={libreriansAnchorEl}
+                open={isAdminMenuOpen}
+                anchorEl={adminAnchorEl}
                 role={undefined}
                 transition
                 disablePortal
@@ -251,13 +229,13 @@ export const Nav = () => {
                       transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
                     }}
                   >
-                    <Paper onMouseEnter={handleLibreriansMenuOpen} onMouseLeave={handleLibreriansMenuClose}>
-                      <ClickAwayListener onClickAway={handleLibreriansMenuClose}>
-                        <MenuList autoFocusItem={isLibrariansMenuOpen} id="menu-list-grow">
-                          <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
-                          <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
-                          <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
-                          <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
+                    <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
+                      <ClickAwayListener onClickAway={handleAdminMenuClose}>
+                        <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
+                          <MenuItem onClick={() => navigate('/ActivityLog')}>יומן פעילות</MenuItem>
+                          <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
+                          <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
+                          <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
@@ -265,13 +243,89 @@ export const Nav = () => {
                 )}
               </Popper>
             </>
-         
-                         {/* <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
+          )}
+          {(role === 'Librarian' || role === 'Admin' && (
+            <>
+              <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
+                ניהול משתמשים
+              </StyledLink>
+              <>
+                <AdminButton
+                  onMouseEnter={handleLibreriansMenuOpen}
+                  onMouseLeave={handleLibreriansMenuClose}
+                  active={isLibrariansMenuOpen || ['/items', '/itemsPendingApproval', '/studentRequest', '/tag-list','/items/borrowingItems'].includes(location.pathname)}
+                  ref={(node) => {
+                    setLibreriansAnchorEl(node);
+                  }}
+                >
+                  אזור ספרנית
+                </AdminButton>
+                <Popper
+                  open={isLibrariansMenuOpen}
+                  anchorEl={libreriansAnchorEl}
+                  role={undefined}
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                      }}
+                    >
+                      <Paper onMouseEnter={handleLibreriansMenuOpen} onMouseLeave={handleLibreriansMenuClose}>
+                        <ClickAwayListener onClickAway={handleLibreriansMenuClose}>
+                          <MenuList autoFocusItem={isLibrariansMenuOpen} id="menu-list-grow">
+                            <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
+                            <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
+                            <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
+                            <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
+                            <MenuItem onClick={() => navigate('/items/borrowingItems')}>פריטים מושאלים</MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </>
+
+              {/* <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
+
                          הרשאות ספרנית
                       </StyledLink> */}
-             </>            
-                    )}
+            </>
+          ))}
           <LeftSection>
+            <Grid container spacing={4} style={{ width: '40%', marginLeft: '40px' }}>
+              <Grid item xs={6}>
+                <Tooltip title="בקשות שמחכות לאישור" arrow>
+                  <IconButton size="large"
+                    aria-label="show 4 new mails"
+                    color="inherit"
+                    onClick={() => navigate('/studentRequest')}>
+                    <Badge badgeContent={requestsCount} color="primary">
+                      <MailIcon />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item xs={6}>
+                <Tooltip title="פריטים שמחכים לאישור" arrow>
+                  <IconButton
+                    size="large"
+                    aria-label="show 17 new notifications"
+                    color="inherit"
+                    onClick={() => navigate('/itemsPendingApproval')}
+                  >
+                    <Badge badgeContent={itemsCount} color="warning">
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+
             {isLoggedIn ? (
               <>
                 <IconButton
@@ -302,4 +356,4 @@ export const Nav = () => {
       <ToolbarOffset />
     </Root>
   );
-};
+});

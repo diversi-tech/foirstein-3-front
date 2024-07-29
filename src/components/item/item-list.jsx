@@ -24,7 +24,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
-import LevelEnum from '../LevelEum';
+
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -115,7 +115,7 @@ const DataTable = observer(() => {
       }
     });
   };
-
+  
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
@@ -169,7 +169,7 @@ const DataTable = observer(() => {
       }
     });
   };
-
+  
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
@@ -380,13 +380,6 @@ const DataTable = observer(() => {
     filterOperatorIsEmpty: "ריק",
     filterOperatorIsNotEmpty: "אינו ריק",
     filterOperatorIsAnyOf: "הוא אחד מ",
-  };
-
-  const levelMapping = {
-    1: 'PRESCHOOL',
-    2: 'LOW',
-    3: 'HIGH',
-    4: 'CLASS',
   };
   const columns = [
     {
@@ -887,7 +880,6 @@ const DataTable = observer(() => {
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                {/* רמה: {LevelEnum[levelMapping[item.itemLevel]] || "לא ידוע"} */}
                 רמה: {item.itemLevel}
               </Typography>
               <Typography
