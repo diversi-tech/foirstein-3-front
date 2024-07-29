@@ -53,6 +53,15 @@ const theme = createTheme({
   typography: {
     fontFamily: 'Rubik',
   },
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Rubik, Arial, sans-serif',
+        },
+      },
+    },
+  },
  
 })
 ReactDOM.createRoot(document.getElementById('root')).render(
