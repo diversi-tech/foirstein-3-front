@@ -299,7 +299,7 @@ export const Nav = observer(() => {
           <LeftSection>
             <Grid container spacing={4} style={{ width: '40%', marginLeft: '40px' }}>
               <Grid item xs={6}>
-                <Tooltip title="בקשות שמחכות לאישור" arrow>
+                <Tooltip title="בקשות השאלה של תלמידות" arrow>
                   <IconButton size="large"
                     aria-label="show 4 new mails"
                     color="inherit"
@@ -311,7 +311,7 @@ export const Nav = observer(() => {
                 </Tooltip>
               </Grid>
               <Grid item xs={6}>
-                <Tooltip title="פריטים שמחכים לאישור" arrow>
+                <Tooltip title="פריטים שמחכים לטיפול" arrow>
                   <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
