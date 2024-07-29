@@ -446,6 +446,7 @@ const DataTable = observer(() => {
       renderCell: (params) => {
         const item = params.row;
         return (
+
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
               <IconButton
@@ -581,8 +582,8 @@ const DataTable = observer(() => {
                     width: '100px',
                     backgroundColor: '#b0b0b0',
                     color: '#0D1E46',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // הוספת צל
-                    marginRight: 0
+                    // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
+                    // marginRight: 0
                   }} // שינוי רוחב הכפתור
                 >
                   {"כל התגיות"}
@@ -602,8 +603,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
+                  {console.log("item.tags", item.tags)} ;
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                    console.log("tegg", tag);
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -841,77 +846,79 @@ const DataTable = observer(() => {
             <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
               <Box display="flex" dir="rtl" margin={1}>
                 {!item.filePath.includes("https") && (
-                  <Typography
-                    variant="body1"
-                    style={{ marginRight: "10px" }}
-                    dir="rtl"
-                  >
-                    מספר ימי השאלה:{item.numberOfDaysOfQuestion}
-                  </Typography>
-                )}
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  מהדורה: {item.edition}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  סידרה: {item.series}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  מספר בסידרה: {item.numOfSeries}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  {/* מוציא לאור: {item.publisher}
+                  <>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>מספר ימי השאלה:</strong> {item.numberOfDaysOfQuestion}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong> מהדורה:</strong> {item.edition}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>סידרה:</strong>  {item.series}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>מספר בסידרה:</strong>  {item.numOfSeries}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      {/* מוציא לאור: {item.publisher}
               </Typography>
               <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
+              variant="body1"
+              style={{ marginRight: "10px" }}
+              dir="rtl"
               > */}
-                  שנה עברית: {item.hebrewPublicationYear}
-                </Typography>
+                      <strong>שנה עברית: </strong>   {item.hebrewPublicationYear}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong> שפה:</strong> {item.language}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>רמה:</strong>  {item.itemLevel}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
+                    </Typography>
+                  </>)}
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  שפה: {item.language}
+                  <strong>הערה:</strong>  {item.note}
                 </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  הערה: {item.note}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  רמה: {item.itemLevel}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  חומר נלווה: {item.accompanyingMaterial}
-                </Typography>
+
               </Box>
             </Collapse>
           ))}
