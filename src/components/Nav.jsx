@@ -251,9 +251,9 @@ export const Nav = observer(() => {
               </StyledLink>
               <>
                 <AdminButton
-                  onMouseEnter={handleAdminMenuOpen}
-                  onMouseLeave={handleAdminMenuClose}
-                  active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
+                  onMouseEnter={handleLibreriansMenuOpen}
+                  onMouseLeave={handleLibreriansMenuClose}
+                  active={isLibrariansMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
                   ref={(node) => {
                     setAdminAnchorEl(node);
                   }}
@@ -261,8 +261,8 @@ export const Nav = observer(() => {
                   אזור ספרנית
                 </AdminButton>
                 <Popper
-                  open={isAdminMenuOpen}
-                  anchorEl={adminAnchorEl}
+                  open={isLibrariansMenuOpen}
+                  anchorEl={libreriansAnchorEl}
                   role={undefined}
                   transition
                   disablePortal
@@ -274,9 +274,9 @@ export const Nav = observer(() => {
                         transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
                       }}
                     >
-                      <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
-                        <ClickAwayListener onClickAway={handleAdminMenuClose}>
-                          <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
+                      <Paper onMouseEnter={handleLibreriansMenuOpen} onMouseLeave={handleLibreriansMenuClose}>
+                        <ClickAwayListener onClickAway={handleLibreriansMenuClose}>
+                          <MenuList autoFocusItem={isLibrariansMenuOpen} id="menu-list-grow">
                             <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
                             <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
                             <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
