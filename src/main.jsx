@@ -51,7 +51,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'Rubik, Arial, sans-serif',
+    fontFamily: 'Rubik',
   },
 })
 ReactDOM.createRoot(document.getElementById('root')).render(
