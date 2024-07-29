@@ -311,7 +311,7 @@ export const Nav = observer(() => {
                 </Tooltip>
               </Grid>
               <Grid item xs={6}>
-                <Tooltip title="פריטים שמחכים לטיפול" arrow>
+                <Tooltip title="פריטים לטיפול" arrow>
                   <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
