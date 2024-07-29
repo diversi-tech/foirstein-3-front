@@ -771,7 +771,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">רשימת קבצים</h2>
+        <h2 align="center">תרשימת קבצים</h2>
         <Grid
           container
           spacing={2}
