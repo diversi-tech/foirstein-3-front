@@ -12,7 +12,7 @@ import requestStore from '../store/studentsRequest-store';
 import itemStore from '../store/item-store';
 import MailIcon from '@mui/icons-material/Mail';
 import { toJS } from 'mobx';
-import { observer } from 'mobx-react-lite'; 
+import { observer } from 'mobx-react-lite';
 // function getCookie(name) {
 //   const value = `; ${document.cookie}`;
 //   const parts = value.split(`; ${name}=`);
@@ -203,48 +203,48 @@ export const Nav = observer(() => {
               חיפוש
             </StyledLink>
           )}
-          {role === 'Admin'   &&  (
-          <>
-          <AdminButton
-            onMouseEnter={handleAdminMenuOpen}
-            onMouseLeave={handleAdminMenuClose}
-            active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
-            ref={(node) => {
-              setAdminAnchorEl(node);
-            }}
-          >
-            הרשאות מנהל
-          </AdminButton>
-          <Popper
-            open={isAdminMenuOpen}
-            anchorEl={adminAnchorEl}
-            role={undefined}
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+          {role === 'Admin' && (
+            <>
+              <AdminButton
+                onMouseEnter={handleAdminMenuOpen}
+                onMouseLeave={handleAdminMenuClose}
+                active={isAdminMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
+                ref={(node) => {
+                  setAdminAnchorEl(node);
                 }}
               >
-                <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
-                  <ClickAwayListener onClickAway={handleAdminMenuClose}>
-                    <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
-                      <MenuItem onClick={() => navigate('/ActivityLog')}>יומן פעילות</MenuItem>
-                      <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
-                      <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
-                      <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-        </>
+                הרשאות מנהל
+              </AdminButton>
+              <Popper
+                open={isAdminMenuOpen}
+                anchorEl={adminAnchorEl}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                    }}
+                  >
+                    <Paper onMouseEnter={handleAdminMenuOpen} onMouseLeave={handleAdminMenuClose}>
+                      <ClickAwayListener onClickAway={handleAdminMenuClose}>
+                        <MenuList autoFocusItem={isAdminMenuOpen} id="menu-list-grow">
+                          <MenuItem onClick={() => navigate('/ActivityLog')}>יומן פעילות</MenuItem>
+                          <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
+                          <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
+                          <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </>
           )}
-          {(role === 'Librarian' || role === 'Admin' || 1 === 1 && (
+          {(role === 'Librarian' || role === 'Admin' && (
             <>
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                 ניהול משתמשים
@@ -291,6 +291,7 @@ export const Nav = observer(() => {
               </>
 
               {/* <StyledLink to="/Librarian" active={location.pathname === '/Librarian'}>
+
                          הרשאות ספרנית
                       </StyledLink> */}
             </>
