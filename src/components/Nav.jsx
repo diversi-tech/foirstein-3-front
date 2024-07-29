@@ -110,10 +110,10 @@ export const Nav = observer(() => {
   React.useEffect(() => {
     try {
       const countRequests = toJS(requestStore.getRequest).length
-      debugger
+    
       setRequestsCount(countRequests)
       const countItems = toJS(itemStore.getPendingList).length
-      debugger
+      
       setItemsCount(countItems)
     }
     catch (error) {
@@ -207,7 +207,7 @@ export const Nav = observer(() => {
             </Typography> 
     </button>
           </RightSection>
-          
+
           {!isLoggedIn && (
             <StyledLink to="/login" active={location.pathname === '/login' || location.pathname === '/login/security-question/reset-password/password-reset-success/login'}>
               התחברות
