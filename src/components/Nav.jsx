@@ -253,7 +253,7 @@ export const Nav = observer(() => {
                 <AdminButton
                   onMouseEnter={handleLibreriansMenuOpen}
                   onMouseLeave={handleLibreriansMenuClose}
-                  active={isLibrariansMenuOpen || ['/ActivityLog', '/changePermission', '/Charts', '/ManagerDashboard'].includes(location.pathname)}
+                  active={isLibrariansMenuOpen || ['/items', '/itemsPendingApproval', '/studentRequest', '/tag-list','/items/borrowingItems'].includes(location.pathname)}
                   ref={(node) => {
                     setAdminAnchorEl(node);
                   }}
