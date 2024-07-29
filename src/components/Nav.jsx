@@ -166,8 +166,8 @@ export const Nav = observer(() => {
   };
 
   const handleAdminMenuClose = () => {
-    setLibreriansAnchorEl(null);
-    setIsLibreriansnMenuOpen(false);
+    setAdminAnchorEl(null);
+    setIsAdminMenuOpen(false);
   };
 
   const renderUserAvatar = (name) => {
