@@ -25,6 +25,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
 
+import LevelEnum from "../LevelEum";
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -427,6 +428,13 @@ const DataTable = observer(() => {
     filterOperatorIsNotEmpty: "אינו ריק",
     filterOperatorIsAnyOf: "הוא אחד מ",
   };
+  const LevelEnumMapping = {
+    0: LevelEnum.PRESCHOOL,
+    1: LevelEnum.LOW,
+    2: LevelEnum.HIGH,
+    3: LevelEnum.CLASS,
+  };
+
   const columns = [
     {
       field: "checkbox",
@@ -610,8 +618,8 @@ const DataTable = observer(() => {
                     width: '100px',
                     backgroundColor: '#b0b0b0',
                     color: '#0D1E46',
-                    // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
-                    // marginRight: 0
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
+                    marginRight: 0
                   }} // שינוי רוחב הכפתור
                 >
                   {"כל התגיות"}
@@ -620,18 +628,18 @@ const DataTable = observer(() => {
                   id="tag-menu"
                   anchorEl={anchorEl}
                   keepMounted
-                  open={Boolean(anchorEl)}
+                  open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
                   onClose={() => { setAnchorEl(null) }}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
                 >
-                  {console.log("item.tags", item.tags)} ;
+                  {console.log("item.tags", item.tags)}
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
 
                   {item.tags.map((tagId) => {
@@ -929,7 +937,7 @@ const DataTable = observer(() => {
                       style={{ marginRight: "10px" }}
                       dir="rtl"
                     >
-                      <strong>רמה:</strong>  {item.itemLevel}
+                      <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
                     </Typography>
                     <Typography
                       variant="body1"
