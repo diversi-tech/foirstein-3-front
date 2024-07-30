@@ -5,7 +5,10 @@ import PendingItems from './components/pendingItemsList/pendingItems'
 import SideNav from "./components/side_nav"
 import { Routing } from './components/Routing'
 import { useEffect } from 'react'
+import CssBaseline from '@mui/material/CssBaseline';
 
+import React from 'react'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 function App() {
   useEffect(() => {
     // האזנה להודעות postMessage
@@ -29,27 +32,43 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    // פונקציה למחיקת הטוקן מהקוקי
-    function deleteTokenCookie() {
-      document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
+  // useEffect(() => {
+  //   // פונקציה למחיקת הטוקן מהקוקי
+  //   function deleteTokenCookie() {
+  //     document.cookie = `jwt=; path=/; domain=.foirstein.diversitech.co.il; expires=Thu, 01 Jan 1970 00:00:00 GMT;`;
 
-    }
+  //   }
 
-    // מחיקת הקוקי בעת סגירת הכרטיסייה
-    window.addEventListener('beforeunload', deleteTokenCookie);
+  //   // מחיקת הקוקי בעת סגירת הכרטיסייה
+  //   window.addEventListener('beforeunload', deleteTokenCookie);
 
-    // ניקוי המאזין בעת הסרת הקומפוננטה מה-DOM
-    return () => {
-      window.removeEventListener('beforeunload', deleteTokenCookie);
-    };
-  }, []);
+  //   // ניקוי המאזין בעת הסרת הקומפוננטה מה-DOM
+  //   return () => {
+  //     window.removeEventListener('beforeunload', deleteTokenCookie);
+  //   };
+  // }, []);
+  const theme = createTheme({
+    typography: {
+      fontFamily: 'Rubik',
+    },
+  })
   
   return (<>
+  ReactDOM.createRoot(document.getElementById('root')).render(
+  
+  <React.StrictMode>
+    {/* <App /> */}
+    {/* <RouterProvider router={router} />  */}
+    <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <Routing></Routing>
+  </ThemeProvider>,
+  </React.StrictMode>,
+)
     {/* <AppRoutes /> */}
     {/* <SideNav></SideNav> */}
     {/* <PendingItems /> */}
-    <Routing></Routing>
+    {/* <Routing></Routing> */}
   </>
   )
 }

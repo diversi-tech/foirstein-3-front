@@ -10,7 +10,7 @@ import ItemSearch from "./item-search";
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
-  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem
+  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem, CircularProgress
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/ControlPoint";
@@ -47,20 +47,66 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  useEffect(() => {
-    itemStore.fetchMedia();
-    tagStore.fetchTag();
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // useEffect(() => {
+  //   itemStore.fetchMedia();
+  //   tagStore.fetchTag();
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await itemStore.fetchMedia();
+  //       await tagStore.fetchTag();
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
+  // }, [tagStore.tagList]);
+
+  // useEffect(() => {
+  //   setFilteredItems(filterItems(itemStore.mediaList));
+  //   setPage(1);
+  //   console.log("items:" + JSON.stringify(itemStore.mediaList));
+  // }, [itemStore.mediaList, filterType]);
+
+  // Fetch data and handle loading state
+  useEffect(() => {
+    const fetchData = async () => {
+      // setIsLoading(true); // Show loading spinner
+      try {
+        await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [itemStore, tagStore]); // Dependencies: triggers fetchData when itemStore or tagStore changes
+
+  // Update tagsList when tagStore.tagList changes
   useEffect(() => {
     setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
   }, [tagStore.tagList]);
 
+  // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
     setFilteredItems(filterItems(itemStore.mediaList));
-    setPage(1);
-    console.log("items:" + JSON.stringify(itemStore.mediaList));
-  }, [itemStore.mediaList, filterType]);
+    setPage(1); // Reset page when items or filterType changes
+    console.log("items:", JSON.stringify(itemStore.mediaList));
+  }, [itemStore.mediaList, filterType]); // Dependencies: triggers effect when mediaList or filterType changes
+
 
   const handleChangePage = (event, value) => {
     setPage(value);
@@ -115,7 +161,7 @@ const DataTable = observer(() => {
       }
     });
   };
-  
+
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
@@ -169,7 +215,7 @@ const DataTable = observer(() => {
       }
     });
   };
-  
+
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
@@ -428,6 +474,7 @@ const DataTable = observer(() => {
       renderCell: (params) => {
         const item = params.row;
         return (
+
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
               <IconButton
@@ -563,8 +610,8 @@ const DataTable = observer(() => {
                     width: '100px',
                     backgroundColor: '#b0b0b0',
                     color: '#0D1E46',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // הוספת צל
-                    marginRight: 0
+                    // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
+                    // marginRight: 0
                   }} // שינוי רוחב הכפתור
                 >
                   {"כל התגיות"}
@@ -584,8 +631,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
+                  {console.log("item.tags", item.tags)} ;
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                    console.log("tegg", tag);
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -720,7 +771,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">רשימת קבצים</h2>
+        <h2 align="center">תרשימת קבצים</h2>
         <Grid
           container
           spacing={2}
@@ -782,116 +833,124 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-        <DataGrid
-          rows={paginatedItems}
-          columns={columns}
-          pageSize={rowsPerPage}
-          disableSelectionOnClick
-          localeText={localeText}
-          autoHeight
-          style={{ overflow: "hidden" }}
-          pagination={false} // Disable DataGrid pagination
-          hideFooterPagination
-          position="sticky"
-          hideFooter
-        />
-        <Box textAlign="center" marginTop={2}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Pagination
-              dir="ltr"
-              count={Math.ceil(totalItems / rowsPerPage)}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              color="primary"
-              shape="rounded"
-              renderItem={(item) => <PaginationItem {...item} />}
-            />
-          </Stack>
-        </Box>
-        {paginatedItems.map((item) => (
-          <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-            <Box display="flex" dir="rtl" margin={1}>
-              {!item.filePath.includes("https") && (
+        {isLoading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" height="400px">
+            <CircularProgress />
+          </Box>
+        ) : (<>
+          <DataGrid
+            rows={paginatedItems}
+            columns={columns}
+            pageSize={rowsPerPage}
+            disableSelectionOnClick
+            localeText={localeText}
+            autoHeight
+            style={{ overflow: "hidden" }}
+            pagination={false} // Disable DataGrid pagination
+            hideFooterPagination
+            position="sticky"
+            hideFooter
+          />
+          <Box textAlign="center" marginTop={2}>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(totalItems / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
+          </Box>
+          {paginatedItems.map((item) => (
+            <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+              <Box display="flex" dir="rtl" margin={1}>
+                {!item.filePath.includes("https") && (
+                  <>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>מספר ימי השאלה:</strong> {item.numberOfDaysOfQuestion}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong> מהדורה:</strong> {item.edition}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>סידרה:</strong>  {item.series}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>מספר בסידרה:</strong>  {item.numOfSeries}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      {/* מוציא לאור: {item.publisher}
+              </Typography>
+              <Typography
+              variant="body1"
+              style={{ marginRight: "10px" }}
+              dir="rtl"
+              > */}
+                      <strong>שנה עברית: </strong>   {item.hebrewPublicationYear}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong> שפה:</strong> {item.language}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>רמה:</strong>  {item.itemLevel}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      style={{ marginRight: "10px" }}
+                      dir="rtl"
+                    >
+                      <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
+                    </Typography>
+                  </>)}
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  מספר ימי השאלה:{item.numberOfDaysOfQuestion}
+                  <strong>הערה:</strong>  {item.note}
                 </Typography>
-              )}
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                מהדורה: {item.edition}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                סידרה: {item.series}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                מספר בסידרה: {item.numOfSeries}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                {/* מוציא לאור: {item.publisher}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              > */}
-                שנה עברית: {item.hebrewPublicationYear}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                שפה: {item.language}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                הערה: {item.note}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                רמה: {item.itemLevel}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                חומר נלווה: {item.accompanyingMaterial}
-              </Typography>
-            </Box>
-          </Collapse>
-        ))}
+
+              </Box>
+            </Collapse>
+          ))}
+        </>)}
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
