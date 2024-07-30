@@ -966,42 +966,40 @@ const DataTable = observer(() => {
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               > */}
-                      <strong>שנה עברית: </strong>   {item.hebrewPublicationYear}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong> שפה:</strong> {item.language}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
-                    </Typography>
-                  </>)}
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  <strong>הערה:</strong>  {item.note}
-                </Typography>
+                שנה עברית: {item.hebrewPublicationYear}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                שפה: {item.language}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                הערה: {item.note}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                רמה: {item.itemLevel}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                חומר נלווה: {item.accompanyingMaterial}
+              </Typography>
+            </Box>
+          </Collapse>
+        ))}
 
-              </Box>
-            </Collapse>
-          ))}
-        </>)}
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
