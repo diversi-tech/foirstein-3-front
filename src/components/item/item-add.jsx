@@ -178,7 +178,23 @@ const ItemDdd = observer(() => {
             denyButtonText: `ביטול`
         }).then(async (result) => {
             if (result.isConfirmed) {
-                if (selectedValue === 'file') {
+                if (selectedValue === 'object') {
+                    const objectToSend = new FormData();
+                    for (const key in formData) {
+                        if (key === 'tag') {
+                            const tagIds = formData[key].map(tagName => {
+                                const tag = tagStore.tagList.find(t => t.name === tagName);
+                                return tag ? tag.id : tagName;
+                            });
+                            tagIds.forEach(tagId => objectToSend.append('tags[]', tagId));
+                        }
+                        if (key === 'title' || key === 'description' || key === 'category' || key === 'note'|| key ==='amount') {
+                            objectToSend.append(key, formData[key]);
+                        }
+                    }
+                    await itemStore.uploadMediaObject(objectToSend);
+                }
+                else if (selectedValue === 'file') {
                     const fileToSend = new FormData();
 
                     for (const key in formData) {

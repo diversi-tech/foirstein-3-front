@@ -24,11 +24,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
     title: mediaItem.title,
     description: mediaItem.description,
     category: mediaItem.category,
+    amount: mediaItem.amount,
     author: mediaItem.author,
     publishingYear: mediaItem.publishingYear,
     isApproved: mediaItem.isApproved,
     tags: initialTagIds,
     filePath: mediaItem.filePath || '',
+    amount: mediaItem.amount,
     edition: mediaItem.edition,
     series: mediaItem.series,
     numOfSeries: mediaItem.numOfSeries,
@@ -37,9 +39,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     accompanyingMaterial: mediaItem.accompanyingMaterial,
     itemLevel: mediaItem.itemLevel,
     hebrewPublicationYear: mediaItem.hebrewPublicationYear,
-    // numberOfCopies: mediaItem.numberOfCopies,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
-    // copiesThatCanBeBorrowed: mediaItem.copiesThatCanBeBorrowed,
   });
 
   const [send, setSend] = useState(false);
@@ -117,6 +117,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category', formData.category);
+    if(!formData.author)
+    formDataToSend.append('amount', formData.amount);
+    if(formData.author){
     formDataToSend.append('author', formData.author);
     formDataToSend.append('edition', formData.edition);
     formDataToSend.append('series', formData.series);
@@ -137,39 +140,48 @@ export default function ItemEdit({ mediaItem, onClose }) {
       formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
     } else {
       formDataToSend.append('filePath', formData.filePath); // Use existing filePath
-    } 
+    } }
     onClose();
     Swal.fire({
       title: "?האם ברצונך לעדכן את הנתונים",
       showDenyButton: true,
       confirmButtonText: "אישור",
       denyButtonText: `ביטול`
-    }).then(async(result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        if (link){
-          await itemStore.updateMediaFile(formData.id, formDataToSend);
-          console.log("id: ",formData.id);
-        } 
-       else {
-         await itemStore.updateMediaBook(formData.id, formDataToSend);
-         console.log("id: ",formData.id);
-       }
+        try {
+          if (link) {
+            await itemStore.updateMediaFile(formData.id, formDataToSend);
+            console.log("id: ", formData.id);}
+          // } else if (!formData.author) {
+          //   await itemStore.updateMediaObject(formData.id, formDataToSend);
+          // } 
+          else {
+            await itemStore.updateMediaBook(formData.id, formDataToSend);
+            console.log("id: ", formData.id);
+          }
           Swal.fire({
             icon: "success",
             title: "השינויים נשמרו בהצלחה",
             showConfirmButton: false,
             timer: 1500
           });
-         
-      }
-       else if (result.isDenied) {
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "שגיאה",
+            text: "העדכון נכשל, נסה שוב מאוחר יותר",
+            showConfirmButton: true
+          });
+        }
+      } else if (result.isDenied) {
         Swal.fire({
           icon: "info",
           title: "לא נשמרו שינויים",
           showConfirmButton: false,
           timer: 1500
         });
-      }
+      }   
       else
       Swal.fire({
         icon: "error",
@@ -205,6 +217,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="title"
             value={formData.title}
             onChange={handleChange}
+            inputProps={{ minLength:2, maxLength: 17 }}
             required
             />
           {formData.title && formData.title.length < 2 && (
@@ -219,10 +232,11 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="description"
             value={formData.description}
             onChange={handleChange}
+            inputProps={{ minLength:3, maxLength: 35 }}
             required
             />
-          {formData.description && formData.description.length < 5 && (
-            <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+          {formData.description && formData.description.length <3 && (
+            <Typography color="error">התיאור חייב להכיל לפחות 3 תווים</Typography>
           )}
            {formData.description === formData.title  &&(
             <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
@@ -235,26 +249,30 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="category"
             value={formData.category}
             onChange={handleChange}
+            inputProps={{ minLength:2, maxLength: 17 }}
             required
             />
           {formData.category && formData.category.length < 2 && (
             <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
           )}
+          {formData.author&&
           <TextField
-            margin="dense"
-            label="מחבר"
-            type="text"
-            fullWidth
-            name="author"
-            value={formData.author}
-            onChange={handleChange}
-            required
-            />
+          margin="dense"
+          label="מחבר"
+          type="text"
+          fullWidth
+          name="author"
+          value={formData.author}
+          onChange={handleChange}
+          inputProps={{ minLength:2, maxLength: 17 }}
+          required
+          />
+        }
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
          
-          {!formData.filePath.includes('https') &&
+          {!formData.filePath.includes('https') &&formData.author&&
            <TextField
            margin="dense"
            label="שנת הוצאה לועזית"
@@ -264,13 +282,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
            value={formData.publishingYear}
            onChange={handleChange}
            inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-          //  required
            />
           }
-        {formData.publishingYear && formData.publishingYear.length === 4 && parseInt(formData.publishingYear) > new Date().getFullYear() && (
-          <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
-        )}
-         {!formData.filePath.includes('https') &&
+       {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
+  <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
+)}
+
+         {!formData.filePath.includes('https') &&formData.author&&
                   <TextField
             margin="dense"
             label="שנה הוצאה עברית"
@@ -279,6 +297,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="hebrewPublicationYear"
             value={formData.hebrewPublicationYear}
             onChange={handleChange}
+            inputProps={{ minLength:4, maxLength: 4 }}
             required
             />}
           {formData.hebrewPublicationYear && formData.hebrewPublicationYear.length < 1 && (
@@ -311,6 +330,19 @@ export default function ItemEdit({ mediaItem, onClose }) {
               ))}
             </Select>
           </FormControl>
+          {!formData.author&&
+          <TextField
+            margin="dense"
+            label="כמות"
+            type="text"
+            fullWidth
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
+            inputProps={{ minLength:1, maxLength: 6 }}
+            // disabled={link}
+          />}
+          {formData.author&&
           <TextField
             margin="dense"
             label="מיקום"
@@ -319,8 +351,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="filePath"
             value={formData.filePath}
             onChange={handleChange}
+            inputProps={{ minLength:1 , maxLength: 17 }}
             disabled={link}
-          />
+          />}
          {link && (
             <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
               <input
@@ -340,6 +373,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               </Typography>
             </Box>
           )}
+          {formData.author&&
            <TextField
             margin="dense"
             label="מהודרה"
@@ -348,11 +382,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="edition"
             value={formData.edition}
             onChange={handleChange}
+            inputProps={{ minLength:3 , maxLength: 15 }}
             required
-            />
+            />}
           {formData.edition && formData.edition.length < 1 && (
             <Typography color="error">המהדורה חייבת להכיל לפחות תו אחד</Typography>
           )}
+          {formData.author&&
            <TextField
             margin="dense"
             label="סידרה"
@@ -361,12 +397,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="series"
             value={formData.series}
             onChange={handleChange}
+            inputProps={{ minLength:1, maxLength: 15 }}
             // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
             required
-            />
+            />}
           {formData.series && formData.series.length < 1 && (
             <Typography color="error">סידרה חייבת להכיל לפחות 3 תווים</Typography>
           )}
+          {formData.author&&
           <TextField
             margin="dense"
             label="מספר בסידרה"
@@ -375,12 +413,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="numOfSeries"
             value={formData.numOfSeries}
             onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+            inputProps={{ minLength:1,maxLength: 4,  inputMode: 'numeric', pattern: '[0-9]*'}}
             required
-            />
+            />}
           {formData.numOfSeries && formData.numOfSeries.length < 1 && (
             <Typography color="error">מספר בסידרה חייבת להכיל לפחות מספר אחד</Typography>
           )}
+          {formData.author&&
            <TextField
             margin="dense"
             label="שפה"
@@ -389,12 +428,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="language"
             value={formData.language}
             onChange={handleChange}
+            inputProps={{ minLength:3 , maxLength: 10 }}
             required
-            />
+            />}
           {formData.language && formData.language.length < 3 && (
             <Typography color="error">שפה חייבת להכיל לפחות 3 תווים </Typography>
           )}
-          
+          {formData.author&&
             <TextField
             margin="dense"
             label="חומר נלווה"
@@ -403,12 +443,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="accompanyingMaterial"
             value={formData.accompanyingMaterial}
             onChange={handleChange}
+            inputProps={{ minLength:3, maxLength: 25 }}
             required
-            />
+            />}
           {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
           )}
-          {/* <Grid item xs={12}> */}
+          {formData.author&&
               <FormControl fullWidth margin="dense">
                 <InputLabel id="level-select-label">רמה</InputLabel>
                 <Select
@@ -425,9 +466,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
-            {/* </Grid> */}
-           {!formData.filePath.includes('https') &&
+              </FormControl>}
+         
+           {!formData.filePath.includes('https')&& formData.author&& 
            <TextField
             margin="dense"
             label="מספר ימי השאלה"
@@ -442,6 +483,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
+          {formData.author&&
           <FormControl fullWidth margin="dense">
            <InputLabel id="availability-label">זמינות</InputLabel>
           <Select
@@ -455,7 +497,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
         <MenuItem value="available">זמין</MenuItem>
         <MenuItem value="notAvailable">לא זמין</MenuItem>
       </Select>
-      </FormControl>
+      </FormControl>}
+      {formData.author&&
             <TextField
             margin="dense"
             label="הערות"
@@ -464,8 +507,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
             name="note"
             value={formData.note}
             onChange={handleChange}
+            inputProps={{ minLength:2, maxLength: 35}}
             required
-            />
+            />}
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}

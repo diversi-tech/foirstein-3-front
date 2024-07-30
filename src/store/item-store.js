@@ -2,12 +2,12 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
 const baseURL='https://libererisas-backend.onrender.com/api/Item';
-const url = 'https://librerisas-bafkend.onrender.com/api/Object';
+// const url = 'https://localhost:7297/api/PhysicalItem';
 
 class ItemStore {
     pendingItemsList = []
     mediaList = [];
-    mediaList2 = {};
+    mediaList2 = [];
     add = false;
     isUpdate;
     isDeleteItem;
@@ -122,8 +122,8 @@ class ItemStore {
             const res = await fetch(`${baseURL}`);
             const obj = await res.json();
             // ככה לעשות
-            // this.mediaList = obj.data["item"];
-            // this.mediaList2 = obj.data["object"];
+            // this.mediaList = obj.data["items"];
+            // this.mediaList2 = obj.data["physicalItems"];
 
             //////////
 
@@ -178,7 +178,7 @@ class ItemStore {
 
     async uploadMediaObject(mediaData) {
         try {
-            const res = await fetch(`${url}/book`, {
+            const res = await fetch(`${url}`, {
                 method: 'POST',
                 body: mediaData,
             });
@@ -194,23 +194,23 @@ class ItemStore {
         }
     }
 
-    async deleteObject(mediaId) {
-        console.log("hiiDeleteMedia!!!!!!!!");
-        try {
-            const res = await fetch(`${url}/${mediaId}`, {
-                method: 'DELETE'
-            });
-            if (res.status === 200) {
-                this.isDeleteObject = true;
-            }
-            else {
-                this.isDeleteObject = false;
-            }
-            this.fetchMedia();
-        } catch (error) {
-            console.error('Failed to delete media:', error);
-        }
-    }
+    // async deleteObject(mediaId) {
+    //     console.log("hiiDeleteMedia!!!!!!!!");
+    //     try {
+    //         const res = await fetch(`${url}/${mediaId}`, {
+    //             method: 'DELETE'
+    //         });
+    //         if (res.status === 200) {
+    //             this.isDeleteObject = true;
+    //         }
+    //         else {
+    //             this.isDeleteObject = false;
+    //         }
+    //         this.fetchMedia();
+    //     } catch (error) {
+    //         console.error('Failed to delete media:', error);
+    //     }
+    // }
 
     async deleteMedia(mediaId) {
         console.log("hiiDeleteMedia!!!!!!!!");
@@ -230,26 +230,26 @@ class ItemStore {
         }
     }
 
-    async updateMediaObject(mediaId, mediaData) {
-        try {
-            console.log("formData: ", mediaData, "beforeFetch");
-            const res = await fetch(`${url}/book/${mediaId}`, {
-                method: 'PUT',
-                body: mediaData
-            });
-            console.log("formData: ", mediaData, "afterFetch");
-            this.fetchMedia();
+    // async updateMediaObject(mediaId, mediaData) {
+    //     try {
+    //         console.log("formData: ", mediaData, "beforeFetch");
+    //         const res = await fetch(`${url}/${mediaId}`, {
+    //             method: 'PUT',
+    //             body: mediaData
+    //         });
+    //         console.log("formData: ", mediaData, "afterFetch");
+    //         this.fetchMedia();
 
-            if (res.status === 200) {
-                this.isUpdateObject = true;
-            }
-            else {
-                this.isUpdateObject = false;
-            }
-        } catch (error) {
-            console.error('Failed to update media:', error);
-        }
-    }
+    //         if (res.status === 200) {
+    //             this.isUpdateObject = true;
+    //         }
+    //         else {
+    //             this.isUpdateObject = false;
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to update media:', error);
+    //     }
+    // }
 
     async updateMediaBook(mediaId, mediaData) {
         try {
