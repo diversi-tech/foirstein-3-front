@@ -176,23 +176,23 @@ class ItemStore {
         }
     }
 
-    // async uploadMediaObject(mediaData) {
-    //     try {
-    //         const res = await fetch(`${url}`, {
-    //             method: 'POST',
-    //             body: mediaData,
-    //         });
-    //         if (res.status === 200) {
-    //             this.isErrorObject = false;
-    //         } else {
-    //             this.isErrorObject = false;
-    //         }
-    //         this.fetchMedia();
-    //     } catch (error) {
-    //         console.error('Failed to upload media:', error);
-    //         this.isError = true;
-    //     }
-    // }
+    async uploadMediaObject(mediaData) {
+        try {
+            const res = await fetch(`${url}`, {
+                method: 'POST',
+                body: mediaData,
+            });
+            if (res.status === 200) {
+                this.isErrorObject = false;
+            } else {
+                this.isErrorObject = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to upload media:', error);
+            this.isError = true;
+        }
+    }
 
     // async deleteObject(mediaId) {
     //     console.log("hiiDeleteMedia!!!!!!!!");
