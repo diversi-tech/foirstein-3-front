@@ -55,14 +55,15 @@ class StudentsRequestStore {
   async updateApproveRequest(requestId) {
     try {
       const res = await fetch(
-        `${baseUrl}BorrowApprovalRequest/approve/${requestId}`,
+        `${baseUrl}BorrowApprovalRequest/approve/${requestId}/4`,
         {
           method: "PUT",
         }
       );
       runInAction(() => {
-        this.fetchRequest();
+        this.fetchRequest("approve",res);
       });
+      console.log();
       return res;
     } catch (error) {
       console.error("Failed to fetch request:", error);
@@ -72,7 +73,7 @@ class StudentsRequestStore {
   async updateDenyRequest(requestId) {
     try {
       const res = await fetch(
-        `${baseUrl}BorrowApprovalRequest/deny/${requestId}`,
+        `${baseUrl}BorrowApprovalRequest/deny/${requestId}/4`,
         {
           method: "PUT",
         }
