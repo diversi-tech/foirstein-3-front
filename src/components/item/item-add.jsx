@@ -28,6 +28,7 @@ import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
 // import { useTheme } from '@mui/material/styles';
+import LevelEnum from '../LevelEum';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -90,7 +91,7 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            filePath: value === 'book' ? '' : null,
+            filePath: value === 'book' ? '' : value === 'object' ? '' : null,
         }));
         setSelectedValue(value);
     };
@@ -171,63 +172,77 @@ const ItemDdd = observer(() => {
         }
         handleClose();
         Swal.fire({
-          title: "?האם ברצונך לשמור את הפריט",
-          showDenyButton: true,
-          confirmButtonText: "אישור",
-          denyButtonText: `ביטול`
-        }).then(async(result) => {
-          if (result.isConfirmed) {
-            if (selectedValue === 'file') {
-                await itemStore.uploadMediaFile(formDataToSend);
+            title: "?האם ברצונך לשמור את הפריט",
+            showDenyButton: true,
+            confirmButtonText: "אישור",
+            denyButtonText: `ביטול`
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                if (selectedValue === 'file') {
+                    const fileToSend = new FormData();
+
+                    for (const key in formData) {
+                        if (key === 'tag') {
+                            const tagIds = formData[key].map(tagName => {
+                                const tag = tagStore.tagList.find(t => t.name === tagName);
+                                return tag ? tag.id : tagName;
+                            });
+                            tagIds.forEach(tagId => fileToSend.append('tags[]', tagId));
+                        } if (key === 'filePath' && formData[key] instanceof File) {
+                            fileToSend.append(key, formData[key]);
+                        }
+                        if (key === 'title' || key === 'author' || key === 'description' || key === 'category' || key === 'note') {
+                            fileToSend.append(key, formData[key]);
+                        }
+                    }
+
+                    await itemStore.uploadMediaFile(fileToSend);
+                    Swal.fire({
+                        icon: "success",
+                        title: "הפריט נשמר בהצלחה",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    await itemStore.uploadMediaBook(formDataToSend);
+                    Swal.fire({
+                        icon: "success",
+                        title: "הפריט נשמר בהצלחה",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            } else if (result.isDenied) {
+
                 Swal.fire({
-                    icon: "success",
-                    title: "הפריט נשמר בהצלחה",
+                    icon: "info",
+                    title: "הפריט לא נשמר",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } if (itemStore.isError) {
+                Swal.fire({
+                    icon: "error",
+                    title: "אופס... תקלה בעת שמירת הפריט",
                     showConfirmButton: false,
                     timer: 1500
                 });
             }
-            else {
-                 await itemStore.uploadMediaBook(formDataToSend); 
-               Swal.fire({
-                icon: "success",
-                title: "הפריט נשמר בהצלחה",
-                showConfirmButton: false,
-                timer: 1500
-            });
-            }
-        }   
-           else if (result.isDenied) {
-            Swal.fire({
-              icon: "info",
-              title: "הפריט לא נשמר",
-              showConfirmButton: false,
-              timer: 1500
-            });
-          }
-          else{
-
-              Swal.fire({
-                  icon: "error",
-                  title: "אופס... תקלה בעת שמירת הפריט",
-                  showConfirmButton: false,
-                  timer: 1500
-                });
-            }
         });
-            setFormData({
-                title: '',
-                description: '',
-                category: '',
-                author: '',
-                publishingYear: '',
-                tag: [],
-                filePath: '',
-            });
-            setIsHndleUpload(true);
-            setSelectedValue('');
-            setIsUpload(true);
-            // handleClose();
-        }
+        setFormData({
+            title: '',
+            description: '',
+            category: '',
+            author: '',
+            publishingYear: '',
+            tag: [],
+            filePath: '',
+        });
+        setIsHndleUpload(true);
+        setSelectedValue('');
+        setIsUpload(true);
+        // handleClose();
+    }
 
 
     return (
@@ -241,8 +256,9 @@ const ItemDdd = observer(() => {
                         value={selectedValue}
                         onChange={handleRadioChange}
                     >
-                        <FormControlLabel value="book" control={<Radio style={{ color: '#DEF9C4' }} />} label="ספר" />
-                        <FormControlLabel value="file" control={<Radio style={{ color: '#DEF9C4' }} />} label="קובץ דיגיטלי" />
+                        <FormControlLabel value="book" control={<Radio style={{ color: '#0D1E46' }} />} label="ספר" />
+                        <FormControlLabel value="file" control={<Radio style={{ color: '#0D1E46' }} />} label="קובץ דיגיטלי" />
+                        <FormControlLabel value="object" control={<Radio style={{ color: '#0D1E46' }} />} label="חפץ" />
                     </RadioGroup>
                 </FormControl>
 
@@ -284,8 +300,8 @@ const ItemDdd = observer(() => {
                                     {touchedFields.description && !formData.description && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.description && formData.description.length < 5 && (
-                                        <Typography color="error">התיאור חייב להכיל לפחות 5 תווים</Typography>
+                                    {formData.description && formData.description.length < 3 && (
+                                        <Typography color="error">התיאור חייב להכיל לפחות 3 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -324,33 +340,196 @@ const ItemDdd = observer(() => {
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.author && formData.author.length < 3 && (
-                                        <Typography color="error">המחבר חייב להכיל לפחות 3 תווים</Typography>
+                                    {formData.author && formData.author.length < 2 && (
+                                        <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
                             {selectedValue === 'book' && (
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <TextField
-                                            id="publishingYearId"
-                                            label="שנת הוצאה"
-                                            variant="outlined"
-                                            name="publishingYear"
-                                            value={formData.publishingYear}
-                                            onChange={handleChange}
-                                            // required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
-                                        />
-                                        {touchedFields.publishingYear && !formData.publishingYear && (
-                                            <Typography color="error">שדה חובה</Typography>
-                                        )}
-                                        {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                            <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid>
+                                <>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="publishingYearId"
+                                                label=" שנת הוצאה לועזית"
+                                                variant="outlined"
+                                                name="publishingYear"
+                                                value={formData.publishingYear}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                            />
+                                            {touchedFields.publishingYear && !formData.publishingYear && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
+                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                            )}
+                                        </FormControl>
+                                    </Grid>
+
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="hebrewPublishingYearId"
+                                                label="שנת הוצאה עברית"
+                                                variant="outlined"
+                                                name="hebrewPublicationYear"
+                                                value={formData.hebrewPublicationYear}
+                                                // type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, hebrewPublicationYear: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                margin="dense"
+                                                label="מהדורה"
+                                                type="text"
+                                                fullWidth
+                                                name="edition"
+                                                value={formData.edition}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, edition: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="series"
+                                                label="סידרה"
+                                                variant="outlined"
+                                                name="series"
+                                                value={formData.series}
+
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, series: true }))}
+                                            />
+                                            {/* {touchedFields.publishingYear && !formData.publishingYear && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
+                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
+                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
+                                            )} */}
+
+
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="numOfSeriesId"
+                                                label="מס בסידרה"
+                                                variant="outlined"
+                                                name="numOfSeries"
+                                                value={formData.numOfSeries}
+                                                type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, numOfSeries: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="languageId"
+                                                label="שפה"
+                                                variant="outlined"
+                                                name="language"
+                                                value={formData.language}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, language: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                margin="dense"
+                                                label="חומר נלווה"
+                                                type="text"
+                                                fullWidth
+                                                name="accompanyingMaterial"
+                                                value={formData.accompanyingMaterial}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, accompanyingMaterial: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="numberOfDaysOfQuestionId"
+                                                label="מספר ימי השאלה"
+                                                variant="outlined"
+                                                name="numberOfDaysOfQuestion"
+                                                value={formData.numberOfDaysOfQuestion}
+                                                type='number'
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, numberOfDaysOfQuestion: true }))}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth margin="dense">
+
+                                            <InputLabel id="availability-label">זמינות</InputLabel>
+                                            <Select
+                                                margin="dense"
+                                                labelId="availability-label"
+                                                id="availability-select"
+                                                // value={availability}
+                                                label="זמינות"
+                                            // onChange={handleChangeAvailable}
+                                            >
+                                                <MenuItem value="available">זמין</MenuItem>
+                                                <MenuItem value="notAvailable">לא זמין</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth margin="dense">
+                                            <InputLabel id="level-select-label">רמה</InputLabel>
+                                            <Select
+                                                labelId="level-select-label"
+                                                id="level-select"
+                                                name="itemLevel"
+                                                // value={formData.itemLevel}
+                                                input={<OutlinedInput label="רמה" />}
+                                            >
+                                                {Object.values(LevelEnum).map((level) => (
+                                                    <MenuItem key={level} value={level}>
+                                                        {level}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </>
                             )}
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="dense"
+                                    label="הערות"
+                                    type="text"
+                                    fullWidth
+                                    name="note"
+                                    value={formData.note}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Grid>
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <InputLabel id="tagId">תגיות</InputLabel>
@@ -405,7 +584,8 @@ const ItemDdd = observer(() => {
                                         <TextField
                                             id="fileId"
                                             type="file"
-                                            label="מיקום"
+                                            label="קובץ"
+
                                             name="filePath"
                                             onChange={handleChange}
                                             required
@@ -423,12 +603,30 @@ const ItemDdd = observer(() => {
                                     </FormControl>
                                 </Grid>
                             )}
+                            {selectedValue === 'object' && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            id="amoundId"
+                                            label="כמות"
+                                            variant="outlined"
+                                            name="amount"
+                                            // value={formData.filePath}
+                                            onChange={handleChange}
+                                            required
+                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, amount: true }))}
+                                            type='text'
+                                        />
+
+                                    </FormControl>
+                                </Grid>
+                            )}
                         </Grid>
                     </DialogContent>
                 }
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#9CDBA6' }}  >העלאה</Button>
-                    <Button onClick={handleClose} style={{ color: '#9CDBA6' }}>ביטול</Button>
+                    <Button type="submit" onClick={handleSubmit} style={{ color: '#0D1E46' }}  >העלאה</Button>
+                    <Button onClick={handleClose} style={{ color: '#0D1E46' }}>ביטול</Button>
                 </DialogActions>
             </Dialog>
         </>

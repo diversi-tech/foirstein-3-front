@@ -11,7 +11,7 @@ import ItemSearch from "./item-search";
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
-  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem
+  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem, CircularProgress
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/ControlPoint";
@@ -47,21 +47,67 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  useEffect(() => {
-    itemStore.fetchMedia();
-    tagStore.fetchTag();
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // useEffect(() => {
+  //   itemStore.fetchMedia();
+  //   tagStore.fetchTag();
+  // }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       await itemStore.fetchMedia();
+  //       await tagStore.fetchTag();
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // useEffect(() => {
+  //   setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
+  // }, [tagStore.tagList]);
+
+  // useEffect(() => {
+  //   setFilteredItems(filterItems(itemStore.mediaList));
+  //   setPage(1);
+  //   console.log("items:" + JSON.stringify(itemStore.mediaList));
+  // }, [itemStore.mediaList, filterType]);
+
+  // Fetch data and handle loading state
+  useEffect(() => {
+    const fetchData = async () => {
+      // setIsLoading(true); // Show loading spinner
+      try {
+        await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [itemStore, tagStore]); // Dependencies: triggers fetchData when itemStore or tagStore changes
+
+  // Update tagsList when tagStore.tagList changes
   useEffect(() => {
     setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
   }, [tagStore.tagList]);
 
+  // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
     // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
     console.log("items:" + JSON.stringify(itemStore.mediaList));
 }, [itemStore.mediaList, filterType]);
+
 
 
   const handleChangePage = (event, value) => {
@@ -115,7 +161,7 @@ const DataTable = observer(() => {
       }
     });
   };
-  
+
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
@@ -165,7 +211,7 @@ const DataTable = observer(() => {
       }
     });
   };
-  
+
   const handleDeleteTag = (item, tag) => {
     setDeleteTag(tag);
     setDeleteItem(item);
@@ -428,6 +474,7 @@ const DataTable = observer(() => {
          if(params.row.author){
           const item = params.row;
         return (
+
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
               <IconButton
@@ -606,8 +653,8 @@ const DataTable = observer(() => {
                     width: '100px',
                     backgroundColor: '#b0b0b0',
                     color: '#0D1E46',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // הוספת צל
-                    marginRight: 0
+                    // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
+                    // marginRight: 0
                   }} // שינוי רוחב הכפתור
                 >
                   {"כל התגיות"}
@@ -627,8 +674,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
+                  {console.log("item.tags", item.tags)} ;
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                    console.log("tegg", tag);
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -763,7 +814,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">רשימת קבצים</h2>
+        <h2 align="center">תרשימת קבצים</h2>
         <Grid
           container
           spacing={2}
@@ -863,12 +914,13 @@ const DataTable = observer(() => {
           <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
             <Box display="flex" dir="rtl" margin={1}>
               {item.filePath && !item.filePath.includes("https")&&  (
+
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  מספר ימי השאלה:{item.numberOfDaysOfQuestion}
+                  <strong>הערה:</strong>  {item.note}
                 </Typography>
               )}
              
@@ -938,6 +990,7 @@ const DataTable = observer(() => {
             </Box>
           </Collapse>
         ))}
+
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}

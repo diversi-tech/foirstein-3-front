@@ -37,10 +37,8 @@ class StudentsRequestStore {
   async fetchRequest(){
     try {
       const res = await fetch(`${baseUrl}BorrowRequest`);
-      console.log("BorrowApprovalReques");
       const data = await res.json();
-      // const rows = extractRawData(data.data); 
-      // return rows;
+      this.requestList=data;
       return data;
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -49,6 +47,8 @@ class StudentsRequestStore {
     }
   }
   get getRequest() {
+    debugger
+    console.log("request: "+this.requestList)
     return this.requestList;
   }
   //עדכון שהבקשה אושרה

@@ -4,6 +4,7 @@ const theme = createTheme({
   direction: 'rtl',
   typography: {
     fontFamily: [
+      'Rubik',
       'Roboto',
       '"Helvetica Neue"',
       'Arial',
@@ -80,10 +81,12 @@ const theme = createTheme({
   },
   palette: {
     primary: {
+     
       main: '#0D1E46',
     },
     secondary: {
       main: '#B71C1C',
+    
     },
     text: {
       primary: '#000000',
