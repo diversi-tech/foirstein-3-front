@@ -2,6 +2,7 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
 const baseURL='https://libererisas-backend.onrender.com/api/Item';
+// const baseURL = 'https://localhost:7297/api/Item';
 // const url = 'https://localhost:7297/api/PhysicalItem';
 
 class ItemStore {
@@ -119,15 +120,15 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch(`${baseURL}`);
+            const res = await fetch('https://localhost:7297/api/Item/GetAllTypesOfItems');
             const obj = await res.json();
             // ככה לעשות
-            // this.mediaList = obj.data["items"];
-            // this.mediaList2 = obj.data["physicalItems"];
+            this.mediaList = obj.data["items"];
+            this.mediaList2 = obj.data["physicalItems"];
 
             //////////
 
-            this.mediaList = obj.data;
+            // this.mediaList = obj.data;
             // console.log("list media: ", this.mediaList);
             // const res2 = await fetch(`${url}`);
             // const obj2 = await res2.data;
@@ -178,7 +179,7 @@ class ItemStore {
 
     // async uploadMediaObject(mediaData) {
     //     try {
-    //         const res = await fetch(`${url}`, {
+    //         const res = await fetch(`${baseURL}`, {
     //             method: 'POST',
     //             body: mediaData,
     //         });
@@ -197,7 +198,7 @@ class ItemStore {
     // async deleteObject(mediaId) {
     //     console.log("hiiDeleteMedia!!!!!!!!");
     //     try {
-    //         const res = await fetch(`${url}/${mediaId}`, {
+    //         const res = await fetch(`${baseURL}/${mediaId}`, {
     //             method: 'DELETE'
     //         });
     //         if (res.status === 200) {
@@ -296,7 +297,7 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
-            debugger
+            // debugger
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {

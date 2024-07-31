@@ -102,11 +102,11 @@ const DataTable = observer(() => {
 
   // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
-    // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
-    setFilteredItems(filterItems(itemStore.mediaList));
+    const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
+    setFilteredItems(filterItems(combinedItems));
     setPage(1);
     console.log("items:" + JSON.stringify(itemStore.mediaList));
-}, [itemStore.mediaList, filterType]);
+}, [itemStore.mediaList,itemStore.mediaList2, filterType]);
 
 
 
@@ -127,10 +127,8 @@ const DataTable = observer(() => {
       confirmButtonText: "כן, מחק",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          
-            await itemStore.deleteMedia(item.id);
-          
+        try {          
+            await itemStore.deleteMedia(item.id);         
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
@@ -291,11 +289,11 @@ const DataTable = observer(() => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    // const filtered2 = itemStore.mediaList2.filter((item) =>
-    //   item.title.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-    // setFilteredItems(filterItems(filtered) && filterItems(filtered2));
-    setFilteredItems(filterItems(filtered));
+    const filtered2 = itemStore.mediaList2.filter((item) =>
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredItems(filterItems(filtered) && filterItems(filtered2));
+    // setFilteredItems(filterItems(filtered));
   };
 
   const getHeaderName = (typeTab) => {
@@ -441,13 +439,13 @@ const DataTable = observer(() => {
           checked={
             selectedItems && itemStore.mediaList &&
             selectedItems && itemStore.mediaList2 &&
-            selectedItems.length === itemStore.mediaList.length&&
+            selectedItems.length === itemStore.mediaList.length &&
             selectedItems.length === itemStore.mediaList2.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
-              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
+              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
+              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
             } else {
               setSelectedItems([]);
             }
@@ -517,6 +515,8 @@ const DataTable = observer(() => {
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
     { field: "category", headerName: "קטגוריה", flex: 1, align: "right" },
+    // { field: "recomended", headerName: "ממולץ", flex: 1, align: "right" },
+    // { field: "userId", headerName: "משתמש", flex: 1, align: "right" },
     // { field: "author", headerName: "מחבר", flex: 1, align: "right" },
     {
       field: "author",
@@ -559,6 +559,7 @@ const DataTable = observer(() => {
         </div>
       ),
     },
+
     {
       field: "status",
       headerName: "סטטוס",
@@ -804,7 +805,10 @@ const DataTable = observer(() => {
         </Grid>
       ),
     },
-  ];
+  ].filter(column => {
+    if (typeTab === "file" && column.field === "publishingYear") return false;
+    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    return true; })
 
   const paginatedItems = filteredItems ? filteredItems.slice(
     (page - 1) * rowsPerPage,
