@@ -349,7 +349,6 @@ const DataTable = observer(() => {
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-    debugger
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
@@ -357,9 +356,7 @@ const DataTable = observer(() => {
         console.log("item: " + JSON.stringify(item))
         console.log("tag: " + JSON.stringify(tag))
         try {
-          debugger
           await itemStore.addItemTag(itemId, tagId);
-          debugger
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {

@@ -47,7 +47,6 @@ class StudentsRequestStore {
     }
   }
   get getRequest() {
-    debugger
     console.log("request: "+this.requestList)
     return this.requestList;
   }
