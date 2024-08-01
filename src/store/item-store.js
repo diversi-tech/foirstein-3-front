@@ -120,15 +120,15 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch('https://localhost:7297/api/Item/GetAllTypesOfItems');
+            const res = await fetch('https://localhost:7297/api/Item');
             const obj = await res.json();
             // ככה לעשות
-            this.mediaList = obj.data["items"];
-            this.mediaList2 = obj.data["physicalItems"];
+            // this.mediaList = obj.data["items"];
+            // this.mediaList2 = obj.data["physicalItems"];
 
             //////////
 
-            // this.mediaList = obj.data;
+            this.mediaList = obj.data;
             // console.log("list media: ", this.mediaList);
             // const res2 = await fetch(`${url}`);
             // const obj2 = await res2.data;

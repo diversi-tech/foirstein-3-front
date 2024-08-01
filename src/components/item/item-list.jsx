@@ -102,11 +102,11 @@ const DataTable = observer(() => {
 
   // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
-    const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
-    setFilteredItems(filterItems(combinedItems));
+    // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
+    setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
     console.log("items:" + JSON.stringify(itemStore.mediaList));
-}, [itemStore.mediaList,itemStore.mediaList2, filterType]);
+}, [itemStore.mediaList, filterType]);
 
 
 
@@ -289,11 +289,11 @@ const DataTable = observer(() => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const filtered2 = itemStore.mediaList2.filter((item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredItems(filterItems(filtered) && filterItems(filtered2));
-    // setFilteredItems(filterItems(filtered));
+    // const filtered2 = itemStore.mediaList2.filter((item) =>
+    //   item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    // setFilteredItems(filterItems(filtered) && filterItems(filtered2));
+    setFilteredItems(filterItems(filtered));
   };
 
   const getHeaderName = (typeTab) => {
@@ -431,21 +431,21 @@ const DataTable = observer(() => {
         <Checkbox
           indeterminate={
             selectedItems && itemStore.mediaList &&
-            selectedItems && itemStore.mediaList2 &&            
+            // selectedItems && itemStore.mediaList2 &&            
             selectedItems.length > 0 &&
-            selectedItems.length < itemStore.mediaList.length&&
-            selectedItems.length < itemStore.mediaList2.length
+            selectedItems.length < itemStore.mediaList.length
+            // selectedItems.length < itemStore.mediaList2.length
           }
           checked={
             selectedItems && itemStore.mediaList &&
-            selectedItems && itemStore.mediaList2 &&
-            selectedItems.length === itemStore.mediaList.length &&
-            selectedItems.length === itemStore.mediaList2.length
+            // selectedItems && itemStore.mediaList2 &&
+            selectedItems.length === itemStore.mediaList.length 
+            // selectedItems.length === itemStore.mediaList2.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
-              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
+              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
+              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
             } else {
               setSelectedItems([]);
             }
