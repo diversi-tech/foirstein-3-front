@@ -8,9 +8,32 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import ItemSearch from "./item-search";
 import {
-  IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
-  DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
-  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem, CircularProgress
+  IconButton,
+  Tooltip,
+  useTheme,
+  Paper,
+  Box,
+  useMediaQuery,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Tabs,
+  Tab,
+  Checkbox,
+  Stack,
+  Pagination,
+  PaginationItem,
+  Chip,
+  TableRow,
+  TableCell,
+  Collapse,
+  Typography,
+  Menu,
+  MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/ControlPoint";
@@ -22,8 +45,8 @@ import Swal from "sweetalert2";
 import { cacheRtl } from "../tag/fields_rtl";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import IconSelectTags from './SelectTags'
-import CancelIcon from '@mui/icons-material/Cancel';
+import IconSelectTags from "./SelectTags";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import LevelEnum from "../LevelEum";
 
@@ -108,7 +131,6 @@ const DataTable = observer(() => {
     console.log("items:", JSON.stringify(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]); // Dependencies: triggers effect when mediaList or filterType changes
 
-
   const handleChangePage = (event, value) => {
     setPage(value);
   };
@@ -178,7 +200,9 @@ const DataTable = observer(() => {
         try {
           await Promise.all(
             selectedItems.map(async (itemId) => {
-              const item = itemStore.mediaList.find(item => item.id === itemId);
+              const item = itemStore.mediaList.find(
+                (item) => item.id === itemId
+              );
               if (item.author == null) {
                 await itemStore.deleteObject(itemId);
               } else {
@@ -232,7 +256,10 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await itemStore.deleteTag(item.id, tag.id);
-        const updatedItem = { ...item, tags: item.tags.filter(t => t !== tag.id) };
+        const updatedItem = {
+          ...item,
+          tags: item.tags.filter((t) => t !== tag.id),
+        };
         itemStore.updateItem(updatedItem);
         setDeleteTagOpen(false);
         Swal.fire({
@@ -300,67 +327,64 @@ const DataTable = observer(() => {
   };
 
   const getHeaderName = (typeTab) => {
-    if (typeTab === 'book') {
+    if (typeTab === "book") {
       return "מדף ";
-    } else if (typeTab === 'object') {
+    } else if (typeTab === "object") {
       return "כמות";
-    } else if (typeTab === 'file') {
+    } else if (typeTab === "file") {
       return "קובץ";
-    }
-    else if (typeTab === 'all') {
+    } else if (typeTab === "all") {
       return "מדף/קובץ/כמות";
     }
   };
 
-  const [typeTab, setTypeTab] = useState('all');
+  const [typeTab, setTypeTab] = useState("all");
   const filterItems = (items) => {
     if (!items) {
       return [];
     }
 
     if (filterType === "all") {
-      setTypeTab('all');
+      setTypeTab("all");
       console.log(items);
       return items;
     }
 
     if (filterType === "book") {
-      setTypeTab('book');
+      setTypeTab("book");
       console.log("book");
       return items.filter((item) => !item.filePath.includes("https"));
     }
 
-    if (filterType === 'object') {
-      setTypeTab('object');
-      console.log('object');
+    if (filterType === "object") {
+      setTypeTab("object");
+      console.log("object");
       return items.filter((item) => item.author == null);
     }
 
     console.log("file");
-    setTypeTab('file');
+    setTypeTab("file");
     const y1 = items.filter((item) => item.filePath.includes("https"));
     console.log(y1);
     return items.filter((item) => item.filePath.includes("https"));
   };
 
-
   const totalItems = filteredItems ? filteredItems.length : 0;
-
 
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-    debugger
+    debugger;
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
-        const item = filteredItems.find(item => item.id === itemId);
-        const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item))
-        console.log("tag: " + JSON.stringify(tag))
+        const item = filteredItems.find((item) => item.id === itemId);
+        const tag = tagsList.find((tag) => tag.id === tagId);
+        console.log("item: " + JSON.stringify(item));
+        console.log("tag: " + JSON.stringify(tag));
         try {
-          debugger
+          debugger;
           await itemStore.addItemTag(itemId, tagId);
-          debugger
+          debugger;
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
@@ -374,21 +398,29 @@ const DataTable = observer(() => {
 
     try {
       await Promise.all(promises);
-      const successMessages = successfulAdds.map(({ item, tag }) =>
-        `<p>התג "${tag.name}" נוסף לפריט "${item.title}" בהצלחה</p>`
-      ).join('');
+      const successMessages = successfulAdds
+        .map(
+          ({ item, tag }) =>
+            `<p>התג "${tag.name}" נוסף לפריט "${item.title}" בהצלחה</p>`
+        )
+        .join("");
 
-      const errorMessages = failedAdds.map(({ item, tag }) =>
-        `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
-      ).join('');
+      const errorMessages = failedAdds
+        .map(
+          ({ item, tag }) =>
+            `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
+        )
+        .join("");
 
-      const finalMessage = `${successMessages}${successMessages && errorMessages ? '<br><br>' : ''}${errorMessages}`;
+      const finalMessage = `${successMessages}${
+        successMessages && errorMessages ? "<br><br>" : ""
+      }${errorMessages}`;
 
       Swal.fire({
         title: "תוצאות ההוספות",
         html: finalMessage || "לא היו שינויים.",
         icon: successfulAdds.length > 0 ? "success" : "error",
-        showConfirmButton: true
+        showConfirmButton: true,
       });
 
       setSelectedItems([]);
@@ -446,17 +478,23 @@ const DataTable = observer(() => {
       renderHeader: () => (
         <Checkbox
           indeterminate={
-            selectedItems && itemStore.mediaList &&
+            selectedItems &&
+            itemStore.mediaList &&
             selectedItems.length > 0 &&
             selectedItems.length < itemStore.mediaList.length
           }
           checked={
-            selectedItems && itemStore.mediaList &&
+            selectedItems &&
+            itemStore.mediaList &&
             selectedItems.length === itemStore.mediaList.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []);
+              setSelectedItems(
+                itemStore.mediaList
+                  ? itemStore.mediaList.map((item) => item.id)
+                  : []
+              );
             } else {
               setSelectedItems([]);
             }
@@ -482,7 +520,6 @@ const DataTable = observer(() => {
       renderCell: (params) => {
         const item = params.row;
         return (
-
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
               <IconButton
@@ -567,8 +604,6 @@ const DataTable = observer(() => {
       flex: 1,
       align: "right",
       renderCell: (params) => (
-
-
         <div
           style={{
             textAlign: "right",
@@ -602,10 +637,10 @@ const DataTable = observer(() => {
           <Stack
             direction="column"
             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: hasTags === false ? 'flex-start' : 'flex-end',
-              height: '100%'
+              display: "flex",
+              justifyContent: "center",
+              alignItems: hasTags === false ? "flex-start" : "flex-end",
+              height: "100%",
             }}
           >
             {hasTags && (
@@ -613,11 +648,13 @@ const DataTable = observer(() => {
                 <Button
                   aria-controls="tag-menu"
                   aria-haspopup="true"
-                  onClick={(event) => { setAnchorEl(event.currentTarget); }}
+                  onClick={(event) => {
+                    setAnchorEl(event.currentTarget);
+                  }}
                   style={{
-                    width: '100px',
-                    backgroundColor: '#b0b0b0',
-                    color: '#0D1E46',
+                    width: "100px",
+                    backgroundColor: "#b0b0b0",
+                    color: "#0D1E46",
                     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
                     // marginRight: 0
                   }} // שינוי רוחב הכפתור
@@ -628,48 +665,61 @@ const DataTable = observer(() => {
                   // id="tag-menu"
                   anchorEl={anchorEl}
                   // keepMounted
-                  open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
-                  onClose={() => { setAnchorEl(null) }}
-                // anchorOrigin={{
-                //   vertical: 'bottom',
-                //   horizontal: 'right',
-                // }}
-                // transformOrigin={{
-                //   vertical: 'top',
-                //   horizontal: 'right',
-                // }}
+                  open={Boolean(anchorEl)} /////שורה בעייתיתתתתתתתתת
+                  onClose={() => {
+                    setAnchorEl(null);
+                  }}
+                  // anchorOrigin={{
+                  //   vertical: 'bottom',
+                  //   horizontal: 'right',
+                  // }}
+                  // transformOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'right',
+                  // }}
                 >
                   {console.log("item.tags", item.tags)}
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
 
                   {item.tags.map((tagId) => {
-                    const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
+                    const tag = tagStore.getTagsList.find(
+                      (tag) => tag.id === tagId
+                    );
                     console.log("tegg", tag);
                     if (tag) {
                       return (
-                        <Typography key={tag.id}
-                          style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
+                        <Typography
+                          key={tag.id}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            padding: "5px",
+                          }}
+                        >
                           <Chip
                             label={tag.name}
                             style={{
                               color: "#0D1E46",
-                              width: '145px',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              padding: '0 8px',
-                              textAlign: 'center'
+                              width: "145px",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              padding: "0 8px",
+                              textAlign: "center",
                             }}
                             variant="outlined"
                             onDelete={() => handleDeleteTag(item, tag)}
                             deleteIcon={
-                              <IconButton aria-label="delete" style={{
-                                padding: '2px',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                                }
-                              }}>
-                                <CancelIcon style={{ marginRight: '7px' }} />
+                              <IconButton
+                                aria-label="delete"
+                                style={{
+                                  padding: "2px",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                                  },
+                                }}
+                              >
+                                <CancelIcon style={{ marginRight: "7px" }} />
                               </IconButton>
                             }
                           />
@@ -681,9 +731,7 @@ const DataTable = observer(() => {
                 </Menu>
               </>
             )}
-            {!hasTags && (
-              <h5>{"לא מוגדרות תגיות"}</h5>
-            )}
+            {!hasTags && <h5>{"לא מוגדרות תגיות"}</h5>}
           </Stack>
         );
       },
@@ -729,16 +777,23 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Grid
+          container
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
                 color: "#FFD700",
-                padding: '4px 8px',
-                minWidth: '40px',
-                minHeight: '40px',
-                borderRadius: '5px',
+                padding: "4px 8px",
+                minWidth: "40px",
+                minHeight: "40px",
+                borderRadius: "5px",
                 "&:hover": {
                   backgroundColor: "#0D1E46",
                   color: "#FFD700",
@@ -752,18 +807,25 @@ const DataTable = observer(() => {
             >
               {selectedItems.length > 0 ? (
                 <Tooltip title="למחיקת פריטים מרובים">
-                  <DeleteIcon style={{ fontSize: '25px' }} />
+                  <DeleteIcon style={{ fontSize: "25px" }} />
                 </Tooltip>
               ) : (
                 <Tooltip title="להוספת פריט חדש" arrow>
-                  <AddIcon style={{ fontSize: '25px' }} />
+                  <AddIcon style={{ fontSize: "25px" }} />
                 </Tooltip>
               )}
             </Button>
           </Grid>
           {selectedItems.length > 0 && (
-            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-              <IconSelectTags handleAddItemTag={handleAddTagsToItems} style={{ fontSize: '20px' }} />
+            <Grid
+              item
+              xs={6}
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
+              <IconSelectTags
+                handleAddItemTag={handleAddTagsToItems}
+                style={{ fontSize: "20px" }}
+              />
             </Grid>
           )}
         </Grid>
@@ -771,10 +833,9 @@ const DataTable = observer(() => {
     },
   ];
 
-  const paginatedItems = filteredItems ? filteredItems.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage
-  ) : [];
+  const paginatedItems = filteredItems
+    ? filteredItems.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+    : [];
 
   return (
     <>
@@ -842,123 +903,132 @@ const DataTable = observer(() => {
           </Grid>
         </Grid>
         {isLoading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" height="400px">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="400px"
+          >
             <CircularProgress />
           </Box>
-        ) : (<>
-          <DataGrid
-            rows={paginatedItems}
-            columns={columns}
-            pageSize={rowsPerPage}
-            disableSelectionOnClick
-            localeText={localeText}
-            autoHeight
-            style={{ overflow: "hidden" }}
-            pagination={false} // Disable DataGrid pagination
-            hideFooterPagination
-            position="sticky"
-            hideFooter
-          />
-          <Box textAlign="center" marginTop={2}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Pagination
-                dir="ltr"
-                count={Math.ceil(totalItems / rowsPerPage)}
-                page={page}
-                onChange={handleChangePage}
-                variant="outlined"
-                color="primary"
-                shape="rounded"
-                renderItem={(item) => <PaginationItem {...item} />}
-              />
-            </Stack>
-          </Box>
-          {paginatedItems.map((item) => (
-            <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-              <Box display="flex" dir="rtl" margin={1}>
-                {!item.filePath.includes("https") && (
-                  <>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>מספר ימי השאלה:</strong> {item.numberOfDaysOfQuestion}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong> מהדורה:</strong> {item.edition}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>סידרה:</strong>  {item.series}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>מספר בסידרה:</strong>  {item.numOfSeries}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      {/* מוציא לאור: {item.publisher}
+        ) : (
+          <>
+            <DataGrid
+              rows={paginatedItems}
+              columns={columns}
+              pageSize={rowsPerPage}
+              disableSelectionOnClick
+              localeText={localeText}
+              autoHeight
+              style={{ overflow: "hidden" }}
+              pagination={false} // Disable DataGrid pagination
+              hideFooterPagination
+              position="sticky"
+              hideFooter
+            />
+            <Box textAlign="center" marginTop={2}>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Pagination
+                  dir="ltr"
+                  count={Math.ceil(totalItems / rowsPerPage)}
+                  page={page}
+                  onChange={handleChangePage}
+                  variant="outlined"
+                  color="primary"
+                  shape="rounded"
+                  renderItem={(item) => <PaginationItem {...item} />}
+                />
+              </Stack>
+            </Box>
+            {paginatedItems.map((item) => (
+              <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+                <Box display="flex" dir="rtl" margin={1}>
+                  {!item.filePath.includes("https") && (
+                    <>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong>מספר ימי השאלה:</strong>{" "}
+                        {item.numberOfDaysOfQuestion}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong> מהדורה:</strong> {item.edition}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong>סידרה:</strong> {item.series}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong>מספר בסידרה:</strong> {item.numOfSeries}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        {/* מוציא לאור: {item.publisher}
               </Typography>
               <Typography
               variant="body1"
               style={{ marginRight: "10px" }}
               dir="rtl"
               > */}
-                      <strong>שנה עברית: </strong>   {item.hebrewPublicationYear}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong> שפה:</strong> {item.language}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
-                    </Typography>
-                  </>)}
-                <Typography
-                  variant="body1"
-                  style={{ marginRight: "10px" }}
-                  dir="rtl"
-                >
-                  <strong>הערה:</strong>  {item.note}
-                </Typography>
-
-              </Box>
-            </Collapse>
-          ))}
-        </>)}
+                        <strong>שנה עברית: </strong>{" "}
+                        {item.hebrewPublicationYear}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong> שפה:</strong> {item.language}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        style={{ marginRight: "10px" }}
+                        dir="rtl"
+                      >
+                        <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
+                      </Typography>
+                    </>
+                  )}
+                  <Typography
+                    variant="body1"
+                    style={{ marginRight: "10px" }}
+                    dir="rtl"
+                  >
+                    <strong>הערה:</strong> {item.note}
+                  </Typography>
+                </Box>
+              </Collapse>
+            ))}
+          </>
+        )}
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}

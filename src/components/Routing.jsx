@@ -48,6 +48,8 @@ import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
 import StudentRequest from './studentRequest/student-request';
+import Borrowing from "./borrowing&return/borrowing-file";
+import Returning from "./borrowing&return/returning-file"
 import { Tooltip } from '@mui/material';
 
 const baseDomain='.foirstein.diversitech.co.il/#/'
@@ -82,6 +84,8 @@ export const Routing = () => {
         <Route path="/tag-list" element={<Box><TagList /></Box>} />
         <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
         <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} /> 
+        <Route path="/returning" element={<Box><Returning /></Box>} /> 
         <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
         <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
         <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
