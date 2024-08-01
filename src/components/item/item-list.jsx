@@ -595,8 +595,8 @@ const DataTable = observer(() => {
         },
         renderCell: (params) => {
           // ודא ש-params ו-params.row מוגדרים
-          if (params && params.row) {
-            const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+          // if (params && params.row) {
+          //   const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
             return (
               <div
                 style={{
@@ -607,23 +607,23 @@ const DataTable = observer(() => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {params.row.amount !== undefined ? (
+                {/* {params.row.amount !== undefined ? (
                   params.row.amount
-                ) : (
-                  params.row.filePath && params.row.filePath.includes("https") ? (
+                ) : ( */}(
+               {  params.row.filePath && params.row.filePath.includes("https") ? (
                     <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
                       {params.row.filePath}
                     </a>
                   ) : (
                     params.row.filePath
                   )
-                )}
+        })
               </div>
             );
           }
-          return null; // מחזיר null אם params או params.row אינם מוגדרים
+          // return null; // מחזיר null אם params או params.row אינם מוגדרים
         },
-      },
+      // },
     {
       field: "tags",
       headerName: "תגיות",
