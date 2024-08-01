@@ -609,7 +609,8 @@ const DataTable = observer(() => {
               >
                 {/* {params.row.amount !== undefined ? (
                   params.row.amount
-                ) : ( */}(
+                ) : ( */}
+                
                {  params.row.filePath && params.row.filePath.includes("https") ? (
                     <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
                       {params.row.filePath}
@@ -617,7 +618,7 @@ const DataTable = observer(() => {
                   ) : (
                     params.row.filePath
                   )
-        })
+        }
               </div>
             );
           }
