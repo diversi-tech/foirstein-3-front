@@ -63,12 +63,15 @@ export const getRoleFromToken = () => {
     try {
       debugger
       const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+      console.log(response,"response")
+      console.log("token data===>",response.data)
       return response.data.isValid;
     } catch (error) {
       console.error('Error validating token:', error);
       return false;
     }
   };
+
   export const getUserIdNumFromToken = () => {
     debugger
     if (!token) return null;

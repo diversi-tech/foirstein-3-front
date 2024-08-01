@@ -322,6 +322,25 @@ class ItemStore {
           this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
         }
       }
+
+
+
+
+
+        validateToken = async () => {
+        const token = sessionStorage.getItem('jwt');
+        if (!token) return false;
+        try {
+          debugger
+          const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+          return response;
+        } catch (error) {
+          console.error('Error validating token:', error);
+          return false;
+        }
+      };
+  
+      
 }
 const itemStore = new ItemStore();
 export default itemStore;
