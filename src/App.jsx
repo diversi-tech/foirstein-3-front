@@ -5,6 +5,7 @@ import PendingItems from './components/pendingItemsList/pendingItems'
 import SideNav from "./components/side_nav"
 import { Routing } from './components/Routing'
 import { useEffect } from 'react'
+import AddNewRequest from './components/AddNewRequest/AddNewRequest'
 
 function App() {
   useEffect(() => {
@@ -50,6 +51,8 @@ function App() {
     {/* <SideNav></SideNav> */}
     {/* <PendingItems /> */}
     <Routing></Routing>
+    <AddNewRequest></AddNewRequest>
+  
   </>
   )
 }

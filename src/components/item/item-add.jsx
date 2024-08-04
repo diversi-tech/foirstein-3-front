@@ -27,6 +27,7 @@ import itemStore from '../../store/item-store';
 import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
+import addNewRequestStore from '../../store/AddNewRequest-store';
 // import { useTheme } from '@mui/material/styles';
 
 const ITEM_HEIGHT = 48;
@@ -70,6 +71,7 @@ const ItemDdd = observer(() => {
     const handleClose = () => {
         setOpen(false);
         itemStore.add = false;
+        addNewRequestStore.add = false;
         setFormData({
             title: '',
             description: '',
