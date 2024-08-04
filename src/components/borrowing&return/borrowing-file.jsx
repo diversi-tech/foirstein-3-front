@@ -30,13 +30,13 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
-const Borrowing = observer(({buttonName}) => {
+const Borrowing = observer(({ buttonName }) => {
   const [formData, setFormData] = useState({
     // id: "50",
     date: "",
     student: "",
     item: "",
-    librarian:{getUserIdNumFromToken},
+    librarian: { getUserIdNumFromToken },
     amount: "",
     remarks: "",
   });
@@ -44,7 +44,7 @@ const Borrowing = observer(({buttonName}) => {
   const [studentInputValue, setStudentInputValue] = useState("");
   const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
-const [amountErrors,setAmountErors]=useState(false);
+  const [amountErrors, setAmountErors] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       await borrowingStore.fetchBorrowing();
@@ -121,7 +121,7 @@ const [amountErrors,setAmountErors]=useState(false);
       )}
       <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
-          תאריך: {new Date().toLocaleDateString("he-IL")}
+          תאריך: {formatDate(new Date())}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
