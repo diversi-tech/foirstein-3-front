@@ -26,6 +26,11 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
 
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+import LevelEnum from "../LevelEum";
+
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
   const [deleteTag, setDeleteTag] = useState(null);
@@ -47,7 +52,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
   //   itemStore.fetchMedia();
@@ -80,9 +84,10 @@ const DataTable = observer(() => {
   // }, [itemStore.mediaList, filterType]);
 
   // Fetch data and handle loading state
+
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
-      // setIsLoading(true); // Show loading spinner
       try {
         await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
       } catch (error) {
@@ -102,11 +107,11 @@ const DataTable = observer(() => {
 
   // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
-    const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
-    setFilteredItems(filterItems(combinedItems));
+    // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
+    setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
     console.log("items:" + JSON.stringify(itemStore.mediaList));
-}, [itemStore.mediaList,itemStore.mediaList2, filterType]);
+}, [itemStore.mediaList, filterType]);
 
 
 
@@ -289,11 +294,11 @@ const DataTable = observer(() => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const filtered2 = itemStore.mediaList2.filter((item) =>
-      item.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredItems(filterItems(filtered) && filterItems(filtered2));
-    // setFilteredItems(filterItems(filtered));
+    // const filtered2 = itemStore.mediaList2.filter((item) =>
+    //   item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    // setFilteredItems(filterItems(filtered) && filterItems(filtered2));
+    setFilteredItems(filterItems(filtered));
   };
 
   const getHeaderName = (typeTab) => {
@@ -341,7 +346,7 @@ const DataTable = observer(() => {
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-    debugger
+
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
@@ -349,9 +354,9 @@ const DataTable = observer(() => {
         console.log("item: " + JSON.stringify(item))
         console.log("tag: " + JSON.stringify(tag))
         try {
-          debugger
+
           await itemStore.addItemTag(itemId, tagId);
-          debugger
+
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
@@ -431,21 +436,21 @@ const DataTable = observer(() => {
         <Checkbox
           indeterminate={
             selectedItems && itemStore.mediaList &&
-            selectedItems && itemStore.mediaList2 &&            
+            // selectedItems && itemStore.mediaList2 &&            
             selectedItems.length > 0 &&
-            selectedItems.length < itemStore.mediaList.length&&
-            selectedItems.length < itemStore.mediaList2.length
+            selectedItems.length < itemStore.mediaList.length
+            // selectedItems.length < itemStore.mediaList2.length
           }
           checked={
             selectedItems && itemStore.mediaList &&
-            selectedItems && itemStore.mediaList2 &&
-            selectedItems.length === itemStore.mediaList.length &&
-            selectedItems.length === itemStore.mediaList2.length
+            // selectedItems && itemStore.mediaList2 &&
+            selectedItems.length === itemStore.mediaList.length 
+            // selectedItems.length === itemStore.mediaList2.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
-              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
+              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
+              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
             } else {
               setSelectedItems([]);
             }
@@ -511,6 +516,24 @@ const DataTable = observer(() => {
             <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
           );
         }
+    },
+    {
+      field: "userID", headerName: "שם המעלה", flex: 1, align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {params.row.userID ? (params.row.userID) : ('')}
+          {console.log("params.row.userID", params.row.userID)}
+
+        </div>
+      )
     },
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
@@ -595,8 +618,8 @@ const DataTable = observer(() => {
         },
         renderCell: (params) => {
           // ודא ש-params ו-params.row מוגדרים
-          if (params && params.row) {
-            const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+          // if (params && params.row) {
+          //   const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
             return (
               <div
                 style={{
@@ -607,23 +630,24 @@ const DataTable = observer(() => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {params.row.amount !== undefined ? (
+                {/* {params.row.amount !== undefined ? (
                   params.row.amount
-                ) : (
-                  params.row.filePath && params.row.filePath.includes("https") ? (
+                ) : ( */}
+                
+               {  params.row.filePath && params.row.filePath.includes("https") ? (
                     <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
                       {params.row.filePath}
                     </a>
                   ) : (
                     params.row.filePath
                   )
-                )}
+        }
               </div>
             );
           }
-          return null; // מחזיר null אם params או params.row אינם מוגדרים
+          // return null; // מחזיר null אם params או params.row אינם מוגדרים
         },
-      },
+      // },
     {
       field: "tags",
       headerName: "תגיות",
@@ -664,7 +688,7 @@ const DataTable = observer(() => {
                   id="tag-menu"
                   anchorEl={anchorEl}
                   keepMounted
-                  open={Boolean(anchorEl)}
+                  open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
                   onClose={() => { setAnchorEl(null) }}
                   anchorOrigin={{
                     vertical: 'bottom',
@@ -723,6 +747,29 @@ const DataTable = observer(() => {
           </Stack>
         );
       },
+    },
+    {
+      field: "recommended", headerName: "", flex: 1, align: "right",
+
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Tooltip title={params.row.recommended ? "מומלץ" : ""}>
+            <Box>
+              {params.row.recommended ? (
+                <StarIcon style={{ color: 'yellow' }} />
+              ) : (<StarBorderIcon />)}
+            </Box>
+          </Tooltip>
+        </div>
+      ),
     },
     {
       field: "actions",
@@ -818,7 +865,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">תרשימת קבצים</h2>
+        <h2 align="center">רשימת קבצים</h2>
         <Grid
           container
           spacing={2}
