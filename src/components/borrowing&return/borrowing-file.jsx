@@ -11,6 +11,7 @@ import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
 import { getUserIdNumFromToken } from "../decipheringToken";
+import itemStore from "../../store/item-store";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
   marginTop: theme.spacing(5),
@@ -29,20 +30,21 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
-const Borrowing = observer(() => {
+const Borrowing = observer(({buttonName}) => {
   const [formData, setFormData] = useState({
+    // id: "50",
     date: "",
     student: "",
-    book: "",
-    librarian: "4",
-    // amount: 1,
+    item: "",
+    librarian:{getUserIdNumFromToken},
+    amount: "",
     remarks: "",
   });
-  const [bookInputValue, setBookInputValue] = useState("");
+  const [itemInputValue, setItemInputValue] = useState("");
   const [studentInputValue, setStudentInputValue] = useState("");
-  const [books, setBooks] = useState(false);
+  const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
-
+const [amountErrors,setAmountErors]=useState(false);
   useEffect(() => {
     const fetchData = async () => {
       await borrowingStore.fetchBorrowing();
@@ -50,18 +52,18 @@ const Borrowing = observer(() => {
     fetchData();
   }, []);
 
-  const formatDate = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-  formData.date = formatDate(new Date());
+  // const formatDate = (date) => {
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const year = date.getFullYear();
+  //   return `${day}/${month}/${year}`;
+  // };
+  // formData.date = formatDate(new Date());
 
   const handleChange = (event, value, name) => {
     switch (name) {
-      case "book":
-        setFormData((prev) => ({ ...prev, book: value ? value.id : "" }));
+      case "item":
+        setFormData((prev) => ({ ...prev, item: value ? value.id : "" }));
         break;
       case "student":
         setFormData((prev) => ({
@@ -74,8 +76,8 @@ const Borrowing = observer(() => {
 
   const handleInputChange = (event, newInputValue, name) => {
     switch (name) {
-      case "book":
-        setBookInputValue(newInputValue);
+      case "item":
+        setItemInputValue(newInputValue);
         break;
       case "student":
         setStudentInputValue(newInputValue);
@@ -83,28 +85,44 @@ const Borrowing = observer(() => {
     }
   };
 
-  const add = async (event) => {
-    event.preventDefault(); // מונע את ברירת המחדל של הטופס (שליחה מחדש של הדף)
+  const borrowing = async (event) => {
+    event.preventDefault();
     const dataToSend = {
-      id: 50,
-      date: formData.date,
-      student: formData.student,
-      book: formData.book,
-      librarian: formData.librarian,
-      // amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
+      date: new Date().toISOString(),
+      studentID: formData.student,
+      bookId: formData.item,
+      librarianId: formData.librarian,
+      amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
       remarks: formData.remarks,
     };
     await borrowingStore.addBorrowing(dataToSend);
   };
-
+  const validateAmount = () => {
+    const physicals = borrowingStore.borrowingList.filter(
+      (p) => p.bookId == formData.item
+    );
+    const item = borrowingStore.bookList.find((b) => b.id == formData.item);
+    let sum = 0;
+    physicals.map((p) => (sum += p.amount));
+    if (item.amount - sum < formData.amount) {
+      return "הכמות המבוקשת לא זמינה";
+    }
+    return null;
+  };
   return (
     <ContainerStyled component="main" maxWidth="xs" dir="rtl">
-      <Typography component="h1" variant="h5">
-        השאלת ספר
-      </Typography>
-      <FormStyled onSubmit={add} noValidate>
+      {buttonName == "book" ? (
+        <Typography component="h1" variant="h5">
+          השאלת ספר
+        </Typography>
+      ) : (
+        <Typography component="h1" variant="h5">
+          השאלת חפצים
+        </Typography>
+      )}
+      <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
-          תאריך: {formData.date}
+          תאריך: {formData.date.toString("dd/mm/yyyy")}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -148,17 +166,29 @@ const Borrowing = observer(() => {
           </Grid>
           <Grid item xs={12}>
             <Autocomplete
-              value={borrowingStore.bookList.find(
-                (item) => item.id === formData.book
-              )}
-              onChange={(event, value) => handleChange(event, value, "book")}
-              inputValue={bookInputValue}
-              onInputChange={(event, value) =>
-                handleInputChange(event, value, "book")
+              value={
+                buttonName == "book"
+                  ? borrowingStore.bookList.find(
+                      (item) => item.id === formData.item
+                    )
+                  : borrowingStore.physicalList.find(
+                      (item) => item.id === formData.item
+                    )
               }
-              options={borrowingStore.bookList.filter((book) =>
-                book.title.includes(bookInputValue)
-              )}
+              onChange={(event, value) => handleChange(event, value, "item")}
+              inputValue={itemInputValue}
+              onInputChange={(event, value) =>
+                handleInputChange(event, value, "item")
+              }
+              options={
+                buttonName == "book"
+                  ? borrowingStore.bookList.filter((item) =>
+                      item.title.includes(itemInputValue)
+                    )
+                  : borrowingStore.physicalList.filter((item) =>
+                      item.title.includes(itemInputValue)
+                    )
+              }
               getOptionLabel={(option) => option.title}
               renderOption={(props, option) => (
                 <li {...props} key={option.id}>
@@ -168,43 +198,44 @@ const Borrowing = observer(() => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="ספר"
-                  id="book"
-                  name="book"
+                  label="פריט"
+                  id="item"
+                  name="item"
                   variant="outlined"
                   fullWidth
-                  onFocus={() => setBooks(true)}
-                  onBlur={() => setBooks(false)}
+                  onFocus={() => setItems(true)}
+                  onBlur={() => setItems(false)}
                 />
               )}
-              open={books}
-              onOpen={() => setBooks(true)}
-              onClose={() => setBooks(false)}
+              open={items}
+              onOpen={() => setItems(true)}
+              onClose={() => setItems(false)}
               filterOptions={(options) => options}
             />
           </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              type="number"
-              fullWidth
-              id="amount"
-              label="כמות"
-              name="amount"
-              value={formData.amount}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "" || !isNaN(value)) {
-                  setFormData((prev) => ({ ...prev, amount: value }));
-                }
-              }}
-              inputProps={{
-                min: "1",
-                step: "1",
-              }}
-            />
-          </Grid>
+          {buttonName == "physical" && (
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                type="number"
+                fullWidth
+                id="amount"
+                label="כמות"
+                name="amount"
+                value={formData.amount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || !isNaN(value)) {
+                    setFormData((prev) => ({ ...prev, amount: value }));
+                  }
+                }}
+                inputProps={{
+                  min: "1",
+                  step: "1",
+                }}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <TextField
               variant="outlined"
@@ -225,9 +256,9 @@ const Borrowing = observer(() => {
           type="submit"
           fullWidth
           variant="contained"
-          color="primary"
+          style={{ backgroundColor: "#0D1E46" }}
         >
-          Sign Up
+          השאלה
         </SubmitButton>
       </FormStyled>
     </ContainerStyled>
