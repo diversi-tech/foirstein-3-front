@@ -33,7 +33,10 @@ class BorrowingStore {
       );
       let dataStudents = await resStudents.json();
       this.bookList = itemStore.mediaList.filter(
-        (item) => item.isApproved === true && !item.filePath.includes("https")
+        (item) => item.isApproved === true && item.itemType == 0
+      );
+      this.physicalList = itemStore.mediaList.filter(
+        (item) => item.isApproved === true && item.itemType == 0
       );
       runInAction(() => {
         this.borrowingList = this.extractRawData(data);
@@ -60,27 +63,11 @@ class BorrowingStore {
     }
   }
 
-  async deleteBorrowing(BorrowingId) {
-    try {
-      console.log("in delete");
-      const res = await fetch(baseUrl + "/" + BorrowingId, {
-        method: "DELETE",
-      });
-      if (res.status === 200) {
-        this.success("!נמחק בהצלחה");
-      } else {
-        this.failure("!המחיקה נכשלה");
-      }
-      this.fetchBorrowing();
-    } catch (error) {
-      console.error("Failed to delete Borrowing:", error);
-    }
-  }
-
   async addBorrowing(BorrowingData) {
     try {
       console.log("hello in add");
-      const res = await fetch(baseUrl ,{
+      console.log(BorrowingData.date);
+      const res = await fetch(baseUrl + "/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(BorrowingData),
@@ -114,6 +101,24 @@ class BorrowingStore {
       console.error("Failed to update Borrowing:", error);
     }
   }
+
+  async deleteBorrowing(BorrowingId) {
+    try {
+      console.log("in delete");
+      const res = await fetch(baseUrl + "/" + BorrowingId, {
+        method: "DELETE",
+      });
+      if (res.status === 200) {
+        this.success("!נמחק בהצלחה");
+      } else {
+        this.failure("!המחיקה נכשלה");
+      }
+      this.fetchBorrowing();
+    } catch (error) {
+      console.error("Failed to delete Borrowing:", error);
+    }
+  }
+
   success(message) {
     Swal.fire({
       text: message,
@@ -121,7 +126,6 @@ class BorrowingStore {
       timer: 1700,
     });
   }
-
   failure(message) {
     Swal.fire({
       icon: "error",
