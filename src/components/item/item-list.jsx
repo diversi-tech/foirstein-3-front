@@ -6,6 +6,7 @@ import tagStore from "../../store/tag-store";
 import ItemEdit from "./item-edit";
 import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
+import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
@@ -24,6 +25,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
+
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import LevelEnum from "../LevelEum";
 
@@ -48,7 +52,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
   //   itemStore.fetchMedia();
@@ -81,9 +84,10 @@ const DataTable = observer(() => {
   // }, [itemStore.mediaList, filterType]);
 
   // Fetch data and handle loading state
+
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
-      // setIsLoading(true); // Show loading spinner
       try {
         await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
       } catch (error) {
@@ -103,10 +107,12 @@ const DataTable = observer(() => {
 
   // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
+    // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
-    setPage(1); // Reset page when items or filterType changes
-    console.log("items:", JSON.stringify(itemStore.mediaList));
-  }, [itemStore.mediaList, filterType]); // Dependencies: triggers effect when mediaList or filterType changes
+    setPage(1);
+    console.log("items:" + JSON.stringify(itemStore.mediaList));
+}, [itemStore.mediaList, filterType]);
+
 
 
   const handleChangePage = (event, value) => {
@@ -126,12 +132,8 @@ const DataTable = observer(() => {
       confirmButtonText: "כן, מחק",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          if (item.author == null) {
-            await itemStore.deleteObject(item.id);
-          } else {
-            await itemStore.deleteMedia(item.id);
-          }
+        try {          
+            await itemStore.deleteMedia(item.id);         
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
@@ -178,12 +180,8 @@ const DataTable = observer(() => {
         try {
           await Promise.all(
             selectedItems.map(async (itemId) => {
-              const item = itemStore.mediaList.find(item => item.id === itemId);
-              if (item.author == null) {
-                await itemStore.deleteObject(itemId);
-              } else {
-                await itemStore.deleteMedia(itemId);
-              }
+              itemStore.mediaList.find(item => item.id === itemId);
+              await itemStore.deleteMedia(itemId);
             })
           );
           Swal.fire({
@@ -296,6 +294,10 @@ const DataTable = observer(() => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // const filtered2 = itemStore.mediaList2.filter((item) =>
+    //   item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    // setFilteredItems(filterItems(filtered) && filterItems(filtered2));
     setFilteredItems(filterItems(filtered));
   };
 
@@ -317,39 +319,34 @@ const DataTable = observer(() => {
     if (!items) {
       return [];
     }
-
     if (filterType === "all") {
       setTypeTab('all');
       console.log(items);
       return items;
     }
-
     if (filterType === "book") {
       setTypeTab('book');
       console.log("book");
-      return items.filter((item) => !item.filePath.includes("https"));
+      return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
     }
-
     if (filterType === 'object') {
       setTypeTab('object');
       console.log('object');
-      return items.filter((item) => item.author == null);
+      return items.filter((item) => item.amount);
     }
-
     console.log("file");
     setTypeTab('file');
-    const y1 = items.filter((item) => item.filePath.includes("https"));
+    const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
     console.log(y1);
-    return items.filter((item) => item.filePath.includes("https"));
+    return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
   };
 
-
   const totalItems = filteredItems ? filteredItems.length : 0;
-
 
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
+
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
@@ -357,7 +354,9 @@ const DataTable = observer(() => {
         console.log("item: " + JSON.stringify(item))
         console.log("tag: " + JSON.stringify(tag))
         try {
+
           await itemStore.addItemTag(itemId, tagId);
+
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
@@ -425,13 +424,6 @@ const DataTable = observer(() => {
     filterOperatorIsNotEmpty: "אינו ריק",
     filterOperatorIsAnyOf: "הוא אחד מ",
   };
-  const LevelEnumMapping = {
-    0: LevelEnum.PRESCHOOL,
-    1: LevelEnum.LOW,
-    2: LevelEnum.HIGH,
-    3: LevelEnum.CLASS,
-  };
-
   const columns = [
     {
       field: "checkbox",
@@ -444,16 +436,21 @@ const DataTable = observer(() => {
         <Checkbox
           indeterminate={
             selectedItems && itemStore.mediaList &&
+            // selectedItems && itemStore.mediaList2 &&            
             selectedItems.length > 0 &&
             selectedItems.length < itemStore.mediaList.length
+            // selectedItems.length < itemStore.mediaList2.length
           }
           checked={
             selectedItems && itemStore.mediaList &&
-            selectedItems.length === itemStore.mediaList.length
+            // selectedItems && itemStore.mediaList2 &&
+            selectedItems.length === itemStore.mediaList.length 
+            // selectedItems.length === itemStore.mediaList2.length
           }
           onChange={(e) => {
             if (e.target.checked) {
-              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []);
+              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
+              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
             } else {
               setSelectedItems([]);
             }
@@ -477,7 +474,8 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-        const item = params.row;
+         if(params.row.author){
+          const item = params.row;
         return (
 
           <div>
@@ -495,7 +493,7 @@ const DataTable = observer(() => {
               </IconButton>
             </Tooltip>
           </div>
-        );
+        );}
       },
     },
     {
@@ -505,17 +503,64 @@ const DataTable = observer(() => {
       align: "right",
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) =>
-        !params.row.filePath.includes("https") ? (
-          <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
-        ) : (
-          <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
-        ),
+      // renderCell: (params) =>
+        renderCell: (params) => {
+          // תנאי לבדיקה אם author קיים
+          if (!params.row.author) {
+            return <CategoryIcon />;
+          }
+          // תנאי משולש לבדיקה אם filePath קיים ואינו כולל "https"
+          return params.row.filePath && !params.row.filePath.includes("https") ? (
+            <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
+          ) : (
+            <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
+          );
+        }
+    },
+    {
+      field: "userID", headerName: "שם המעלה", flex: 1, align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {params.row.userID ? (params.row.userID) : ('')}
+          {console.log("params.row.userID", params.row.userID)}
+
+        </div>
+      )
     },
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
     { field: "category", headerName: "קטגוריה", flex: 1, align: "right" },
-    { field: "author", headerName: "מחבר", flex: 1, align: "right" },
+    // { field: "recomended", headerName: "ממולץ", flex: 1, align: "right" },
+    // { field: "userId", headerName: "משתמש", flex: 1, align: "right" },
+    // { field: "author", headerName: "מחבר", flex: 1, align: "right" },
+    {
+      field: "author",
+      headerName: "מחבר ",
+      flex: 1,
+      align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {!params.row.author ?  "--":
+          params.row.author}
+        </div>
+      ),
+    },
     {
       field: "publishingYear",
       headerName: "שנת הוצאה",
@@ -531,12 +576,13 @@ const DataTable = observer(() => {
             textOverflow: "ellipsis",
           }}
         >
-          {params.row.filePath.includes("https")
+          {params.row.filePath && params.row.filePath.includes("https") || !params.row.author
             ? "--"
             : params.row.publishingYear}
         </div>
       ),
     },
+
     {
       field: "status",
       headerName: "סטטוס",
@@ -554,37 +600,54 @@ const DataTable = observer(() => {
             color: params.row.isApproved ? "#2C6B2F" : "#E57373",
           }}
         >
-          {params.row.isApproved ? "מאושר" : "ממתין לאישור"}
+          {(params.row.isApproved&&params.row.author) ? "מאושר" : "ממתין לאישור"}
         </div>
       ),
     },
-    {
-      field: "filePath",
-      headerName: getHeaderName(typeTab),
-      flex: 1,
-      align: "right",
-      renderCell: (params) => (
-
-
-        <div
-          style={{
-            textAlign: "right",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {params.value.includes("https") ? (
-            <a href={params.filePath} target="_blank" rel="noopener noreferrer">
-              {params.value}
-            </a>
-          ) : (
-            params.value
-          )}
-        </div>
-      ),
-    },
+      {
+        field: "displayField",
+        headerName: getHeaderName(typeTab),
+        flex: 1,
+        align: "right",
+        valueGetter: (params) => {
+          // ודא ש-params ו-params.row מוגדרים
+          if (params && params.row) {
+            return params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+          }
+          return null; // מחזיר null אם params או params.row אינם מוגדרים
+        },
+        renderCell: (params) => {
+          // ודא ש-params ו-params.row מוגדרים
+          // if (params && params.row) {
+          //   const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+            return (
+              <div
+                style={{
+                  textAlign: "right",
+                  width: "100%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {/* {params.row.amount !== undefined ? (
+                  params.row.amount
+                ) : ( */}
+                
+               {  params.row.filePath && params.row.filePath.includes("https") ? (
+                    <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
+                      {params.row.filePath}
+                    </a>
+                  ) : (
+                    params.row.filePath
+                  )
+        }
+              </div>
+            );
+          }
+          // return null; // מחזיר null אם params או params.row אינם מוגדרים
+        },
+      // },
     {
       field: "tags",
       headerName: "תגיות",
@@ -622,21 +685,21 @@ const DataTable = observer(() => {
                   {"כל התגיות"}
                 </Button>
                 <Menu
-                  // id="tag-menu"
+                  id="tag-menu"
                   anchorEl={anchorEl}
-                  // keepMounted
+                  keepMounted
                   open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
                   onClose={() => { setAnchorEl(null) }}
-                // anchorOrigin={{
-                //   vertical: 'bottom',
-                //   horizontal: 'right',
-                // }}
-                // transformOrigin={{
-                //   vertical: 'top',
-                //   horizontal: 'right',
-                // }}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
                 >
-                  {console.log("item.tags", item.tags)}
+                  {console.log("item.tags", item.tags)} ;
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
 
                   {item.tags.map((tagId) => {
@@ -684,6 +747,29 @@ const DataTable = observer(() => {
           </Stack>
         );
       },
+    },
+    {
+      field: "recommended", headerName: "", flex: 1, align: "right",
+
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Tooltip title={params.row.recommended ? "מומלץ" : ""}>
+            <Box>
+              {params.row.recommended ? (
+                <StarIcon style={{ color: 'yellow' }} />
+              ) : (<StarBorderIcon />)}
+            </Box>
+          </Tooltip>
+        </div>
+      ),
     },
     {
       field: "actions",
@@ -766,7 +852,10 @@ const DataTable = observer(() => {
         </Grid>
       ),
     },
-  ];
+  ].filter(column => {
+    if (typeTab === "file" && column.field === "publishingYear") return false;
+    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    return true; })
 
   const paginatedItems = filteredItems ? filteredItems.slice(
     (page - 1) * rowsPerPage,
@@ -776,7 +865,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">תרשימת קבצים</h2>
+        <h2 align="center">רשימת קבצים</h2>
         <Grid
           container
           spacing={2}
@@ -838,112 +927,45 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-        {isLoading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" height="400px">
-            <CircularProgress />
-          </Box>
-        ) : (<>
-          <DataGrid
-            rows={paginatedItems}
-            columns={columns}
-            pageSize={rowsPerPage}
-            disableSelectionOnClick
-            localeText={localeText}
-            autoHeight
-            style={{ overflow: "hidden" }}
-            pagination={false} // Disable DataGrid pagination
-            hideFooterPagination
-            position="sticky"
-            hideFooter
-          />
-          <Box textAlign="center" marginTop={2}>
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Pagination
-                dir="ltr"
-                count={Math.ceil(totalItems / rowsPerPage)}
-                page={page}
-                onChange={handleChangePage}
-                variant="outlined"
-                color="primary"
-                shape="rounded"
-                renderItem={(item) => <PaginationItem {...item} />}
-              />
-            </Stack>
-          </Box>
-          {paginatedItems.map((item) => (
-            <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-              <Box display="flex" dir="rtl" margin={1}>
-                {!item.filePath.includes("https") && (
-                  <>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>מספר ימי השאלה:</strong> {item.numberOfDaysOfQuestion}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong> מהדורה:</strong> {item.edition}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>סידרה:</strong>  {item.series}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>מספר בסידרה:</strong>  {item.numOfSeries}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      {/* מוציא לאור: {item.publisher}
-              </Typography>
-              <Typography
-              variant="body1"
-              style={{ marginRight: "10px" }}
-              dir="rtl"
-              > */}
-                      <strong>שנה עברית: </strong>   {item.hebrewPublicationYear}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong> שפה:</strong> {item.language}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      style={{ marginRight: "10px" }}
-                      dir="rtl"
-                    >
-                      <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
-                    </Typography>
-                  </>)}
+        <DataGrid
+          rows={paginatedItems}
+          columns={columns}
+          pageSize={rowsPerPage}
+          disableSelectionOnClick
+          localeText={localeText}
+          autoHeight
+          style={{ overflow: "hidden" }}
+          pagination={false} // Disable DataGrid pagination
+          hideFooterPagination
+          position="sticky"
+          hideFooter
+        />
+        <Box textAlign="center" marginTop={2}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Pagination
+              dir="ltr"
+              count={Math.ceil(totalItems / rowsPerPage)}
+              page={page}
+              onChange={handleChangePage}
+              variant="outlined"
+              color="primary"
+              shape="rounded"
+              renderItem={(item) => <PaginationItem {...item} />}
+            />
+          </Stack>
+        </Box>
+        {paginatedItems.map((item) => (
+        // {!typeTab === "object" &&
+
+          <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+            <Box display="flex" dir="rtl" margin={1}>
+              {item.filePath && !item.filePath.includes("https")&&  (
+
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
@@ -951,11 +973,75 @@ const DataTable = observer(() => {
                 >
                   <strong>הערה:</strong>  {item.note}
                 </Typography>
+              )}
+             
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                מהדורה: {item.edition}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                סידרה: {item.series}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                מספר בסידרה: {item.numOfSeries}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                {/* מוציא לאור: {item.publisher}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              > */}
+                שנה עברית: {item.hebrewPublicationYear}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                שפה: {item.language}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                הערה: {item.note}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                רמה: {item.itemLevel}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                חומר נלווה: {item.accompanyingMaterial}
+              </Typography>
+            </Box>
+          </Collapse>
+        ))}
 
-              </Box>
-            </Collapse>
-          ))}
-        </>)}
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}

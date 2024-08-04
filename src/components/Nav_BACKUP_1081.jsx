@@ -260,7 +260,11 @@ export const Nav = observer(() => {
               </Popper>
             </>
           )}
+<<<<<<< HEAD
+          {(role === 'Librarian' || role === 'Admin' || 1==1 && (
+=======
           {(role === 'Librarian' || role === 'Admin'  && (
+>>>>>>> master
             <>
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                 ניהול משתמשים

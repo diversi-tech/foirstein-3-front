@@ -103,7 +103,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
-  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
+  const [selectedLevel, setSelectedLevel] = useState(formData.itemLevel);
   // const [addTagOpen, SetAddTagOpen] = useState(false);
     
   const handleChangeSelect = (event) => {
@@ -129,10 +129,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
-    // formDataToSend.append('numberOfCopies', formData.numberOfCopies);
     formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
-    // formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
-
     formDataToSend.append('publishingYear', formData.publishingYear);
     formDataToSend.append('isApproved', formData.isApproved);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
@@ -140,7 +137,28 @@ export default function ItemEdit({ mediaItem, onClose }) {
       formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
     } else {
       formDataToSend.append('filePath', formData.filePath); // Use existing filePath
-    } }
+    } 
+  }
+  else{
+    formDataToSend.append('author', null);
+    formDataToSend.append('edition', null);
+    formDataToSend.append('series',null);
+    formDataToSend.append('numOfSeries', 0);
+    formDataToSend.append('language', null);
+    formDataToSend.append('note', null);
+    formDataToSend.append('accompanyingMaterial', null);
+    formDataToSend.append('itemLevel', 0);
+    formDataToSend.append('hebrewPublicationYear', null);
+    formDataToSend.append('numberOfDaysOfQuestion', 0);
+    formDataToSend.append('publishingYear', null);
+    formDataToSend.append('isApproved', null);
+    formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
+    if (formData.file) {
+      formDataToSend.append('filePath', null); // Append the file directly as IFormFile
+    } else {
+      formDataToSend.append('filePath', null); // Use existing filePath
+    } 
+  }
     onClose();
     Swal.fire({
       title: "?האם ברצונך לעדכן את הנתונים",
@@ -287,7 +305,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
        {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
   <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
 )}
-
          {!formData.filePath.includes('https') &&formData.author&&
                   <TextField
             margin="dense"
@@ -376,7 +393,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author&&
            <TextField
             margin="dense"
-            label="מהודרה"
+            label="מהדורה"
             type="text"
             fullWidth
             name="edition"
@@ -456,7 +473,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
                   labelId="level-select-label"
                   id="level-select"
                   name="itemLevel"
-                  value={formData.itemLevel}
+                 // value={formData.itemLevel}
+                  value={selectedLevel}
                   onChange={handleChangeSelect}
                   input={<OutlinedInput label="רמה" />}
                 >

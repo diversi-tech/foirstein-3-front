@@ -2,6 +2,7 @@ import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
 const baseURL='https://libererisas-backend.onrender.com/api/Item';
+// const baseURL = 'https://localhost:7297/api/Item';
 // const url = 'https://localhost:7297/api/PhysicalItem';
 
 class ItemStore {
@@ -119,21 +120,9 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch(`${baseURL}`);
+            const res = await fetch('https://localhost:7297/api/Item');
             const obj = await res.json();
-            // ככה לעשות
-            // this.mediaList = obj.data["items"];
-            // this.mediaList2 = obj.data["physicalItems"];
-
-            //////////
-
             this.mediaList = obj.data;
-            // console.log("list media: ", this.mediaList);
-            // const res2 = await fetch(`${url}`);
-            // const obj2 = await res2.data;
-            // this.mediaList2 = obj2.res2;
-            // this.mediaList2=[...obj, ...obj2];
-
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -176,28 +165,29 @@ class ItemStore {
         }
     }
 
-    async uploadMediaObject(mediaData) {
-        try {
-            const res = await fetch(`${url}`, {
-                method: 'POST',
-                body: mediaData,
-            });
-            if (res.status === 200) {
-                this.isErrorObject = false;
-            } else {
-                this.isErrorObject = false;
-            }
-            this.fetchMedia();
-        } catch (error) {
-            console.error('Failed to upload media:', error);
-            this.isError = true;
-        }
-    }
+    // async uploadMediaObject(mediaData) {
+    //     try {
+    //         const res = await fetch(`${baseURL}`, {
+    //             method: 'POST',
+    //             body: mediaData,
+    //         });
+    //         if (res.status === 200) {
+    //             this.isErrorObject = false;
+    //         } else {
+    //             this.isErrorObject = false;
+    //         }
+    //         this.fetchMedia();
+    //     } catch (error) {
+    //         console.error('Failed to upload media:', error);
+    //         this.isError = true;
+    //     }
+    // }
+
 
     // async deleteObject(mediaId) {
     //     console.log("hiiDeleteMedia!!!!!!!!");
     //     try {
-    //         const res = await fetch(`${url}/${mediaId}`, {
+    //         const res = await fetch(`${baseURL}/${mediaId}`, {
     //             method: 'DELETE'
     //         });
     //         if (res.status === 200) {
@@ -296,7 +286,7 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
-            debugger
+            
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {
@@ -322,6 +312,25 @@ class ItemStore {
           this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
         }
       }
+
+
+
+
+
+        validateToken = async () => {
+        const token = sessionStorage.getItem('jwt');
+        if (!token) return false;
+        try {
+          debugger
+          const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+          return response;
+        } catch (error) {
+          console.error('Error validating token:', error);
+          return false;
+        }
+      };
+  
+      
 }
 const itemStore = new ItemStore();
 export default itemStore;
