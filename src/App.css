@@ -1,4 +1,135 @@
 
+/* עיצוב לגלגלת   */
+/* html {
+  scrollbar-width: thin; 
+  scrollbar-color: #0D1E46 #F1F1F1; 
+} */
+/* .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #0D1E46;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+} */
+/* .content {
+  margin-top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  background-color: #F5F5F5;
+} */
+.Accessibility {
+  position: 'left'; /* הגדרת הקונטיינר כמיקום יחסית */
+  width: 0; /* או גובה מוגדר, תלוי בתוכן שלך */
+  height:10%; /* או גובה מוגדר */
+}
+/* .high-contrast {
+  background-color: black !important;
+  color: yellow !important;
+}
+.high-contrast a {
+  color: cyan !important;
+}
+.high-contrast input, .high-contrast textarea, .high-contrast select, .high-contrast button,
+.high-contrast .MuiInputBase-root, .high-contrast .MuiButton-root,
+.high-contrast .MuiOutlinedInput-root, .high-contrast .MuiInputLabel-root,
+.high-contrast .MuiFormLabel-root, .high-contrast .MuiFormControl-root,
+.high-contrast .MuiPaper-root, .high-contrast .MuiDrawer-paper,
+.high-contrast .MuiTypography-root, .high-contrast .MuiSwitch-root,
+.high-contrast .MuiButton-label, .high-contrast .MuiFormControlLabel-label,
+.high-contrast table, .high-contrast th, .high-contrast td {
+  background-color: black !important;
+  color: yellow !important;
+  border: 1px solid yellow !important;
+}
+.high-contrast input:focus, .high-contrast textarea:focus, .high-contrast select:focus,
+.high-contrast .MuiOutlinedInput-root.Mui-focused {
+  border-color: cyan !important;
+  outline: none !important;
+  box-shadow: 0 0 10px cyan !important;
+}
+.high-contrast .MuiInputBase-input {
+  color: yellow !important;
+  background-color: black !important;
+}
+.high-contrast .MuiInput-underline:before {
+  border-bottom: 2px solid yellow !important;
+}
+.high-contrast .MuiInput-underline:hover:not(.Mui-disabled):before {
+  border-bottom: 2px solid cyan !important;
+}
+.high-contrast .MuiOutlinedInput-notchedOutline {
+  border-color: yellow !important;
+}
+.high-contrast .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: cyan !important;
+}
+.increase-text-size * {
+  font-size: 1.05em !important;
+}
+.add-underlines a {
+  text-decoration: underline !important;
+}
+.color-contrast {
+  background-color: black !important;
+  color: yellow !important;
+}
+.color-contrast a {
+  color: pink !important;
+}
+.color-contrast input, .color-contrast textarea, .color-contrast select, .color-contrast button,
+.color-contrast .MuiInputBase-root, .color-contrast .MuiButton-root,
+.color-contrast .MuiOutlinedInput-root, .color-contrast .MuiInputLabel-root,
+.color-contrast .MuiFormLabel-root, .color-contrast .MuiFormControl-root,
+.color-contrast .MuiPaper-root, .color-contrast .MuiDrawer-paper,
+.color-contrast .MuiTypography-root, .color-contrast .MuiSwitch-root,
+.color-contrast .MuiButton-label, .color-contrast .MuiFormControlLabel-label,
+.color-contrast table, .color-contrast th, .color-contrast td {
+  background-color: black !important;
+  color: yellow !important;
+  border: 1px solid pink !important;
+}
+.color-contrast input:focus, .color-contrast textarea:focus, .color-contrast select:focus,
+.color-contrast .MuiOutlinedInput-root.Mui-focused {
+  border-color: pink !important;
+  outline: none !important;
+  box-shadow: 0 0 10px pink !important;
+}
+.color-contrast .MuiInputBase-input {
+  color: yellow !important;
+  background-color: black !important;
+}
+.color-contrast .MuiInput-underline:before {
+  border-bottom: 2px solid yellow !important;
+}
+.color-contrast .MuiInput-underline:hover:not(.Mui-disabled):before {
+  border-bottom: 2px solid pink !important;
+}
+.color-contrast .MuiOutlinedInput-notchedOutline {
+  border-color: yellow !important;
+}
+.color-contrast .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: pink !important;
+}
+.grayscale {
+  filter: grayscale(100%) !important;
+}
+
+
+
+
+
+
+ */
+
+
+
+
 
 /* .divHeader{
  

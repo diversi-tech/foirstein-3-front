@@ -8,7 +8,8 @@ import ItemDdd from "./components/item/item-add";
 import TagList from "./components/tag/tag-list";
 import TagAdd from "./components/tag/tag-add";
 import ImageHomePage from "./components/homePage"
-import Borrowing from "./components/borrowing&return/borrowing-file";
+import Borrowing from "./components/borrowing&return/borrowing"
+import Returning from "./components/borrowing&return/returning"
 // import Header from './components/Header'
 import Footer from "./components/footer";
 import PendingItems from "./components/pendingItemsList/pendingItems";

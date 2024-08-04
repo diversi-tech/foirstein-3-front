@@ -1,28 +1,10 @@
 // import { BrowserRouter, Route, Routes, HashRouter } from "react-router-dom";
 import { Nav } from "./Nav";
-// import ChangePermission from "./changePermission";
-// import UserManagementComponent from "./adminEditing";
-// import ActivityLog from './ActivityLog';
-// import Login from "./login/login";
-// import PasswordResetSuccess from "./resetPassword/passwordResetSuccess";
-// import ResetPassword from "./resetPassword/reserPassword";
-// import SecurityQuestions from "./resetPassword/securityQuestions";
-// import Register from "./login/register";
-// import Profile from "./personalArea/profile";
-// import ManagerDashboard from "./reports/creatReport";
-// import ViewReports from "./reports/showReport";
-// import ReportPage from "./reports/showReport1";
-// import Charts from "./AllCharts/charts";
+
 import Footer from "./footer";
-// import { Home } from "./login/home";
-// import PasswordRecovery from "./resetPassword/passwordRecovery";
-// import '../App.css';
-// import ProfileForm from "./personalArea/profileForm";
-// import AccessibilityOptions from "./Accessibility/AccessibilityOptions";
-// import { AccessibilityProvider } from "./Accessibility/AccessibilityContext";
+
 import { useEffect } from "react";
 import DataTable from "./item/BorrowingItemsList";
-
 
 import React from 'react';
 import Box from '@mui/material/Box';
@@ -48,9 +30,13 @@ import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
 import StudentRequest from './studentRequest/student-request';
-import Borrowing from "./borrowing&return/borrowing-file";
-import Returning from "./borrowing&return/returning-file"
+import Borrowing from "./borrowing&return/borrowing";
+import Returning from "./borrowing&return/returning"
 import { Tooltip } from '@mui/material';
+import AccessibilityOptions from "./AccessibilityOptions";
+import { AccessibilityProvider } from "./AccessibilityContext";
+
+import '../App.css'
 
 const baseDomain='.foirstein.diversitech.co.il/#/'
 const loginDomain=`https://login${baseDomain}`
@@ -64,13 +50,13 @@ function ExternalRedirect({ url }) {
 export const Routing = () => {
   return (
     <HashRouter>
-      {/* <AccessibilityProvider> */}
+      <AccessibilityProvider>
         <nav className="navbar">
           <Nav />
         </nav>
         <div className="content">
           <div className="Accessibility">
-            {/* <AccessibilityOptions /> */}
+            <AccessibilityOptions />
           </div>
           <Routes>
           <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
@@ -108,34 +94,11 @@ export const Routing = () => {
 
         <Route path="*" element={<h1>Page Not Found</h1>} />
 
-            {/* <Route path='/' element={<Home />} />
-            <Route path='/home' element={<Home />} />
-            <Route path='/search' element={<iframe src="https://foirstein-2-front-1.onrender.com/" title="ProjectB" width="100%" height="600px" />} />
-            <Route path='/Librarian' element={<ExternalRedirect url="https://diversi-tech.github.io/foirstein-3-front/#/" />} />
-            <Route path='/Charts' element={<Charts />} />
-            <Route path='login/home' element={<Home />} />
-            <Route path='/ActivityLog' element={<ActivityLog />} />
-            <Route path='/changePermission' element={<ChangePermission />} />
-            <Route path='/UserManagementComponent' element={<UserManagementComponent />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profileform" element={<ProfileForm />} />
-            <Route path="home" element={<Home />} />
-            <Route path="/ManagerDashboard" element={<ManagerDashboard />} />
-            <Route path="/view-reports" element={<ViewReports />} />
-            <Route path="/report/:reportId" element={<ReportPage />} />
-            <Route path="login/register" element={<Register />} />
-            <Route path="login/security-question" element={<SecurityQuestions />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/password-reset-success" element={<PasswordResetSuccess />} />
-            <Route path="login/security-question/reset-password/password-reset-success/login" element={<Login />} />
-            <Route path="login/security-question/reset-password/password-reset-success/login/home" element={<Home />} />
-            <Route path="/passwordRecovery" element={<PasswordRecovery />} /> */}
+        
           </Routes>
           <Footer />
         </div>
-      {/* </AccessibilityProvider> */}
+      </AccessibilityProvider >
     </HashRouter>
   );
 }

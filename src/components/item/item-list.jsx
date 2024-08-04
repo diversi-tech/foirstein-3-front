@@ -6,6 +6,7 @@ import tagStore from "../../store/tag-store";
 import ItemEdit from "./item-edit";
 import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
+import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
 import {
   IconButton,
@@ -47,8 +48,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from "./SelectTags";
 import CancelIcon from "@mui/icons-material/Cancel";
-
-import LevelEnum from "../LevelEum";
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -126,10 +125,12 @@ const DataTable = observer(() => {
 
   // Update filteredItems when itemStore.mediaList or filterType changes
   useEffect(() => {
+    // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
-    setPage(1); // Reset page when items or filterType changes
-    console.log("items:", JSON.stringify(itemStore.mediaList));
-  }, [itemStore.mediaList, filterType]); // Dependencies: triggers effect when mediaList or filterType changes
+    setPage(1);
+    console.log("items:" + JSON.stringify(itemStore.mediaList));
+}, [itemStore.mediaList, filterType]);
+
 
   const handleChangePage = (event, value) => {
     setPage(value);
@@ -148,12 +149,8 @@ const DataTable = observer(() => {
       confirmButtonText: "כן, מחק",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          if (item.author == null) {
-            await itemStore.deleteObject(item.id);
-          } else {
-            await itemStore.deleteMedia(item.id);
-          }
+        try {          
+            await itemStore.deleteMedia(item.id);         
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
@@ -200,6 +197,7 @@ const DataTable = observer(() => {
         try {
           await Promise.all(
             selectedItems.map(async (itemId) => {
+<<<<<<< HEAD
               const item = itemStore.mediaList.find(
                 (item) => item.id === itemId
               );
@@ -208,6 +206,10 @@ const DataTable = observer(() => {
               } else {
                 await itemStore.deleteMedia(itemId);
               }
+=======
+              itemStore.mediaList.find(item => item.id === itemId);
+              await itemStore.deleteMedia(itemId);
+>>>>>>> master
             })
           );
           Swal.fire({
@@ -323,6 +325,10 @@ const DataTable = observer(() => {
     const filtered = itemStore.mediaList.filter((item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    // const filtered2 = itemStore.mediaList2.filter((item) =>
+    //   item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    // setFilteredItems(filterItems(filtered) && filterItems(filtered2));
     setFilteredItems(filterItems(filtered));
   };
 
@@ -343,30 +349,39 @@ const DataTable = observer(() => {
     if (!items) {
       return [];
     }
-
     if (filterType === "all") {
       setTypeTab("all");
       console.log(items);
       return items;
     }
-
     if (filterType === "book") {
       setTypeTab("book");
       console.log("book");
-      return items.filter((item) => !item.filePath.includes("https"));
+      return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
     }
+<<<<<<< HEAD
 
     if (filterType === "object") {
       setTypeTab("object");
       console.log("object");
       return items.filter((item) => item.author == null);
+=======
+    if (filterType === 'object') {
+      setTypeTab('object');
+      console.log('object');
+      return items.filter((item) => item.amount);
+>>>>>>> master
     }
-
     console.log("file");
+<<<<<<< HEAD
     setTypeTab("file");
     const y1 = items.filter((item) => item.filePath.includes("https"));
+=======
+    setTypeTab('file');
+    const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+>>>>>>> master
     console.log(y1);
-    return items.filter((item) => item.filePath.includes("https"));
+    return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -460,13 +475,6 @@ const DataTable = observer(() => {
     filterOperatorIsNotEmpty: "אינו ריק",
     filterOperatorIsAnyOf: "הוא אחד מ",
   };
-  const LevelEnumMapping = {
-    0: LevelEnum.PRESCHOOL,
-    1: LevelEnum.LOW,
-    2: LevelEnum.HIGH,
-    3: LevelEnum.CLASS,
-  };
-
   const columns = [
     {
       field: "checkbox",
@@ -478,12 +486,19 @@ const DataTable = observer(() => {
       renderHeader: () => (
         <Checkbox
           indeterminate={
+<<<<<<< HEAD
             selectedItems &&
             itemStore.mediaList &&
+=======
+            selectedItems && itemStore.mediaList &&
+            // selectedItems && itemStore.mediaList2 &&            
+>>>>>>> master
             selectedItems.length > 0 &&
             selectedItems.length < itemStore.mediaList.length
+            // selectedItems.length < itemStore.mediaList2.length
           }
           checked={
+<<<<<<< HEAD
             selectedItems &&
             itemStore.mediaList &&
             selectedItems.length === itemStore.mediaList.length
@@ -495,6 +510,17 @@ const DataTable = observer(() => {
                   ? itemStore.mediaList.map((item) => item.id)
                   : []
               );
+=======
+            selectedItems && itemStore.mediaList &&
+            // selectedItems && itemStore.mediaList2 &&
+            selectedItems.length === itemStore.mediaList.length 
+            // selectedItems.length === itemStore.mediaList2.length
+          }
+          onChange={(e) => {
+            if (e.target.checked) {
+              // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
+              setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
+>>>>>>> master
             } else {
               setSelectedItems([]);
             }
@@ -518,7 +544,8 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-        const item = params.row;
+         if(params.row.author){
+          const item = params.row;
         return (
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
@@ -535,7 +562,7 @@ const DataTable = observer(() => {
               </IconButton>
             </Tooltip>
           </div>
-        );
+        );}
       },
     },
     {
@@ -545,17 +572,46 @@ const DataTable = observer(() => {
       align: "right",
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) =>
-        !params.row.filePath.includes("https") ? (
-          <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
-        ) : (
-          <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
-        ),
+      // renderCell: (params) =>
+        renderCell: (params) => {
+          // תנאי לבדיקה אם author קיים
+          if (!params.row.author) {
+            return <CategoryIcon />;
+          }
+          // תנאי משולש לבדיקה אם filePath קיים ואינו כולל "https"
+          return params.row.filePath && !params.row.filePath.includes("https") ? (
+            <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
+          ) : (
+            <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
+          );
+        }
     },
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
     { field: "category", headerName: "קטגוריה", flex: 1, align: "right" },
-    { field: "author", headerName: "מחבר", flex: 1, align: "right" },
+    // { field: "recomended", headerName: "ממולץ", flex: 1, align: "right" },
+    // { field: "userId", headerName: "משתמש", flex: 1, align: "right" },
+    // { field: "author", headerName: "מחבר", flex: 1, align: "right" },
+    {
+      field: "author",
+      headerName: "מחבר ",
+      flex: 1,
+      align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {!params.row.author ?  "--":
+          params.row.author}
+        </div>
+      ),
+    },
     {
       field: "publishingYear",
       headerName: "שנת הוצאה",
@@ -571,12 +627,13 @@ const DataTable = observer(() => {
             textOverflow: "ellipsis",
           }}
         >
-          {params.row.filePath.includes("https")
+          {params.row.filePath && params.row.filePath.includes("https") || !params.row.author
             ? "--"
             : params.row.publishingYear}
         </div>
       ),
     },
+
     {
       field: "status",
       headerName: "סטטוס",
@@ -594,6 +651,7 @@ const DataTable = observer(() => {
             color: params.row.isApproved ? "#2C6B2F" : "#E57373",
           }}
         >
+<<<<<<< HEAD
           {params.row.isApproved ? "מאושר" : "ממתין לאישור"}
         </div>
       ),
@@ -620,9 +678,56 @@ const DataTable = observer(() => {
           ) : (
             params.value
           )}
+=======
+          {(params.row.isApproved&&params.row.author) ? "מאושר" : "ממתין לאישור"}
+>>>>>>> master
         </div>
       ),
     },
+      {
+        field: "displayField",
+        headerName: getHeaderName(typeTab),
+        flex: 1,
+        align: "right",
+        valueGetter: (params) => {
+          // ודא ש-params ו-params.row מוגדרים
+          if (params && params.row) {
+            return params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+          }
+          return null; // מחזיר null אם params או params.row אינם מוגדרים
+        },
+        renderCell: (params) => {
+          // ודא ש-params ו-params.row מוגדרים
+          // if (params && params.row) {
+          //   const value = params.row.amount !== undefined ? params.row.amount : params.row.filePath;
+            return (
+              <div
+                style={{
+                  textAlign: "right",
+                  width: "100%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {/* {params.row.amount !== undefined ? (
+                  params.row.amount
+                ) : ( */}
+                
+               {  params.row.filePath && params.row.filePath.includes("https") ? (
+                    <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
+                      {params.row.filePath}
+                    </a>
+                  ) : (
+                    params.row.filePath
+                  )
+        }
+              </div>
+            );
+          }
+          // return null; // מחזיר null אם params או params.row אינם מוגדרים
+        },
+      // },
     {
       field: "tags",
       headerName: "תגיות",
@@ -662,8 +767,9 @@ const DataTable = observer(() => {
                   {"כל התגיות"}
                 </Button>
                 <Menu
-                  // id="tag-menu"
+                  id="tag-menu"
                   anchorEl={anchorEl}
+<<<<<<< HEAD
                   // keepMounted
                   open={Boolean(anchorEl)} /////שורה בעייתיתתתתתתתתת
                   onClose={() => {
@@ -677,8 +783,21 @@ const DataTable = observer(() => {
                   //   vertical: 'top',
                   //   horizontal: 'right',
                   // }}
+=======
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={() => { setAnchorEl(null) }}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+>>>>>>> master
                 >
-                  {console.log("item.tags", item.tags)}
+                  {console.log("item.tags", item.tags)} ;
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
 
                   {item.tags.map((tagId) => {
@@ -831,7 +950,10 @@ const DataTable = observer(() => {
         </Grid>
       ),
     },
-  ];
+  ].filter(column => {
+    if (typeTab === "file" && column.field === "publishingYear") return false;
+    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    return true; })
 
   const paginatedItems = filteredItems
     ? filteredItems.slice((page - 1) * rowsPerPage, page * rowsPerPage)
@@ -902,6 +1024,7 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
+<<<<<<< HEAD
         {isLoading ? (
           <Box
             display="flex"
@@ -1029,6 +1152,123 @@ const DataTable = observer(() => {
             ))}
           </>
         )}
+=======
+        <DataGrid
+          rows={paginatedItems}
+          columns={columns}
+          pageSize={rowsPerPage}
+          disableSelectionOnClick
+          localeText={localeText}
+          autoHeight
+          style={{ overflow: "hidden" }}
+          pagination={false} // Disable DataGrid pagination
+          hideFooterPagination
+          position="sticky"
+          hideFooter
+        />
+        <Box textAlign="center" marginTop={2}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Pagination
+              dir="ltr"
+              count={Math.ceil(totalItems / rowsPerPage)}
+              page={page}
+              onChange={handleChangePage}
+              variant="outlined"
+              color="primary"
+              shape="rounded"
+              renderItem={(item) => <PaginationItem {...item} />}
+            />
+          </Stack>
+        </Box>
+        {paginatedItems.map((item) => (
+        // {!typeTab === "object" &&
+
+          <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
+            <Box display="flex" dir="rtl" margin={1}>
+              {item.filePath && !item.filePath.includes("https")&&  (
+
+                <Typography
+                  variant="body1"
+                  style={{ marginRight: "10px" }}
+                  dir="rtl"
+                >
+                  <strong>הערה:</strong>  {item.note}
+                </Typography>
+              )}
+             
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                מהדורה: {item.edition}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                סידרה: {item.series}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                מספר בסידרה: {item.numOfSeries}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                {/* מוציא לאור: {item.publisher}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              > */}
+                שנה עברית: {item.hebrewPublicationYear}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                שפה: {item.language}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                הערה: {item.note}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                רמה: {item.itemLevel}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                חומר נלווה: {item.accompanyingMaterial}
+              </Typography>
+            </Box>
+          </Collapse>
+        ))}
+
+>>>>>>> master
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
