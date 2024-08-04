@@ -13,6 +13,7 @@ import itemStore from '../store/item-store';
 import MailIcon from '@mui/icons-material/Mail';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
+
 // function getCookie(name) {
 //   const value = `; ${document.cookie}`;
 //   const parts = value.split(`; ${name}=`);
@@ -176,7 +177,15 @@ export const Nav = observer(() => {
     }
     return '';
   };
+  const handleProfileClickSavedItemsScreen = () => {
+    navigate('/SavedItemsScreen');
+    handleMenuClose();
+  };
 
+const handleProfileClickToRequestStatus = () => {
+    navigate('/StatusListView');
+    handleMenuClose();
+  };
   return (
     <Root>
       <NavBar position="fixed">
@@ -252,6 +261,7 @@ export const Nav = observer(() => {
                           <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
                           <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
                           <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
+                        
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
@@ -260,8 +270,10 @@ export const Nav = observer(() => {
               </Popper>
             </>
           )}
-          {(role === 'Librarian' || role === 'Admin' && (
+   
+          {(role === 'Librarian' || role === 'Admin')  && ( 
             <>
+            
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                 ניהול משתמשים
               </StyledLink>
@@ -312,7 +324,7 @@ export const Nav = observer(() => {
                          הרשאות ספרנית
                       </StyledLink> */}
             </>
-          ))}
+          )}
           <LeftSection>
             <Grid container spacing={4} style={{ width: '40%', marginLeft: '40px' }}>
               <Grid item xs={6}>
@@ -362,6 +374,8 @@ export const Nav = observer(() => {
                 >
                   <MenuItem onClick={handleProfileClick}>ניהול חשבון</MenuItem>
                   <MenuItem onClick={handleLogout}>התנתקות</MenuItem>
+                  <MenuItem onClick={handleProfileClickToRequestStatus}>בקשות סטטוס</MenuItem>
+                  <MenuItem onClick={handleProfileClickSavedItemsScreen}>מאגר אישי </MenuItem>
                 </Menu>
               </>
             ) : (
