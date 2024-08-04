@@ -103,7 +103,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
       file: file || null
     }));
   };
-  const [selectedLevel, setSelectedLevel] = useState(LevelEnum.PRESCHOOL);
+  const [selectedLevel, setSelectedLevel] = useState(formData.itemLevel);
   // const [addTagOpen, SetAddTagOpen] = useState(false);
     
   const handleChangeSelect = (event) => {
@@ -376,7 +376,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author&&
            <TextField
             margin="dense"
-            label="מהודרה"
+            label="מהדורה"
             type="text"
             fullWidth
             name="edition"
@@ -456,7 +456,8 @@ export default function ItemEdit({ mediaItem, onClose }) {
                   labelId="level-select-label"
                   id="level-select"
                   name="itemLevel"
-                  value={formData.itemLevel}
+                 // value={formData.itemLevel}
+                  value={selectedLevel}
                   onChange={handleChangeSelect}
                   input={<OutlinedInput label="רמה" />}
                 >

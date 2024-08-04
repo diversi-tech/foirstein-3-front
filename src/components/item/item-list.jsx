@@ -25,6 +25,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
 
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
 import LevelEnum from "../LevelEum";
 
 const DataTable = observer(() => {
@@ -48,7 +51,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
   //   itemStore.fetchMedia();
@@ -81,9 +83,10 @@ const DataTable = observer(() => {
   // }, [itemStore.mediaList, filterType]);
 
   // Fetch data and handle loading state
+
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
-      // setIsLoading(true); // Show loading spinner
       try {
         await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
       } catch (error) {
@@ -350,7 +353,7 @@ const DataTable = observer(() => {
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-    debugger
+
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
@@ -358,9 +361,9 @@ const DataTable = observer(() => {
         console.log("item: " + JSON.stringify(item))
         console.log("tag: " + JSON.stringify(tag))
         try {
-          debugger
+
           await itemStore.addItemTag(itemId, tagId);
-          debugger
+
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
@@ -515,6 +518,24 @@ const DataTable = observer(() => {
           <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
         ),
     },
+    {
+      field: "userID", headerName: "שם המעלה", flex: 1, align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {params.row.userID ? (params.row.userID) : ('')}
+          {console.log("params.row.userID", params.row.userID)}
+
+        </div>
+      )
+    },
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
     { field: "category", headerName: "קטגוריה", flex: 1, align: "right" },
@@ -625,19 +646,19 @@ const DataTable = observer(() => {
                   {"כל התגיות"}
                 </Button>
                 <Menu
-                  // id="tag-menu"
+                  id="tag-menu"
                   anchorEl={anchorEl}
-                  // keepMounted
+                  keepMounted
                   open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
                   onClose={() => { setAnchorEl(null) }}
-                // anchorOrigin={{
-                //   vertical: 'bottom',
-                //   horizontal: 'right',
-                // }}
-                // transformOrigin={{
-                //   vertical: 'top',
-                //   horizontal: 'right',
-                // }}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
                 >
                   {console.log("item.tags", item.tags)}
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
@@ -687,6 +708,29 @@ const DataTable = observer(() => {
           </Stack>
         );
       },
+    },
+    {
+      field: "recommended", headerName: "", flex: 1, align: "right",
+
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Tooltip title={params.row.recommended ? "מומלץ" : ""}>
+            <Box>
+              {params.row.recommended ? (
+                <StarIcon style={{ color: 'yellow' }} />
+              ) : (<StarBorderIcon />)}
+            </Box>
+          </Tooltip>
+        </div>
+      ),
     },
     {
       field: "actions",
@@ -769,6 +813,7 @@ const DataTable = observer(() => {
         </Grid>
       ),
     },
+
   ];
 
   const paginatedItems = filteredItems ? filteredItems.slice(
@@ -779,7 +824,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">תרשימת קבצים</h2>
+        <h2 align="center">רשימת קבצים</h2>
         <Grid
           container
           spacing={2}
