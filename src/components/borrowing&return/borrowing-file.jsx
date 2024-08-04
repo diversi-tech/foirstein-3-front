@@ -52,13 +52,12 @@ const [amountErrors,setAmountErors]=useState(false);
     fetchData();
   }, []);
 
-  // const formatDate = (date) => {
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const month = String(date.getMonth() + 1).padStart(2, "0");
-  //   const year = date.getFullYear();
-  //   return `${day}/${month}/${year}`;
-  // };
-  // formData.date = formatDate(new Date());
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const handleChange = (event, value, name) => {
     switch (name) {
@@ -122,7 +121,7 @@ const [amountErrors,setAmountErors]=useState(false);
       )}
       <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
-          תאריך: {formData.date.toString("dd/mm/yyyy")}
+          תאריך: {new Date().toLocaleDateString("he-IL")}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
