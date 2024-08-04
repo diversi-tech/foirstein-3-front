@@ -26,8 +26,8 @@ class BorrowingStore {
             debugger
             const borrowing = await fetch(`${baseUrl}`);
             const jsonBorrowing = await borrowing.json();
-            const jsBorrowing=toJS(jsonBorrowing)
-            console.log("jsBorrowing: "+JSON.stringify(jsBorrowing.data))
+            // const jsBorrowing=toJS(jsonBorrowing)
+            console.log("jsBorrowing: "+JSON.stringify(jsonBorrowing.data))
             this.borrowingList=jsBorrowing.data
             // runInAction(() => {
             //     this.borrowingList = this.extractRawData(data);

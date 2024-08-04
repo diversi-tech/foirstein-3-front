@@ -8,9 +8,12 @@ import borrowingStore from '../../store/borrowingStore';
 const columns = [
   { field: 'Id', headerName: 'מספר השאלה', flex: 1, headerAlign: 'center', align: 'center' },
   { field: 'Date', headerName: 'תאריך השאלה', flex: 1, headerAlign: 'center', align: 'center' },
-  { field: 'LibrarianId', headerName: 'מזהה ספרנית', flex: 1, headerAlign: 'center', align: 'center' },
-  { field: 'StudentId', headerName: 'שם התלמידה המשאילה', flex: 1, headerAlign: 'center', align: 'center' },
-  { field: 'BookId', headerName: 'שם הספרנית המאשרת', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'LibrarianName', headerName: 'שם ספרנית', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'StudentName', headerName: 'שם התלמידה המשאילה', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'ItemTitle', headerName: 'כותרת', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'ItemAuthor', headerName: 'יוצר', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'ItemType', headerName: 'סוג', flex: 1, headerAlign: 'center', align: 'center' },
+  { field: 'ItemTitle', headerName: 'כותרת', flex: 1, headerAlign: 'center', align: 'center' },
 ];
 
 const localeText = {
