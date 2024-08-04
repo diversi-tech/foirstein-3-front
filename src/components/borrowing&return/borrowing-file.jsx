@@ -36,7 +36,7 @@ const Borrowing = observer(({buttonName}) => {
     date: "",
     student: "",
     item: "",
-    librarian:7,
+    librarian:{getUserIdNumFromToken},
     amount: "",
     remarks: "",
   });

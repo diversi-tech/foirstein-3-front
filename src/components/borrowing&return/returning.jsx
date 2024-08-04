@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Returning from "./returning-file";
-
+import { getRoleFromToken } from "../decipheringToken";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -36,7 +36,7 @@ function a11yProps(index) {
 
 export default function returning() {
   const [value, setValue] = React.useState(0);
-  const [premission, setPremission] = React.useState("");
+  const [permissions, setPermissions] = React.useState(getRoleFromToken);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -56,7 +56,7 @@ export default function returning() {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          {premission == "book" ? (
+          {permissions == "book" ? (
             <Tab label="מוצר" {...a11yProps(0)} disabled />
           ) : (
             <Tab label="מוצר" {...a11yProps(0)} />

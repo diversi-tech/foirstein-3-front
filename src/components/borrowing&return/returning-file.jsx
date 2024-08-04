@@ -35,7 +35,7 @@ const Returning = observer(({ buttonName }) => {
     date: new Date().toISOString(),
     student: "",
     book: "",
-    librarian: 7,
+    librarian: {getUserIdNumFromToken},
     amount: 1,
   });
   const [itemInputValue, setItemInputValue] = useState("");
