@@ -16,7 +16,8 @@ function App() {
       console.log('Received message:', event)
       const allowedOrigins = [
         'https://login.foirstein.diversitech.co.il',  // דומיין הפרויקט הראשי
-        'https://diversi-tech.github.io'     // דומיין נוסף המותר
+        'https://diversi-tech.github.io',
+        // 'https://librarian.foirstein.diversitech.co.il'     // דומיין נוסף המותר
       ];
       if (allowedOrigins.includes(event.origin)) {
         const token = event.data.token;
