@@ -36,7 +36,7 @@ const Borrowing = observer(({ buttonName }) => {
     date: "",
     student: "",
     item: "",
-    librarian: "7",
+    librarian: "",
     amount: "",
     remarks: "",
   });
@@ -92,7 +92,7 @@ const Borrowing = observer(({ buttonName }) => {
       date: new Date().toISOString(),
       studentID: formData.student,
       bookId: formData.item,
-      librarianId: formData.librarian,
+      librarianId: 7,
       amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
       remarks: formData.remarks,
     };
