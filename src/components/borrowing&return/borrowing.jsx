@@ -4,7 +4,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Borrowing from "./borrowing-file";
-import { getRoleFromToken } from "../decipheringToken";
+// import { getRoleFromToken } from "../decipheringToken";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -36,7 +36,7 @@ function a11yProps(index) {
 
 export default function borrowing() {
   const [value, setValue] = React.useState(0);
-  const [permissions, setPermissions] = React.useState(getRoleFromToken);
+  const [permissions, setPermissions] = React.useState('Librarian');
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };

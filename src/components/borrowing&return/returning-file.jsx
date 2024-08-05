@@ -10,7 +10,7 @@ import {
 import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
-import { getUserIdNumFromToken } from "../decipheringToken";
+// import { getUserIdNumFromToken } from "../decipheringToken";
 import { toJS } from "mobx";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
@@ -35,8 +35,9 @@ const Returning = observer(({ buttonName }) => {
     date: new Date().toISOString(),
     student: "",
     book: "",
-    librarian: {getUserIdNumFromToken},
-    amount: 1,
+    // librarian: {getUserIdNumFromToken},
+    librarian: "7",
+    amount: null,
   });
   const [itemInputValue, setItemInputValue] = useState("");
   const [studentInputValue, setStudentInputValue] = useState("");
@@ -49,13 +50,6 @@ const Returning = observer(({ buttonName }) => {
     };
     fetchData();
   }, []);
-
-  const formatDate = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   const handleChange = (event, value, name) => {
     switch (name) {
@@ -88,7 +82,7 @@ const Returning = observer(({ buttonName }) => {
     const borrowing = list.find((b) => {
       return (
         b.librarianId == formData.librarian &&
-        b.studentID == formData.student &&
+        b.studentId == formData.student &&
         b.bookId == formData.book
       );
     });
@@ -101,15 +95,7 @@ const Returning = observer(({ buttonName }) => {
     const borrowing = await getBorrowing();
     if (borrowing.amount != formData.amount) {
       borrowing.amount -= formData.amount;
-      const dataToSend = {
-        date: new Date().toISOString(),
-        studentID: borrowing.studentID,
-        bookId: borrowing.bookId,
-        librarianId: borrowing.librarianId,
-        amount: borrowing.amount, // המרת amount למספר אם לא כבר
-        remarks: borrowing.remarks,
-      };
-      await borrowingStore.updateBorrowing(borrowing.id, dataToSend);
+      await borrowingStore.updateBorrowing(borrowing.id, borrowing);
     } else {
       await borrowingStore.deleteBorrowing(borrowing.id);
     }
@@ -128,7 +114,7 @@ const Returning = observer(({ buttonName }) => {
       )}
       <FormStyled onSubmit={returning} noValidate>
         <Typography variant="subtitle1" gutterBottom>
-        תאריך: {formatDate(new Date())}
+          תאריך: {new Date().toLocaleDateString("he-IL")}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>

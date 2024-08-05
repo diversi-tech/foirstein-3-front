@@ -8,6 +8,7 @@ class BorrowingStore {
   borrowingList = [];
   studentList = [];
   bookList = [];
+  physicalList = [];
   message = "";
 
   constructor() {
@@ -15,6 +16,7 @@ class BorrowingStore {
       borrowingList: observable,
       studentList: observable,
       bookList: observable,
+      physicalList: observable,
       fetchBorrowing: action,
       updateBorrowing: action,
       deleteBorrowing: action,

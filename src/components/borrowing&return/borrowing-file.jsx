@@ -10,7 +10,7 @@ import {
 import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
-import { getUserIdNumFromToken } from "../decipheringToken";
+import {getUserIdFromToken} from "../decipheringToken"
 import itemStore from "../../store/item-store";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
@@ -36,7 +36,7 @@ const Borrowing = observer(({ buttonName }) => {
     date: "",
     student: "",
     item: "",
-    librarian: { getUserIdNumFromToken },
+    librarian: "7",
     amount: "",
     remarks: "",
   });
@@ -50,6 +50,7 @@ const Borrowing = observer(({ buttonName }) => {
       await borrowingStore.fetchBorrowing();
     };
     fetchData();
+    const libraryId = getUserIdFromToken();
   }, []);
 
   const formatDate = (date) => {
@@ -122,6 +123,9 @@ const Borrowing = observer(({ buttonName }) => {
       <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
           תאריך: {formatDate(new Date())}
+        </Typography>
+        <Typography>
+          ספרנית: {libraryId}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
