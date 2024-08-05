@@ -220,26 +220,27 @@ class ItemStore {
         }
     }
 
-    // async updateMediaObject(mediaId, mediaData) {
-    //     try {
-    //         console.log("formData: ", mediaData, "beforeFetch");
-    //         const res = await fetch(`${url}/${mediaId}`, {
-    //             method: 'PUT',
-    //             body: mediaData
-    //         });
-    //         console.log("formData: ", mediaData, "afterFetch");
-    //         this.fetchMedia();
+    async updateMediaObject(mediaId, mediaData) {
+        try {
+            console.log("formData: ", mediaData, "beforeFetch");
+            // const res = await fetch(`${baseURL}/physicalItem/${mediaId}`, {
+                const res = await fetch(`https://localhost:7297/api/Item/physicalItem/${mediaId}`, {
+                method: 'PUT',
+                body: mediaData
+            });
+            console.log("formData: ", mediaData, "afterFetch");
+            this.fetchMedia();
 
-    //         if (res.status === 200) {
-    //             this.isUpdateObject = true;
-    //         }
-    //         else {
-    //             this.isUpdateObject = false;
-    //         }
-    //     } catch (error) {
-    //         console.error('Failed to update media:', error);
-    //     }
-    // }
+            if (res.status === 200) {
+                this.isUpdateObject = true;
+            }
+            else {
+                this.isUpdateObject = false;
+            }
+        } catch (error) {
+            console.error('Failed to update media:', error);
+        }
+    }
 
     async updateMediaBook(mediaId, mediaData) {
         try {
