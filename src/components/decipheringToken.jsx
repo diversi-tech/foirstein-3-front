@@ -62,9 +62,7 @@ export const getRoleFromToken = () => {
 
 
   export const validateToken = async () => {
-    debugger
-    
-    //const token = sessionStorage.getItem('jwt');
+   
     const token = getCookie('jwt');
     console.log(`token!!!!!!!!!`,token);
     if (!token) 
