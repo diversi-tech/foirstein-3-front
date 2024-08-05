@@ -20,25 +20,45 @@ class BorrowingStore {
         this.fetchBorrowing();
     }
 
+    // async fetchBorrowing() {
+    //     try {
+    //         // console.log("in fetch");
+    //         debugger
+    //         const borrowing = await fetch(`${baseUrl}/withDetails`);
+    //         const jsonBorrowing = await borrowing.json();
+    //         debugger
+    //         // const jsBorrowing=toJS(jsonBorrowing)
+    //         console.log("jsBorrowing: "+JSON.stringify(jsonBorrowing.data))
+    //         this.borrowingList=jsBorrowing.data
+    //         // runInAction(() => {
+    //         //     this.borrowingList = this.extractRawData(data);
+    //         //     console.log("Processed data:", this.borrowingList);
+    //         // });
+    //     } catch (error) {
+    //         // this.failure("!!!בעיה בהבאת הנתונים");
+    //         console.error("Failed to fetch tag:", error);
+    //     }
+    // }
     async fetchBorrowing() {
         try {
-            // console.log("in fetch");
-            debugger
-            const borrowing = await fetch(`${baseUrl}`);
-            const jsonBorrowing = await borrowing.json();
-            debugger
-            // const jsBorrowing=toJS(jsonBorrowing)
-            console.log("jsBorrowing: "+JSON.stringify(jsonBorrowing.data))
-            this.borrowingList=jsBorrowing.data
-            // runInAction(() => {
-            //     this.borrowingList = this.extractRawData(data);
-            //     console.log("Processed data:", this.borrowingList);
-            // });
+            const response = await fetch(`${baseUrl}/withDetails`); 
+            const data = await response.json();
+    
+            console.log("Data from API:", data); 
+            
+            if (response.ok) { 
+                runInAction(() => {
+                    this.borrowingList = data.data || data; 
+                    console.log("borrowing: "+this.borrowingList)
+                });
+            } else {
+                console.error("Error fetching borrowing data:", data); 
+            }
         } catch (error) {
-            // this.failure("!!!בעיה בהבאת הנתונים");
-            console.error("Failed to fetch tag:", error);
+            console.error("Failed to fetch borrowing data:", error); 
         }
     }
+    
 
     extractRawData(proxyObject) {
         if (proxyObject != undefined && proxyObject.data != null) {
