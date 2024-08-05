@@ -13,7 +13,7 @@ function App() {
   useEffect(() => {
     // האזנה להודעות postMessage
     const handleMessage = (event) => {
-      console.log('Received message:', event)
+  
       const allowedOrigins = [
         'https://login.foirstein.diversitech.co.il',  // דומיין הפרויקט הראשי
         'https://diversi-tech.github.io',

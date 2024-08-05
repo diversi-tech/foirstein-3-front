@@ -63,7 +63,8 @@ export const getRoleFromToken = () => {
 
   export const validateToken = async () => {
     const token = sessionStorage.getItem('jwt');
-    if (!token) return false;
+    if (!token) 
+      return false;
     try {
       
       const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
