@@ -126,7 +126,7 @@ const Borrowing = observer(({ buttonName }) => {
           תאריך: {formatDate(new Date())}
         </Typography>
         <Typography>
-          ספרנית: {this.libraryId}
+          ספרנית: {libraryId}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
