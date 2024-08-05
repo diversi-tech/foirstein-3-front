@@ -31,7 +31,7 @@ import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
 // import { useTheme } from '@mui/material/styles';
-import LevelEnum from '../LevelEum';
+import {LevelEnum} from '../Enums';
 
 
 
@@ -369,6 +369,7 @@ const ItemDdd = observer(() => {
                                     )}
                                 </FormControl>
                             </Grid>
+                            {!selectedValue === 'object' &&
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
@@ -380,7 +381,7 @@ const ItemDdd = observer(() => {
                                         onChange={handleChange}
                                         required
                                         onBlur={() => setTouchedFields((prev) => ({ ...prev, author: true }))}
-                                    />
+                                        />
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
@@ -389,6 +390,7 @@ const ItemDdd = observer(() => {
                                     )}
                                 </FormControl>
                             </Grid>
+                            }
                             {selectedValue === 'book' && (
                                 <>
                                     <Grid item xs={12}>
@@ -554,6 +556,7 @@ const ItemDdd = observer(() => {
                                             </Select>
                                         </FormControl>
                                     </Grid>
+
                                     <Grid item xs={12}>
                                         <FormControl fullWidth margin="dense">
                                             <InputLabel id="level-select-label">רמה</InputLabel>
@@ -617,7 +620,7 @@ const ItemDdd = observer(() => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-
+                            {selectedValue === 'book' &&
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
@@ -635,7 +638,7 @@ const ItemDdd = observer(() => {
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
                                 </FormControl>
-                            </Grid>
+                            </Grid>}
                             {selectedValue === 'file' && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
