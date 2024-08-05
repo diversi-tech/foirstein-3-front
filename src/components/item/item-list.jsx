@@ -133,17 +133,22 @@ const DataTable = observer(() => {
       confirmButtonText: "כן, מחק",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {          
-            await itemStore.deleteMedia(item.id);         
-          Swal.fire({
-            title: "נמחק בהצלחה",
-            text: "הפריט נמחק בהצלחה",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          // עדכן את רשימת הפריטים אחרי מחיקה
-          itemStore.fetchMedia();
+        try {
+          const deleteSuccess = await itemStore.deleteMedia(item.id);
+          
+          if (deleteSuccess) {
+            Swal.fire({
+              title: "נמחק בהצלחה",
+              text: "הפריט נמחק בהצלחה",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            // עדכן את רשימת הפריטים אחרי מחיקה
+            itemStore.fetchMedia();
+          } else {
+            throw new Error("מחיקה נכשלה");
+          }
         } catch (error) {
           Swal.fire({
             title: "שגיאה",
@@ -165,7 +170,7 @@ const DataTable = observer(() => {
       }
     });
   };
-
+  
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
@@ -328,7 +333,9 @@ const DataTable = observer(() => {
     if (filterType === "book") {
       setTypeTab('book');
       // return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      console.log('book');
       return items.filter((item) => item.itemType === TypeEnum.BOOK);
+      
     }
     if (filterType === 'object') {
       setTypeTab('object');
@@ -339,7 +346,9 @@ const DataTable = observer(() => {
     }
     console.log("file");
     setTypeTab('file');
-    // const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    console.log('file');
+
+    // return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
     // console.log(y1);
       return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
@@ -633,18 +642,17 @@ const DataTable = observer(() => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {/* {params.row.amount !== undefined ? (
+                {params.row.amount  ? (
                   params.row.amount
-                ) : ( */}
-                
-               {  params.row.filePath && params.row.filePath.includes("https") ? (
+                ) : (
+                  params.row.filePath && params.row.filePath.includes("https") ? (
                     <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
                       {params.row.filePath}
                     </a>
                   ) : (
                     params.row.filePath
                   )
-        }
+                )}
               </div>
             );
           }
@@ -969,67 +977,66 @@ const DataTable = observer(() => {
 
           <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
             <Box display="flex" dir="rtl" margin={1}>
-              {item.filePath && !item.filePath.includes("https")&&  (
-
+              {item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  <strong>מספר ימי השאלה:</strong>  {item.numberOfDaysOfQuetion}
+                  <strong>מספר ימי השאלה:</strong>  {item.numberOfDaysOfQuestion}
                 </Typography>
-              )}
-             {!item.itemType === TypeEnum.PHYSICALITEM &&
+              }
+             {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
               <Typography
               variant="body1"
               style={{ marginRight: "10px" }}
               dir="rtl"
               >
-                מהדורה: {item.edition}
+               <strong> מהדורה:</strong> {item.edition}
+              </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                <strong>סידרה:</strong> {item.series}
+              </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+              <strong>  מספר בסידרה:</strong> {item.numOfSeries}
+              </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                <strong> שנה עברית:</strong> {item.hebrewPublicationYear}
               </Typography>
               }
-              {/* {!TypeEnum.PHYSICALITEM&& */}
+             {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                סידרה: {item.series}
+               <strong> שפה: </strong>{item.language}
               </Typography>
-              {/* } */}
-              {/* {!TypeEnum.PHYSICALITEM&& */}
+              }
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                מספר בסידרה: {item.numOfSeries}
-              </Typography>
-              {/* } */}
-              {/* {!TypeEnum.PHYSICALITEM&& */}
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                שנה עברית: {item.hebrewPublicationYear}
-              </Typography>
-              {/* } */}
-              {/* {!TypeEnum.PHYSICALITEM&& */}
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                שפה: {item.language}
-              </Typography>
-              {/* } */}
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                הערה: {item.note}
+               <strong> הערה:</strong> {item.note}
               </Typography>
 
               <Typography
@@ -1037,17 +1044,17 @@ const DataTable = observer(() => {
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                רמה: {item.itemLevel}
+               <strong> רמה: </strong>{item.itemLevel}
               </Typography>
-              {/* {!TypeEnum.PHYSICALITEM&& */}
+              {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                חומר נלווה: {item.accompanyingMaterial}
+               <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
               </Typography>
-              {/* } */}
+              }
             </Box>
           </Collapse>
         ))}

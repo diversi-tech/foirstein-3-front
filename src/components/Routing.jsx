@@ -93,7 +93,8 @@ export const Routing = () => {
         <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url={`${loginDomain}login`} />} />
         <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url={`${loginDomain}login`} />} />
         <Route path='/passwordRecovery' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-
+        <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
+        <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
 
         

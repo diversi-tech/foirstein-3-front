@@ -20,12 +20,12 @@ const Footer = () => {
           color: theme.palette.text.secondary,
           padding: theme.spacing(4),
           marginTop: theme.spacing(8),
-          textAlign: 'right',
-          fontFamily: theme.typography.fontFamily,
+          fontFamily: 'Rubik',
         }}
       >
         <Container maxWidth="lg">
           <Grid container spacing={4}>
+            {/* לוגו */}
             <Grid item xs={12} md={3}>
               <Box
                 sx={{
@@ -41,6 +41,8 @@ const Footer = () => {
                 />
               </Box>
             </Grid>
+
+            {/* כתובת */}
             <Grid item xs={12} md={3}>
               <Typography variant="h6" gutterBottom>
                 סמינר הליכות בית יעקב
@@ -51,39 +53,22 @@ const Footer = () => {
                 מודיעין עילית
               </Typography>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <Typography variant="h6" gutterBottom>
-                מרחבית - מרחב התוכן של בית יעקב
-              </Typography>
-              <Typography variant="body1">
-                <IconButton color="inherit">
-                  <EmailIcon />
-                </IconButton>
-                cc@hby.org.il
-                <br />
-                <IconButton color="inherit">
-                  <PhoneIcon />
-                </IconButton>
-                טלפון: 08-9147130
-                <br />
-                <IconButton color="inherit">
-                  <FaxIcon />
-                </IconButton>
-                פקס: 08-9147103
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Typography variant="h6" gutterBottom>
-                קישורים מהירים
-              </Typography>
+
+            {/* קישורים מהירים */}
+            <Grid item xs={12} md={3} sx={{ textAlign: 'right' }}>
               <Link
                 component={RouterLink}
                 to="/"
                 color="inherit"
                 underline="none"
-                sx={{ display: 'block', marginBottom: theme.spacing(1), display: 'flex', alignItems: 'center' }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'row-reverse', // Icons on the left
+                  marginBottom: theme.spacing(2), // Increased margin
+                }}
               >
-                <HomeIcon sx={{ marginRight: theme.spacing(1) }} />
+              
                 דף הבית
               </Link>
               <Link
@@ -91,9 +76,14 @@ const Footer = () => {
                 to="/login"
                 color="inherit"
                 underline="none"
-                sx={{ display: 'block', marginBottom: theme.spacing(1), display: 'flex', alignItems: 'center' }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'row-reverse', // Icons on the left
+                  marginBottom: theme.spacing(2), // Increased margin
+                }}
               >
-                <LoginIcon sx={{ marginRight: theme.spacing(1) }} />
+              
                 התחברות
               </Link>
               <Link
@@ -101,16 +91,43 @@ const Footer = () => {
                 to="/search"
                 color="inherit"
                 underline="none"
-                sx={{ display: 'block', marginBottom: theme.spacing(1), display: 'flex', alignItems: 'center' }}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'row-reverse', // Icons on the left
+                  marginBottom: theme.spacing(2), // Increased margin
+                }}
               >
-                <SearchIcon sx={{ marginRight: theme.spacing(1) }} />
+               
                 חיפוש
               </Link>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body2" align="center" fontSize={18} sx={{ color: '#FFD700' }}>
-                מרחבית - מרחב התוכן של בית יעקב
+
+            {/* מייל, פקס וטלפון */}
+            <Grid item xs={12} md={3} sx={{ textAlign: 'right' }}>
+
+              <Typography variant="body1">
+                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: theme.spacing(2), flexDirection: 'row-reverse' }}>
+                  <EmailIcon sx={{ marginLeft: theme.spacing(1) }} />
+                  <Link href="mailto:cc@hby.org.il" color="inherit" underline="none">
+                    cc@hby.org.il
+                  </Link>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: theme.spacing(2), flexDirection: 'row-reverse' }}>
+                  <PhoneIcon sx={{ marginLeft: theme.spacing(1) }} />
+                  <Typography sx={{ marginLeft: theme.spacing(1) }}>
+                    טלפון: 08-9147130
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row-reverse' }}>
+                  <FaxIcon sx={{ marginLeft: theme.spacing(1) }} />
+                  <Typography sx={{ marginLeft: theme.spacing(1) }}>
+                    פקס: 08-9147103
+                  </Typography>
+                </Box>
               </Typography>
+            </Grid>
+            <Grid item xs={12}>
             </Grid>
           </Grid>
         </Container>
