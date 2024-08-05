@@ -638,9 +638,7 @@ const DataTable = observer(() => {
           </div>
         );
       }
-      // return null; // מחזיר null אם params או params.row אינם מוגדרים
     },
-    // },
     {
       field: "tags",
       headerName: "תגיות",
@@ -652,9 +650,6 @@ const DataTable = observer(() => {
         const [anchorEl, setAnchorEl] = useState(null);
         const item = params.row;
         const hasTags = item.tags.length > 0;
-        const handleMenuOpen = (event) => {
-          setAnchorEl(event.currentTarget);
-        };
 
         const handleMenuClose = () => {
           setAnchorEl(null);
@@ -811,8 +806,13 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Grid container  sx={{
+          display: 'flex',
+          justifyContent: 'flex-end', // הזזת הכפתורים ימינה
+          alignItems: 'center',
+          spacing: 2, // הוספת רווחים בין רכיבי ה-Grid
+        }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center',justifyContent: 'flex-end',spacing: 4 }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
@@ -825,6 +825,7 @@ const DataTable = observer(() => {
                   backgroundColor: "#0D1E46",
                   color: "#FFD700",
                 },
+                marginRight: '10px',
               }}
               onClick={
                 selectedItems.length > 0
