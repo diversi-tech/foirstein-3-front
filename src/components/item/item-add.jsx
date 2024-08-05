@@ -58,7 +58,7 @@ const ItemDdd = observer(() => {
     const [isFormValid, setIsFormValid] = useState(false);
     const [touchedFields, setTouchedFields] = useState({});
     // const [error, setTouchedFields] = useState({});
-    const [isRecommended, setIsRecommended] = useState(false);
+    //const [isRecommended, setIsRecommended] = useState(false);
 
     const [formData, setFormData] = useState({
         title: '',

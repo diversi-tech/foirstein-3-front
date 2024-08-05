@@ -4,12 +4,15 @@ import tagStore from '../../store/tag-store';
 import Swal from 'sweetalert2';
 import {LevelEnum} from '../Enums';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import StarIcon from '@mui/icons-material/Star';
+// import StarBorderIcon from '@mui/icons-material/StarBorder';
+// import StarIcon from '@mui/icons-material/Star';
 import {
-  TextField, Button, Dialog, DialogActions, DialogContent, 
+  TextField, Button, Dialog, DialogActions, DialogContent,
   DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
+
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 export default function ItemEdit({ mediaItem, onClose }) {
   const tagMap = tagStore.tagList.reduce((map, tag) => {
@@ -44,7 +47,6 @@ export default function ItemEdit({ mediaItem, onClose }) {
     accompanyingMaterial: mediaItem.accompanyingMaterial,
     itemLevel: mediaItem.itemLevel,
     hebrewPublicationYear: mediaItem.hebrewPublicationYear,
-    // numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
   });
 
   const [send, setSend] = useState(false);
@@ -112,11 +114,16 @@ export default function ItemEdit({ mediaItem, onClose }) {
   };
   const [selectedLevel, setSelectedLevel] = useState(formData.itemLevel);
   // const [addTagOpen, SetAddTagOpen] = useState(false);
-    
+
   const handleChangeSelect = (event) => {
     setSelectedLevel(event.target.value);
   };
-  
+  // const getRecommendationText = () => {
+  //  if (formData.amount){return 'האם החפץ מומלץ';} 
+  //  else if(new URL(formData.filePath)){return 'האם הקובץ מומלץ';}
+  //  else if(formData.edition){return 'האם הספר מומלץ';}  
+  // }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
@@ -210,8 +217,15 @@ export default function ItemEdit({ mediaItem, onClose }) {
           timer: 1500
         });
       }
-    });
-  };
+      else
+      Swal.fire({
+        icon: "error",
+        title: "אופס... תקלה בעת שמירת השינויים",
+        showConfirmButton: false,
+        timer: 1500
+      });
+  });
+};
   
   const getRecommendationText = (value) => {
     switch (value) {
@@ -260,13 +274,13 @@ const handleRecommendationToggle = () => {
             name="title"
             value={formData.title}
             onChange={handleChange}
-            inputProps={{ minLength:2, maxLength: 17 }}
+            inputProps={{ minLength: 2, maxLength: 17 }}
             required
-            />
+          />
           {formData.title && formData.title.length < 2 && (
             <Typography color="error">הכותרת חייבת להכיל לפחות 2 תווים</Typography>
           )}
-          
+
           <TextField
             margin="dense"
             label="תיאור"
@@ -275,15 +289,15 @@ const handleRecommendationToggle = () => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            inputProps={{ minLength:3, maxLength: 35 }}
+            inputProps={{ minLength: 3, maxLength: 35 }}
             required
-            />
-          {formData.description && formData.description.length <3 && (
+          />
+          {formData.description && formData.description.length < 3 && (
             <Typography color="error">התיאור חייב להכיל לפחות 3 תווים</Typography>
           )}
-           {formData.description === formData.title  &&(
+          {formData.description === formData.title && (
             <Typography color="error">שם וכותרת לא יוכלים להיות זהים</Typography>
-           )}
+          )}
           <TextField
             margin="dense"
             label="קטגוריה"
@@ -292,55 +306,55 @@ const handleRecommendationToggle = () => {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            inputProps={{ minLength:2, maxLength: 17 }}
+            inputProps={{ minLength: 2, maxLength: 17 }}
             required
-            />
+          />
           {formData.category && formData.category.length < 2 && (
             <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
           )}
-          {formData.author&&
-          <TextField
-          margin="dense"
-          label="מחבר"
-          type="text"
-          fullWidth
-          name="author"
-          value={formData.author}
-          onChange={handleChange}
-          inputProps={{ minLength:2, maxLength: 17 }}
-          required
-          />
-        }
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="מחבר"
+              type="text"
+              fullWidth
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              inputProps={{ minLength: 2, maxLength: 17 }}
+              required
+            />
+          }
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
-         
-          {!formData.filePath.includes('https') &&formData.author&&
-           <TextField
-           margin="dense"
-           label="שנת הוצאה לועזית"
-           type="text"
-           fullWidth
-           name="publishingYear"
-           value={formData.publishingYear}
-           onChange={handleChange}
-           inputProps={{ minLength:4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-           />
+
+          {!formData.filePath.includes('https') && formData.author &&
+            <TextField
+              margin="dense"
+              label="שנת הוצאה לועזית"
+              type="text"
+              fullWidth
+              name="publishingYear"
+              value={formData.publishingYear}
+              onChange={handleChange}
+              inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+            />
           }
-       {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
-  <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
-)}
-         {!formData.filePath.includes('https') &&formData.author&&
-                  <TextField
-            margin="dense"
-            label="שנה הוצאה עברית"
-            type="text"
-            fullWidth
-            name="hebrewPublicationYear"
-            value={formData.hebrewPublicationYear}
-            onChange={handleChange}
-            inputProps={{ minLength:4, maxLength: 4 }}
-            required
+          {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
+            <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
+          )}
+          {!formData.filePath.includes('https') && formData.author &&
+            <TextField
+              margin="dense"
+              label="שנה הוצאה עברית"
+              type="text"
+              fullWidth
+              name="hebrewPublicationYear"
+              value={formData.hebrewPublicationYear}
+              onChange={handleChange}
+              inputProps={{ minLength: 4, maxLength: 4 }}
+              required
             />}
           {formData.hebrewPublicationYear && formData.hebrewPublicationYear.length < 1 && (
             <Typography color="error">שנת הוצאה חייב להכיל 4 תווים </Typography>
@@ -363,7 +377,7 @@ const handleRecommendationToggle = () => {
                 </Box>
               )}
               MenuProps={MenuProps}
-              >
+            >
               {tagStore.tagList.map((tag) => (
                 <MenuItem key={tag.id} value={tag.id}>
                   <Checkbox checked={formData.tags.indexOf(tag.id) > -1} />
@@ -372,31 +386,31 @@ const handleRecommendationToggle = () => {
               ))}
             </Select>
           </FormControl>
-          {!formData.author&&
-          <TextField
-            margin="dense"
-            label="כמות"
-            type="text"
-            fullWidth
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            inputProps={{ minLength:1, maxLength: 6 }}
+          {!formData.author &&
+            <TextField
+              margin="dense"
+              label="כמות"
+              type="text"
+              fullWidth
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, maxLength: 6 }}
             // disabled={link}
-          />}
-          {formData.author&&
-          <TextField
-            margin="dense"
-            label="מיקום"
-            type="text"
-            fullWidth
-            name="filePath"
-            value={formData.filePath}
-            onChange={handleChange}
-            inputProps={{ minLength:1 , maxLength: 17 }}
-            disabled={link}
-          />}
-         {link && (
+            />}
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="מיקום"
+              type="text"
+              fullWidth
+              name="filePath"
+              value={formData.filePath}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, maxLength: 17 }}
+              disabled={link}
+            />}
+          {link && (
             <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 1 }}>
               <input
                 accept="*"
@@ -415,78 +429,78 @@ const handleRecommendationToggle = () => {
               </Typography>
             </Box>
           )}
-          {formData.author&&
-           <TextField
-            margin="dense"
-            label="מהדורה"
-            type="text"
-            fullWidth
-            name="edition"
-            value={formData.edition}
-            onChange={handleChange}
-            inputProps={{ minLength:3 , maxLength: 15 }}
-            required
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="מהדורה"
+              type="text"
+              fullWidth
+              name="edition"
+              value={formData.edition}
+              onChange={handleChange}
+              inputProps={{ minLength: 3, maxLength: 15 }}
+              required
             />}
           {formData.edition && formData.edition.length < 1 && (
             <Typography color="error">המהדורה חייבת להכיל לפחות תו אחד</Typography>
           )}
-          {formData.author&&
-           <TextField
-            margin="dense"
-            label="סידרה"
-            type="text"
-            fullWidth
-            name="series"
-            value={formData.series}
-            onChange={handleChange}
-            inputProps={{ minLength:1, maxLength: 15 }}
-            // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="סידרה"
+              type="text"
+              fullWidth
+              name="series"
+              value={formData.series}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, maxLength: 15 }}
+              // inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
+              required
             />}
           {formData.series && formData.series.length < 1 && (
             <Typography color="error">סידרה חייבת להכיל לפחות 3 תווים</Typography>
           )}
-          {formData.author&&
-          <TextField
-            margin="dense"
-            label="מספר בסידרה"
-            type="number"
-            fullWidth
-            name="numOfSeries"
-            value={formData.numOfSeries}
-            onChange={handleChange}
-            inputProps={{ minLength:1,maxLength: 4,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="מספר בסידרה"
+              type="number"
+              fullWidth
+              name="numOfSeries"
+              value={formData.numOfSeries}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+              required
             />}
           {formData.numOfSeries && formData.numOfSeries.length < 1 && (
             <Typography color="error">מספר בסידרה חייבת להכיל לפחות מספר אחד</Typography>
           )}
-          {formData.author&&
-           <TextField
-            margin="dense"
-            label="שפה"
-            type="text"
-            fullWidth
-            name="language"
-            value={formData.language}
-            onChange={handleChange}
-            inputProps={{ minLength:3 , maxLength: 10 }}
-            required
+          {formData.author &&
+            <TextField
+              margin="dense"
+              label="שפה"
+              type="text"
+              fullWidth
+              name="language"
+              value={formData.language}
+              onChange={handleChange}
+              inputProps={{ minLength: 3, maxLength: 10 }}
+              required
             />}
           {formData.language && formData.language.length < 3 && (
             <Typography color="error">שפה חייבת להכיל לפחות 3 תווים </Typography>
           )}
-          {formData.author&&
+          {formData.author &&
             <TextField
-            margin="dense"
-            label="חומר נלווה"
-            type="text"
-            fullWidth
-            name="accompanyingMaterial"
-            value={formData.accompanyingMaterial}
-            onChange={handleChange}
-            inputProps={{ minLength:3, maxLength: 25 }}
-            required
+              margin="dense"
+              label="חומר נלווה"
+              type="text"
+              fullWidth
+              name="accompanyingMaterial"
+              value={formData.accompanyingMaterial}
+              onChange={handleChange}
+              inputProps={{ minLength: 3, maxLength: 25 }}
+              required
             />}
           {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
@@ -570,10 +584,10 @@ const handleRecommendationToggle = () => {
                             {/* </Grid> */}
         </DialogContent>
         <DialogActions style={{ position: 'sticky', bottom: 0, background: '#fff', zIndex: 1 }}>
-          <Button onClick={onClose} style={{ color: '#468585'}}>
+          <Button onClick={onClose} style={{ color: '#468585' }}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: '#468585'}} >
+          <Button type="submit" style={{ color: '#468585' }} >
             שמירה
           </Button>
         </DialogActions>

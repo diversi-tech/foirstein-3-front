@@ -36,7 +36,7 @@ function a11yProps(index) {
 
 export default function borrowing() {
   const [value, setValue] = React.useState(0);
-  const [permissions, setPermissions] = React.useState(getRoleFromToken);
+  const [permissions, setPermissions] = React.useState(getRoleFromToken());
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -57,7 +57,7 @@ export default function borrowing() {
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="מוצר" {...a11yProps(0)} disabled />
+            <Tab label="חפץ" {...a11yProps(0)} disabled />
             <Tab label="ספר" {...a11yProps(1)} />
           </Tabs>
         ) : permissions == "Librarian" ? (
@@ -66,7 +66,7 @@ export default function borrowing() {
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="מוצר" {...a11yProps(0)} />
+            <Tab label="חפץ" {...a11yProps(0)} />
             <Tab label="ספר" {...a11yProps(1)} />
           </Tabs>
         ) : (
@@ -75,7 +75,7 @@ export default function borrowing() {
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="מוצר" {...a11yProps(0)} disabled />
+            <Tab label="חפץ" {...a11yProps(0)} disabled />
             <Tab label="ספר" {...a11yProps(1)} disabled />
           </Tabs>
         )}

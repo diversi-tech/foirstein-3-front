@@ -10,7 +10,7 @@ import {
 import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
-import { getUserIdNumFromToken } from "../decipheringToken";
+import {getUserIdFromTokenid} from "../decipheringToken"
 import itemStore from "../../store/item-store";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
@@ -32,11 +32,9 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 
 const Borrowing = observer(({ buttonName }) => {
   const [formData, setFormData] = useState({
-    // id: "50",
     date: "",
     student: "",
     item: "",
-    librarian: { getUserIdNumFromToken },
     amount: "",
     remarks: "",
   });
@@ -45,6 +43,7 @@ const Borrowing = observer(({ buttonName }) => {
   const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
   const [amountErrors, setAmountErors] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       await borrowingStore.fetchBorrowing();
@@ -90,7 +89,7 @@ const Borrowing = observer(({ buttonName }) => {
       date: new Date().toISOString(),
       studentID: formData.student,
       bookId: formData.item,
-      librarianId: formData.librarian,
+      librarianId: getUserIdFromTokenid(),
       amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
       remarks: formData.remarks,
     };

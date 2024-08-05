@@ -29,8 +29,8 @@ import PendingItems from './pendingItemsList/pendingItems';
 import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
-import Borrowing from "./borrowing&return/borrowing";
-import Returning from "./borrowing&return/returning"
+import Borrowing from "../components/borrowing&return/borrowing";
+import Returning from "../components/borrowing&return/returning"
 import StudentRequest from './studentRequest/student-request';
 import { Tooltip } from '@mui/material';
 import AccessibilityOptions from "./AccessibilityOptions";
@@ -70,6 +70,8 @@ export const Routing = () => {
         <Route path="/tag-list" element={<Box><TagList /></Box>} />
         <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
         <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} /> 
+        <Route path="/returning" element={<Box><Returning /></Box>} /> 
         <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
         <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
         <Route path="/returning" element={<Box><Returning /></Box>} />
@@ -91,7 +93,8 @@ export const Routing = () => {
         <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url={`${loginDomain}login`} />} />
         <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url={`${loginDomain}login`} />} />
         <Route path='/passwordRecovery' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-
+        <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
+        <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
 
         
