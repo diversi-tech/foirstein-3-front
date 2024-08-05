@@ -35,7 +35,7 @@ function a11yProps(index) {
 }
 
 export default function borrowing() {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(-1);
   const [permissions, setPermissions] = React.useState(getRoleFromToken());
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -44,12 +44,22 @@ export default function borrowing() {
   return (
     <Box sx={{ width: "100%" }}>
       <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-          display: "flex",
-          justifyContent: "center",
-        }}
+sx={{
+  width: "100%",
+  maxWidth: 600,
+  "& .MuiTabs-indicator": {
+    backgroundColor: "#0D1E46",
+  },
+  "& .MuiTab-root": {
+    color: "#DCDCDC",
+    "&.Mui-selected": {
+      color: "#0D1E46",
+    },
+  },
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}}
       >
         {permissions == "LibrarianBook" ? (
           <Tabs
@@ -80,12 +90,18 @@ export default function borrowing() {
           </Tabs>
         )}
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <Borrowing buttonName={"physical"} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <Borrowing buttonName={"book"} />
-      </CustomTabPanel>
+      {value === -1 ? (
+        <Box sx={{ p: 3, textAlign: 'center' }}>בחר לשונית כדי להציג את התוכן</Box>
+      ) : (
+        <>
+          <CustomTabPanel value={value} index={0}>
+            <Borrowing buttonName={"physical"} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            <Borrowing buttonName={"book"} />
+          </CustomTabPanel>
+        </>
+      )}
     </Box>
   );
 }
