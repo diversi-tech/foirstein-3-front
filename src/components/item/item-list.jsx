@@ -327,29 +327,19 @@ const DataTable = observer(() => {
     }
     if (filterType === "all") {
       setTypeTab('all');
-      console.log(items);
       return items;
     }
     if (filterType === "book") {
       setTypeTab('book');
-      // return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
-      console.log('book');
       return items.filter((item) => item.itemType === TypeEnum.BOOK);
       
     }
     if (filterType === 'object') {
       setTypeTab('object');
-      console.log('object');
-      // return items.filter((item) => item.amount);
     return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
 
     }
-    console.log("file");
     setTypeTab('file');
-    console.log('file');
-
-    // return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
-    // console.log(y1);
       return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
