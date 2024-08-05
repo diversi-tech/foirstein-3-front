@@ -120,7 +120,7 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch('https://localhost:7297/api/Item');
+            const res = await fetch(baseURL);
             const obj = await res.json();
             this.mediaList = obj.data;
         }
