@@ -29,11 +29,9 @@ import PendingItems from './pendingItemsList/pendingItems';
 import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
-import Borrowing from "./borrowing&return/borrowing";
-import Returning from "./borrowing&return/returning"
+import Borrowing from "../components/borrowing&return/borrowing";
+import Returning from "../components/borrowing&return/returning"
 import StudentRequest from './studentRequest/student-request';
-import Borrowing from "./borrowing&return/borrowing";
-import Returning from "./borrowing&return/returning"
 import { Tooltip } from '@mui/material';
 import AccessibilityOptions from "./AccessibilityOptions";
 import { AccessibilityProvider } from "./AccessibilityContext";
