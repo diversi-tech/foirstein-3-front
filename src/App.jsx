@@ -6,7 +6,7 @@ import SideNav from "./components/side_nav"
 import { Routing } from './components/Routing'
 import { useEffect } from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
-
+import {validateToken} from './components/decipheringToken';
 import React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 function App() {
@@ -32,7 +32,16 @@ function App() {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      const isValid = await validateToken();
+      if (!isValid) {
+        window.location.href = 'https://login.foirstein.diversitech.co.il';
+      }
+    };
 
+    checkToken();
+  }, []);
   // useEffect(() => {
   //   // פונקציה למחיקת הטוקן מהקוקי
   //   function deleteTokenCookie() {
