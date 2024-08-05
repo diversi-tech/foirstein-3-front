@@ -33,7 +33,7 @@ export const getRoleFromToken = () => {
     }
   };
   export const getUserIdFromToken = () => {
-    debugger
+    
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);
@@ -62,7 +62,7 @@ export const getRoleFromToken = () => {
     const token = sessionStorage.getItem('jwt');
     if (!token) return false;
     try {
-      debugger
+      
       const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
       console.log(response,"response")
       console.log("token data===>",response.data)
@@ -74,7 +74,7 @@ export const getRoleFromToken = () => {
   };
 
   export const getUserIdNumFromToken = () => {
-    debugger
+    
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useState, useEffect } from 'react';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {
     Button,
     Radio,
@@ -21,14 +23,17 @@ import {
     Box,
     OutlinedInput,
     Checkbox,
-    ListItemText
+    ListItemText,
+    IconButton
 } from '@mui/material';
 import itemStore from '../../store/item-store';
 import Swal from 'sweetalert2'
 import { createTheme, useTheme } from '@mui/material/styles';
 import tagStore from '../../store/tag-store';
 // import { useTheme } from '@mui/material/styles';
-import LevelEnum from '../LevelEum';
+import {LevelEnum} from '../Enums';
+
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -53,7 +58,7 @@ const ItemDdd = observer(() => {
     const [isFormValid, setIsFormValid] = useState(false);
     const [touchedFields, setTouchedFields] = useState({});
     // const [error, setTouchedFields] = useState({});
-
+    //const [isRecommended, setIsRecommended] = useState(false);
 
     const [formData, setFormData] = useState({
         title: '',
@@ -63,7 +68,22 @@ const ItemDdd = observer(() => {
         publishingYear: '',
         tag: [],
         filePath: '',
+        recommended: false,
+        userID: 5
     });
+
+    const getRecommendationText = (value) => {
+        switch (value) {
+            case 'book':
+                return 'האם הספר מומלץ?';
+            case 'file':
+                return 'האם הקובץ מומלץ?';
+            case 'object':
+                return 'האם המוצר מומלץ?';
+            default:
+                return 'האם פריט זה מומלץ?';
+        }
+    };
 
     const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -97,6 +117,7 @@ const ItemDdd = observer(() => {
     };
 
     const handleChange = (e) => {
+        // setIsRecommended(!isRecommended);
         const { name, value, type, files } = e.target;
         setTouchedFields((prev) => ({ ...prev, [name]: true }));
         if (type === 'file') {
@@ -117,6 +138,15 @@ const ItemDdd = observer(() => {
                 [name]: value,
             }));
         }
+    };
+
+    const handleRecommendationToggle = () => {
+        setFormData((prevData) => ({
+            ...prevData,
+            recommended: !prevData.recommended,
+            userID: prevData.userID + 1,
+
+        }));
     };
 
     const handleTagChange = (event) => {
@@ -188,7 +218,7 @@ const ItemDdd = observer(() => {
                             });
                             tagIds.forEach(tagId => objectToSend.append('tags[]', tagId));
                         }
-                        if (key === 'title' || key === 'description' || key === 'category' || key === 'note'|| key ==='amount') {
+                        if (key === 'title' || key === 'description' || key === 'category' || key === 'note' || key === 'amount') {
                             objectToSend.append(key, formData[key]);
                         }
                     }
@@ -196,7 +226,6 @@ const ItemDdd = observer(() => {
                 }
                 else if (selectedValue === 'file') {
                     const fileToSend = new FormData();
-
                     for (const key in formData) {
                         if (key === 'tag') {
                             const tagIds = formData[key].map(tagName => {
@@ -211,7 +240,6 @@ const ItemDdd = observer(() => {
                             fileToSend.append(key, formData[key]);
                         }
                     }
-
                     await itemStore.uploadMediaFile(fileToSend);
                     Swal.fire({
                         icon: "success",
@@ -311,7 +339,7 @@ const ItemDdd = observer(() => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, description: true }))}
+                                    //onBlur={() => setTouchedFields((prev) => ({ ...prev, description: true }))}
                                     />
                                     {touchedFields.description && !formData.description && (
                                         <Typography color="error">שדה חובה</Typography>
@@ -336,11 +364,12 @@ const ItemDdd = observer(() => {
                                     {touchedFields.category && !formData.category && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
-                                    {formData.category && formData.category.length < 3 && (
-                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 3 תווים</Typography>
+                                    {formData.category && formData.category.length < 2 && (
+                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
                                     )}
                                 </FormControl>
                             </Grid>
+                            {!selectedValue === 'object' &&
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
@@ -352,7 +381,7 @@ const ItemDdd = observer(() => {
                                         onChange={handleChange}
                                         required
                                         onBlur={() => setTouchedFields((prev) => ({ ...prev, author: true }))}
-                                    />
+                                        />
                                     {touchedFields.author && !formData.author && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
@@ -361,6 +390,7 @@ const ItemDdd = observer(() => {
                                     )}
                                 </FormControl>
                             </Grid>
+                            }
                             {selectedValue === 'book' && (
                                 <>
                                     <Grid item xs={12}>
@@ -398,6 +428,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, hebrewPublicationYear: true }))}
                                             />
+                                            {touchedFields.hebrewPublicationYear && !formData.hebrewPublicationYear && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -413,6 +446,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, edition: true }))}
                                             />
+                                            {touchedFields.edition && !formData.edition && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -428,12 +464,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, series: true }))}
                                             />
-                                            {/* {touchedFields.publishingYear && !formData.publishingYear && (
+                                            {touchedFields.series && !formData.series && (
                                                 <Typography color="error">שדה חובה</Typography>
                                             )}
-                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                            )} */}
 
 
                                         </FormControl>
@@ -451,6 +484,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, numOfSeries: true }))}
                                             />
+                                            {touchedFields.numOfSeries && !formData.numOfSeries && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -465,6 +501,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, language: true }))}
                                             />
+                                            {touchedFields.language && !formData.language && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -495,6 +534,9 @@ const ItemDdd = observer(() => {
                                                 required
                                                 onBlur={() => setTouchedFields((prev) => ({ ...prev, numberOfDaysOfQuestion: true }))}
                                             />
+                                            {touchedFields.numberOfDaysOfQuestion && !formData.numberOfDaysOfQuestion && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -514,6 +556,7 @@ const ItemDdd = observer(() => {
                                             </Select>
                                         </FormControl>
                                     </Grid>
+
                                     <Grid item xs={12}>
                                         <FormControl fullWidth margin="dense">
                                             <InputLabel id="level-select-label">רמה</InputLabel>
@@ -530,6 +573,9 @@ const ItemDdd = observer(() => {
                                                     </MenuItem>
                                                 ))}
                                             </Select>
+                                            {touchedFields.itemLevel && !formData.itemLevel && (
+                                                <Typography color="error">שדה חובה</Typography>
+                                            )}
                                         </FormControl>
                                     </Grid>
                                 </>
@@ -574,26 +620,25 @@ const ItemDdd = observer(() => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {selectedValue === 'book' && (
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <TextField
-                                            id="filePathId"
-                                            label="מיקום"
-                                            variant="outlined"
-                                            name="filePath"
-                                            value={formData.filePath}
-                                            onChange={handleChange}
-                                            required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
-                                            type='text'
-                                        />
-                                        {touchedFields.filePath && !formData.filePath && (
-                                            <Typography color="error">שדה חובה</Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid>
-                            )}
+                            {selectedValue === 'book' &&
+                            <Grid item xs={12}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        id="filePathId"
+                                        label="מיקום"
+                                        variant="outlined"
+                                        name="filePath"
+                                        value={formData.filePath}
+                                        onChange={handleChange}
+                                        required
+                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
+                                        type='text'
+                                    />
+                                    {touchedFields.filePath && !formData.filePath && (
+                                        <Typography color="error">שדה חובה</Typography>
+                                    )}
+                                </FormControl>
+                            </Grid>}
                             {selectedValue === 'file' && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
@@ -633,10 +678,15 @@ const ItemDdd = observer(() => {
                                             onBlur={() => setTouchedFields((prev) => ({ ...prev, amount: true }))}
                                             type='text'
                                         />
-
                                     </FormControl>
                                 </Grid>
                             )}
+                            <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
+                                <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
+                                <IconButton onClick={handleRecommendationToggle}>
+                                    {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
+                                </IconButton>
+                            </Grid>
                         </Grid>
                     </DialogContent>
                 }

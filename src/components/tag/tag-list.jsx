@@ -195,6 +195,7 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
+                          color="#0D1E46"
                           onClick={() => dialogOpen("editOpen", row)}
                         >
                           <EditIcon />

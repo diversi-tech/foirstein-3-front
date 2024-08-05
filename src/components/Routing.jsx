@@ -29,6 +29,8 @@ import PendingItems from './pendingItemsList/pendingItems';
 import ItemAdd from './item/item-add';
 import TagList from './tag/tag-list';
 import TagAdd from './tag/tag-add';
+import Borrowing from "./borrowing&return/borrowing";
+import Returning from "./borrowing&return/returning"
 import StudentRequest from './studentRequest/student-request';
 import { Tooltip } from '@mui/material';
 import AccessibilityOptions from "./AccessibilityOptions";
@@ -69,6 +71,8 @@ export const Routing = () => {
         <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
         <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
         <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
+        <Route path="/returning" element={<Box><Returning /></Box>} />
         <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
         <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
         <Route path='/Charts' element={<ExternalRedirect url={`${loginDomain}Charts`} />} />

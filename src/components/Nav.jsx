@@ -311,6 +311,8 @@ const handleProfileClickToRequestStatus = () => {
                             <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
                             <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
                             <MenuItem onClick={() => navigate('/items/borrowingItems')}>פריטים מושאלים</MenuItem>
+                            <MenuItem onClick={() => navigate('/borrowing')}>טופס השאלה</MenuItem>
+                            <MenuItem onClick={() => navigate('/returning')}>טופס החזרה</MenuItem>
                           </MenuList>
                         </ClickAwayListener>
                       </Paper>
