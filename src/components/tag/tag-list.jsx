@@ -36,6 +36,14 @@ import Fields_rtl from "./fields_rtl";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
   textAlign: "center",
+  borderBottom: `1px solid ${theme.palette.grey[200]}`, // גבול קל עדין
+}));
+
+const HeaderTableCell = styled(StyledTableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.grey[100], // צבע רקע עדין
+  fontWeight: "bold", // הדגשה קלה של הטקסט
+  borderBottom: `1px solid ${theme.palette.grey[300]}`, // גבול עדין
+  textAlign: "center",
 }));
 
 const StickyTableRow = styled(TableRow)({
@@ -158,7 +166,7 @@ const TagList = observer(() => {
       <Grid item xs={12} md={8} lg={6}>
         <Paper elevation={3}>
           <Box padding={2}>
-            <Box textAlign="center" marginTop={3}>
+            <Box textAlign="center" marginTop={3} marginBottom={3}>
               <Button variant="contained" style={{background:"#0D1E46"}} onClick={tagAdd}>
                 <AddCircleOutlineIcon />
                 יצירת תג חדש
@@ -168,7 +176,7 @@ const TagList = observer(() => {
               <Table aria-label="תגים">
                 <TableBody>
                   <StickyTableRow>
-                    <StyledTableCell
+                    <HeaderTableCell
                       onClick={toggleSort}
                       style={{ cursor: "pointer" }}
                     >
@@ -184,9 +192,9 @@ const TagList = observer(() => {
                           <ArrowDropDownIcon style={{ marginLeft: 4 }} />
                         )}
                       </Box>
-                    </StyledTableCell>
-                    <StyledTableCell>עריכה</StyledTableCell>
-                    <StyledTableCell>מחיקה</StyledTableCell>
+                    </HeaderTableCell>
+                    <HeaderTableCell>עריכה</HeaderTableCell>
+                    <HeaderTableCell>מחיקה</HeaderTableCell>
                   </StickyTableRow>
                   {currentTags.map((row) => (
                     <TableRow key={row.id}>
