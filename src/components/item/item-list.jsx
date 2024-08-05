@@ -227,7 +227,7 @@ const DataTable = observer(() => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק את התג",
       text: "התג יימחק",
-      icon: "warning",
+      icon: "question",
       showDenyButton: true,
       denyButtonText: `ביטול`,
       confirmButtonColor: "#3085d6",
@@ -250,7 +250,7 @@ const DataTable = observer(() => {
         Swal.fire({
           title: "בוטל",
           text: "התג לא נמחק",
-          icon: "info",
+          icon: "error",
           showConfirmButton: false,
           timer: 1500,
         });
