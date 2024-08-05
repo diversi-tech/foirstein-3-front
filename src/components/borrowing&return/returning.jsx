@@ -35,8 +35,8 @@ function a11yProps(index) {
 }
 
 export default function returning() {
-  const [value, setValue] = React.useState(0);
-  const [permissions, setPermissions] = React.useState(getRoleFromToken);
+  const [value, setValue] = React.useState(-1);
+  const [permissions, setPermissions] = React.useState(getRoleFromToken());
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -51,25 +51,42 @@ export default function returning() {
           justifyContent: "center",
         }}
       >
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          {permissions == "book" ? (
-            <Tab label="מוצר" {...a11yProps(0)} disabled />
-          ) : (
-            <Tab label="מוצר" {...a11yProps(0)} />
-          )}
-          <Tab label="ספר" {...a11yProps(1)} />
-        </Tabs>
+        {permissions == "LibrarianBook" ? (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="חפץ" {...a11yProps(0)} disabled />
+            <Tab label="ספר" {...a11yProps(1)} />
+          </Tabs>
+        ) : permissions == "Librarian" ? (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="חפץ" {...a11yProps(0)} />
+            <Tab label="ספר" {...a11yProps(1)} />
+          </Tabs>
+        ) : (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="חפץ" {...a11yProps(0)} disabled />
+            <Tab label="ספר" {...a11yProps(1)} disabled />
+          </Tabs>
+        )}
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <Returning buttonName={"physical"} />
-      </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <Returning buttonName={"book"} />
       </CustomTabPanel>
+      <CustomTabPanel value={value} index={0}>
+        <Returning buttonName={"physical"} />
+      </CustomTabPanel>
+
     </Box>
   );
 }

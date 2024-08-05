@@ -25,11 +25,12 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
+import { TypeEnum } from "../Enums";
 
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
-import LevelEnum from "../LevelEum";
+import {LevelEnum} from "../Enums";
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -132,17 +133,22 @@ const DataTable = observer(() => {
       confirmButtonText: "כן, מחק",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {          
-            await itemStore.deleteMedia(item.id);         
-          Swal.fire({
-            title: "נמחק בהצלחה",
-            text: "הפריט נמחק בהצלחה",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          // עדכן את רשימת הפריטים אחרי מחיקה
-          itemStore.fetchMedia();
+        try {
+          const deleteSuccess = await itemStore.deleteMedia(item.id);
+          
+          if (deleteSuccess) {
+            Swal.fire({
+              title: "נמחק בהצלחה",
+              text: "הפריט נמחק בהצלחה",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            // עדכן את רשימת הפריטים אחרי מחיקה
+            itemStore.fetchMedia();
+          } else {
+            throw new Error("מחיקה נכשלה");
+          }
         } catch (error) {
           Swal.fire({
             title: "שגיאה",
@@ -164,7 +170,7 @@ const DataTable = observer(() => {
       }
     });
   };
-
+  
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
       title: "האם אתה בטוח שברצונך למחוק פריטים נבחרים",
@@ -326,19 +332,25 @@ const DataTable = observer(() => {
     }
     if (filterType === "book") {
       setTypeTab('book');
-      console.log("book");
-      return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      // return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      console.log('book');
+      return items.filter((item) => item.itemType === TypeEnum.BOOK);
+      
     }
     if (filterType === 'object') {
       setTypeTab('object');
       console.log('object');
-      return items.filter((item) => item.amount);
+      // return items.filter((item) => item.amount);
+    return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
+
     }
     console.log("file");
     setTypeTab('file');
-    const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
-    console.log(y1);
-    return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    console.log('file');
+
+    // return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    // console.log(y1);
+      return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -474,7 +486,7 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-         if(params.row.author){
+        //  if(params.row.author){
           const item = params.row;
         return (
 
@@ -495,7 +507,7 @@ const DataTable = observer(() => {
           </div>
         );}
       },
-    },
+    // },
     {
       field: "icon",
       headerName: "",
@@ -630,18 +642,17 @@ const DataTable = observer(() => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {/* {params.row.amount !== undefined ? (
+                {params.row.amount  ? (
                   params.row.amount
-                ) : ( */}
-                
-               {  params.row.filePath && params.row.filePath.includes("https") ? (
+                ) : (
+                  params.row.filePath && params.row.filePath.includes("https") ? (
                     <a href={params.row.filePath} target="_blank" rel="noopener noreferrer">
                       {params.row.filePath}
                     </a>
                   ) : (
                     params.row.filePath
                   )
-        }
+                )}
               </div>
             );
           }
@@ -853,8 +864,10 @@ const DataTable = observer(() => {
       ),
     },
   ].filter(column => {
+    // if (TypeEnum.FILE && column.field === "publishingYear") return false;
     if (typeTab === "file" && column.field === "publishingYear") return false;
     if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    // if (TypeEnum.PHYSICALITEM && (column.field === "publishingYear" || column.field === "author")) return false;
     return true; })
 
   const paginatedItems = filteredItems ? filteredItems.slice(
@@ -964,80 +977,84 @@ const DataTable = observer(() => {
 
           <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
             <Box display="flex" dir="rtl" margin={1}>
-              {item.filePath && !item.filePath.includes("https")&&  (
-
+              {item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  <strong>הערה:</strong>  {item.note}
+                  <strong>מספר ימי השאלה:</strong>  {item.numberOfDaysOfQuestion}
                 </Typography>
-              )}
-             
+              }
+             {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
+              <Typography
+              variant="body1"
+              style={{ marginRight: "10px" }}
+              dir="rtl"
+              >
+               <strong> מהדורה:</strong> {item.edition}
+              </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                מהדורה: {item.edition}
+                <strong>סידרה:</strong> {item.series}
               </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                סידרה: {item.series}
+              <strong>  מספר בסידרה:</strong> {item.numOfSeries}
               </Typography>
+}
+{item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                מספר בסידרה: {item.numOfSeries}
+                <strong> שנה עברית:</strong> {item.hebrewPublicationYear}
               </Typography>
+              }
+             {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                {/* מוציא לאור: {item.publisher}
+               <strong> שפה: </strong>{item.language}
               </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              > */}
-                שנה עברית: {item.hebrewPublicationYear}
-              </Typography>
+              }
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                שפה: {item.language}
+               <strong> הערה:</strong> {item.note}
               </Typography>
+
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                הערה: {item.note}
+               <strong> רמה: </strong>{item.itemLevel}
               </Typography>
+              {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                רמה: {item.itemLevel}
+               <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
               </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              >
-                חומר נלווה: {item.accompanyingMaterial}
-              </Typography>
+              }
             </Box>
           </Collapse>
         ))}
