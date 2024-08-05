@@ -28,9 +28,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import Fields_rtl from "./fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -127,7 +127,7 @@ const TagList = observer(() => {
     if (deleteItem) {
       await TagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
-      dialogClose("confirmDeleteOpen")
+      dialogClose("confirmDeleteOpen");
     }
   };
 
@@ -159,7 +159,7 @@ const TagList = observer(() => {
         <Paper elevation={3}>
           <Box padding={2}>
             <Box textAlign="center" marginTop={3}>
-              <Button variant="contained" color="primary" onClick={tagAdd}>
+              <Button variant="contained" style={{background:"#0D1E46"}} onClick={tagAdd}>
                 <AddCircleOutlineIcon />
                 יצירת תג חדש
               </Button>
@@ -195,7 +195,7 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
-                          color="#0D1E46"
+                          style={{ color: "#0D1E46" }}
                           onClick={() => dialogOpen("editOpen", row)}
                         >
                           <EditIcon />
@@ -203,6 +203,7 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
+                          style={{ color: "#0D1E46" }}
                           onClick={() => dialogOpen("deleteOpen", row)}
                         >
                           <DeleteIcon />
@@ -286,13 +287,22 @@ const TagList = observer(() => {
         <DialogTitle>אישור מחיקה</DialogTitle>
         <DialogContent>
           <Typography>התג הזה משויך לפריטים הבאים:</Typography>
-          <Box sx={{ maxHeight: 200, overflow: 'auto', padding: 1, border: '1px solid #ddd' }}>
-          <List>
-            {itemsUsingTag.map((item) => (
-              <ListItem key={item.id}><ArrowLeftIcon/> {item.title}</ListItem>
-            ))}
-          </List>
-        </Box>
+          <Box
+            sx={{
+              maxHeight: 200,
+              overflow: "auto",
+              padding: 1,
+              border: "1px solid #ddd",
+            }}
+          >
+            <List>
+              {itemsUsingTag.map((item) => (
+                <ListItem key={item.id}>
+                  <ArrowLeftIcon /> {item.title}
+                </ListItem>
+              ))}
+            </List>
+          </Box>
           <Typography>האם אתה בטוח שברצונך למחוק את התג הזה?</Typography>
         </DialogContent>
         <DialogActions>
