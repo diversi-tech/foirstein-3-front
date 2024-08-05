@@ -26,6 +26,7 @@ class BorrowingStore {
             debugger
             const borrowing = await fetch(`${baseUrl}`);
             const jsonBorrowing = await borrowing.json();
+            debugger
             // const jsBorrowing=toJS(jsonBorrowing)
             console.log("jsBorrowing: "+JSON.stringify(jsonBorrowing.data))
             this.borrowingList=jsBorrowing.data
