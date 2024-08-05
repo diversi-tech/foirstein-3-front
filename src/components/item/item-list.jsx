@@ -9,32 +9,9 @@ import { observer } from "mobx-react-lite";
 import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
 import {
-  IconButton,
-  Tooltip,
-  useTheme,
-  Paper,
-  Box,
-  useMediaQuery,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Tabs,
-  Tab,
-  Checkbox,
-  Stack,
-  Pagination,
-  PaginationItem,
-  Chip,
-  TableRow,
-  TableCell,
-  Collapse,
-  Typography,
-  Menu,
-  MenuItem,
-  CircularProgress,
+  IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
+  DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
+  Chip, TableRow, TableCell, Collapse, Typography, Menu, MenuItem, CircularProgress
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/ControlPoint";
@@ -46,8 +23,14 @@ import Swal from "sweetalert2";
 import { cacheRtl } from "../tag/fields_rtl";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import IconSelectTags from "./SelectTags";
-import CancelIcon from "@mui/icons-material/Cancel";
+import IconSelectTags from './SelectTags'
+import CancelIcon from '@mui/icons-material/Cancel';
+import { TypeEnum } from "../Enums";
+
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+import {LevelEnum} from "../Enums";
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -70,7 +53,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
 
   // useEffect(() => {
   //   itemStore.fetchMedia();
@@ -103,9 +85,10 @@ const DataTable = observer(() => {
   // }, [itemStore.mediaList, filterType]);
 
   // Fetch data and handle loading state
+
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
-      // setIsLoading(true); // Show loading spinner
       try {
         await Promise.all([itemStore.fetchMedia(), tagStore.fetchTag()]);
       } catch (error) {
@@ -130,6 +113,7 @@ const DataTable = observer(() => {
     setPage(1);
     console.log("items:" + JSON.stringify(itemStore.mediaList));
 }, [itemStore.mediaList, filterType]);
+
 
 
   const handleChangePage = (event, value) => {
@@ -197,19 +181,8 @@ const DataTable = observer(() => {
         try {
           await Promise.all(
             selectedItems.map(async (itemId) => {
-<<<<<<< HEAD
-              const item = itemStore.mediaList.find(
-                (item) => item.id === itemId
-              );
-              if (item.author == null) {
-                await itemStore.deleteObject(itemId);
-              } else {
-                await itemStore.deleteMedia(itemId);
-              }
-=======
               itemStore.mediaList.find(item => item.id === itemId);
               await itemStore.deleteMedia(itemId);
->>>>>>> master
             })
           );
           Swal.fire({
@@ -258,10 +231,7 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await itemStore.deleteTag(item.id, tag.id);
-        const updatedItem = {
-          ...item,
-          tags: item.tags.filter((t) => t !== tag.id),
-        };
+        const updatedItem = { ...item, tags: item.tags.filter(t => t !== tag.id) };
         itemStore.updateItem(updatedItem);
         setDeleteTagOpen(false);
         Swal.fire({
@@ -333,55 +303,45 @@ const DataTable = observer(() => {
   };
 
   const getHeaderName = (typeTab) => {
-    if (typeTab === "book") {
+    if (typeTab === 'book') {
       return "מדף ";
-    } else if (typeTab === "object") {
+    } else if (typeTab === 'object') {
       return "כמות";
-    } else if (typeTab === "file") {
+    } else if (typeTab === 'file') {
       return "קובץ";
-    } else if (typeTab === "all") {
+    }
+    else if (typeTab === 'all') {
       return "מדף/קובץ/כמות";
     }
   };
 
-  const [typeTab, setTypeTab] = useState("all");
+  const [typeTab, setTypeTab] = useState('all');
   const filterItems = (items) => {
     if (!items) {
       return [];
     }
     if (filterType === "all") {
-      setTypeTab("all");
+      setTypeTab('all');
       console.log(items);
       return items;
     }
     if (filterType === "book") {
-      setTypeTab("book");
-      console.log("book");
-      return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      setTypeTab('book');
+      // return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      return items.filter((item) => item.itemType === TypeEnum.BOOK);
     }
-<<<<<<< HEAD
-
-    if (filterType === "object") {
-      setTypeTab("object");
-      console.log("object");
-      return items.filter((item) => item.author == null);
-=======
     if (filterType === 'object') {
       setTypeTab('object');
       console.log('object');
-      return items.filter((item) => item.amount);
->>>>>>> master
+      // return items.filter((item) => item.amount);
+    return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
+
     }
     console.log("file");
-<<<<<<< HEAD
-    setTypeTab("file");
-    const y1 = items.filter((item) => item.filePath.includes("https"));
-=======
     setTypeTab('file');
-    const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
->>>>>>> master
-    console.log(y1);
-    return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    // const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    // console.log(y1);
+      return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -389,17 +349,17 @@ const DataTable = observer(() => {
   const handleAddTagsToItems = async (tags) => {
     let successfulAdds = [];
     let failedAdds = [];
-    debugger;
+
     const promises = tags.flatMap((tagId) =>
       selectedItems.map(async (itemId) => {
-        const item = filteredItems.find((item) => item.id === itemId);
-        const tag = tagsList.find((tag) => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item));
-        console.log("tag: " + JSON.stringify(tag));
+        const item = filteredItems.find(item => item.id === itemId);
+        const tag = tagsList.find(tag => tag.id === tagId);
+        console.log("item: " + JSON.stringify(item))
+        console.log("tag: " + JSON.stringify(tag))
         try {
-          debugger;
+
           await itemStore.addItemTag(itemId, tagId);
-          debugger;
+
           if (itemStore.isAddItemTag) {
             successfulAdds.push({ item, tag });
           } else {
@@ -413,29 +373,21 @@ const DataTable = observer(() => {
 
     try {
       await Promise.all(promises);
-      const successMessages = successfulAdds
-        .map(
-          ({ item, tag }) =>
-            `<p>התג "${tag.name}" נוסף לפריט "${item.title}" בהצלחה</p>`
-        )
-        .join("");
+      const successMessages = successfulAdds.map(({ item, tag }) =>
+        `<p>התג "${tag.name}" נוסף לפריט "${item.title}" בהצלחה</p>`
+      ).join('');
 
-      const errorMessages = failedAdds
-        .map(
-          ({ item, tag }) =>
-            `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
-        )
-        .join("");
+      const errorMessages = failedAdds.map(({ item, tag }) =>
+        `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
+      ).join('');
 
-      const finalMessage = `${successMessages}${
-        successMessages && errorMessages ? "<br><br>" : ""
-      }${errorMessages}`;
+      const finalMessage = `${successMessages}${successMessages && errorMessages ? '<br><br>' : ''}${errorMessages}`;
 
       Swal.fire({
         title: "תוצאות ההוספות",
         html: finalMessage || "לא היו שינויים.",
         icon: successfulAdds.length > 0 ? "success" : "error",
-        showConfirmButton: true,
+        showConfirmButton: true
       });
 
       setSelectedItems([]);
@@ -486,31 +438,13 @@ const DataTable = observer(() => {
       renderHeader: () => (
         <Checkbox
           indeterminate={
-<<<<<<< HEAD
-            selectedItems &&
-            itemStore.mediaList &&
-=======
             selectedItems && itemStore.mediaList &&
             // selectedItems && itemStore.mediaList2 &&            
->>>>>>> master
             selectedItems.length > 0 &&
             selectedItems.length < itemStore.mediaList.length
             // selectedItems.length < itemStore.mediaList2.length
           }
           checked={
-<<<<<<< HEAD
-            selectedItems &&
-            itemStore.mediaList &&
-            selectedItems.length === itemStore.mediaList.length
-          }
-          onChange={(e) => {
-            if (e.target.checked) {
-              setSelectedItems(
-                itemStore.mediaList
-                  ? itemStore.mediaList.map((item) => item.id)
-                  : []
-              );
-=======
             selectedItems && itemStore.mediaList &&
             // selectedItems && itemStore.mediaList2 &&
             selectedItems.length === itemStore.mediaList.length 
@@ -520,7 +454,6 @@ const DataTable = observer(() => {
             if (e.target.checked) {
               // setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : []&&itemStore.mediaList2 ? itemStore.mediaList2.map((item) => item.id) : [])
               setSelectedItems(itemStore.mediaList ? itemStore.mediaList.map((item) => item.id) : [])
->>>>>>> master
             } else {
               setSelectedItems([]);
             }
@@ -544,9 +477,10 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-         if(params.row.author){
+        //  if(params.row.author){
           const item = params.row;
         return (
+
           <div>
             <Tooltip title={openRows[item.id] ? "סגור" : "פתח"}>
               <IconButton
@@ -564,7 +498,7 @@ const DataTable = observer(() => {
           </div>
         );}
       },
-    },
+    // },
     {
       field: "icon",
       headerName: "",
@@ -585,6 +519,24 @@ const DataTable = observer(() => {
             <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
           );
         }
+    },
+    {
+      field: "userID", headerName: "שם המעלה", flex: 1, align: "right",
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "right",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {params.row.userID ? (params.row.userID) : ('')}
+          {console.log("params.row.userID", params.row.userID)}
+
+        </div>
+      )
     },
     { field: "title", headerName: "כותרת", flex: 1, align: "right" },
     { field: "description", headerName: "תיאור", flex: 1, align: "right" },
@@ -651,36 +603,7 @@ const DataTable = observer(() => {
             color: params.row.isApproved ? "#2C6B2F" : "#E57373",
           }}
         >
-<<<<<<< HEAD
-          {params.row.isApproved ? "מאושר" : "ממתין לאישור"}
-        </div>
-      ),
-    },
-    {
-      field: "filePath",
-      headerName: getHeaderName(typeTab),
-      flex: 1,
-      align: "right",
-      renderCell: (params) => (
-        <div
-          style={{
-            textAlign: "right",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {params.value.includes("https") ? (
-            <a href={params.filePath} target="_blank" rel="noopener noreferrer">
-              {params.value}
-            </a>
-          ) : (
-            params.value
-          )}
-=======
           {(params.row.isApproved&&params.row.author) ? "מאושר" : "ממתין לאישור"}
->>>>>>> master
         </div>
       ),
     },
@@ -742,10 +665,10 @@ const DataTable = observer(() => {
           <Stack
             direction="column"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: hasTags === false ? "flex-start" : "flex-end",
-              height: "100%",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: hasTags === false ? 'flex-start' : 'flex-end',
+              height: '100%'
             }}
           >
             {hasTags && (
@@ -753,13 +676,11 @@ const DataTable = observer(() => {
                 <Button
                   aria-controls="tag-menu"
                   aria-haspopup="true"
-                  onClick={(event) => {
-                    setAnchorEl(event.currentTarget);
-                  }}
+                  onClick={(event) => { setAnchorEl(event.currentTarget); }}
                   style={{
-                    width: "100px",
-                    backgroundColor: "#b0b0b0",
-                    color: "#0D1E46",
+                    width: '100px',
+                    backgroundColor: '#b0b0b0',
+                    color: '#0D1E46',
                     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.0)', // הוספת צל
                     // marginRight: 0
                   }} // שינוי רוחב הכפתור
@@ -769,23 +690,8 @@ const DataTable = observer(() => {
                 <Menu
                   id="tag-menu"
                   anchorEl={anchorEl}
-<<<<<<< HEAD
-                  // keepMounted
-                  open={Boolean(anchorEl)} /////שורה בעייתיתתתתתתתתת
-                  onClose={() => {
-                    setAnchorEl(null);
-                  }}
-                  // anchorOrigin={{
-                  //   vertical: 'bottom',
-                  //   horizontal: 'right',
-                  // }}
-                  // transformOrigin={{
-                  //   vertical: 'top',
-                  //   horizontal: 'right',
-                  // }}
-=======
                   keepMounted
-                  open={Boolean(anchorEl)}
+                  open={Boolean(anchorEl)}/////שורה בעייתיתתתתתתתתת
                   onClose={() => { setAnchorEl(null) }}
                   anchorOrigin={{
                     vertical: 'bottom',
@@ -795,50 +701,38 @@ const DataTable = observer(() => {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
->>>>>>> master
                 >
                   {console.log("item.tags", item.tags)} ;
                   {console.log("tagStore.getTagsList", tagStore.getTagsList)}
 
                   {item.tags.map((tagId) => {
-                    const tag = tagStore.getTagsList.find(
-                      (tag) => tag.id === tagId
-                    );
+                    const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
                     console.log("tegg", tag);
                     if (tag) {
                       return (
-                        <Typography
-                          key={tag.id}
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            padding: "5px",
-                          }}
-                        >
+                        <Typography key={tag.id}
+                          style={{ display: 'flex', justifyContent: 'center', padding: '5px' }}>
                           <Chip
                             label={tag.name}
                             style={{
                               color: "#0D1E46",
-                              width: "145px",
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              padding: "0 8px",
-                              textAlign: "center",
+                              width: '145px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '0 8px',
+                              textAlign: 'center'
                             }}
                             variant="outlined"
                             onDelete={() => handleDeleteTag(item, tag)}
                             deleteIcon={
-                              <IconButton
-                                aria-label="delete"
-                                style={{
-                                  padding: "2px",
-                                  "&:hover": {
-                                    backgroundColor: "rgba(0, 0, 0, 0.1)",
-                                  },
-                                }}
-                              >
-                                <CancelIcon style={{ marginRight: "7px" }} />
+                              <IconButton aria-label="delete" style={{
+                                padding: '2px',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                                }
+                              }}>
+                                <CancelIcon style={{ marginRight: '7px' }} />
                               </IconButton>
                             }
                           />
@@ -850,10 +744,35 @@ const DataTable = observer(() => {
                 </Menu>
               </>
             )}
-            {!hasTags && <h5>{"לא מוגדרות תגיות"}</h5>}
+            {!hasTags && (
+              <h5>{"לא מוגדרות תגיות"}</h5>
+            )}
           </Stack>
         );
       },
+    },
+    {
+      field: "recommended", headerName: "", flex: 1, align: "right",
+
+      renderCell: (params) => (
+        <div
+          style={{
+            textAlign: "center",
+            width: "100%",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Tooltip title={params.row.recommended ? "מומלץ" : ""}>
+            <Box>
+              {params.row.recommended ? (
+                <StarIcon style={{ color: 'yellow' }} />
+              ) : (<StarBorderIcon />)}
+            </Box>
+          </Tooltip>
+        </div>
+      ),
     },
     {
       field: "actions",
@@ -896,23 +815,16 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid
-          container
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
+        <Grid container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
                 color: "#FFD700",
-                padding: "4px 8px",
-                minWidth: "40px",
-                minHeight: "40px",
-                borderRadius: "5px",
+                padding: '4px 8px',
+                minWidth: '40px',
+                minHeight: '40px',
+                borderRadius: '5px',
                 "&:hover": {
                   backgroundColor: "#0D1E46",
                   color: "#FFD700",
@@ -926,43 +838,39 @@ const DataTable = observer(() => {
             >
               {selectedItems.length > 0 ? (
                 <Tooltip title="למחיקת פריטים מרובים">
-                  <DeleteIcon style={{ fontSize: "25px" }} />
+                  <DeleteIcon style={{ fontSize: '25px' }} />
                 </Tooltip>
               ) : (
                 <Tooltip title="להוספת פריט חדש" arrow>
-                  <AddIcon style={{ fontSize: "25px" }} />
+                  <AddIcon style={{ fontSize: '25px' }} />
                 </Tooltip>
               )}
             </Button>
           </Grid>
           {selectedItems.length > 0 && (
-            <Grid
-              item
-              xs={6}
-              sx={{ display: "flex", justifyContent: "center" }}
-            >
-              <IconSelectTags
-                handleAddItemTag={handleAddTagsToItems}
-                style={{ fontSize: "20px" }}
-              />
+            <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <IconSelectTags handleAddItemTag={handleAddTagsToItems} style={{ fontSize: '20px' }} />
             </Grid>
           )}
         </Grid>
       ),
     },
   ].filter(column => {
+    // if (TypeEnum.FILE && column.field === "publishingYear") return false;
     if (typeTab === "file" && column.field === "publishingYear") return false;
     if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    // if (TypeEnum.PHYSICALITEM && (column.field === "publishingYear" || column.field === "author")) return false;
     return true; })
 
-  const paginatedItems = filteredItems
-    ? filteredItems.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-    : [];
+  const paginatedItems = filteredItems ? filteredItems.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  ) : [];
 
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">תרשימת קבצים</h2>
+        <h2 align="center">רשימת קבצים</h2>
         <Grid
           container
           spacing={2}
@@ -1024,135 +932,6 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-<<<<<<< HEAD
-        {isLoading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="400px"
-          >
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            <DataGrid
-              rows={paginatedItems}
-              columns={columns}
-              pageSize={rowsPerPage}
-              disableSelectionOnClick
-              localeText={localeText}
-              autoHeight
-              style={{ overflow: "hidden" }}
-              pagination={false} // Disable DataGrid pagination
-              hideFooterPagination
-              position="sticky"
-              hideFooter
-            />
-            <Box textAlign="center" marginTop={2}>
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Pagination
-                  dir="ltr"
-                  count={Math.ceil(totalItems / rowsPerPage)}
-                  page={page}
-                  onChange={handleChangePage}
-                  variant="outlined"
-                  color="primary"
-                  shape="rounded"
-                  renderItem={(item) => <PaginationItem {...item} />}
-                />
-              </Stack>
-            </Box>
-            {paginatedItems.map((item) => (
-              <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
-                <Box display="flex" dir="rtl" margin={1}>
-                  {!item.filePath.includes("https") && (
-                    <>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong>מספר ימי השאלה:</strong>{" "}
-                        {item.numberOfDaysOfQuestion}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong> מהדורה:</strong> {item.edition}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong>סידרה:</strong> {item.series}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong>מספר בסידרה:</strong> {item.numOfSeries}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        {/* מוציא לאור: {item.publisher}
-              </Typography>
-              <Typography
-              variant="body1"
-              style={{ marginRight: "10px" }}
-              dir="rtl"
-              > */}
-                        <strong>שנה עברית: </strong>{" "}
-                        {item.hebrewPublicationYear}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong> שפה:</strong> {item.language}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong>רמה:</strong> {LevelEnumMapping[item.itemLevel]}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        style={{ marginRight: "10px" }}
-                        dir="rtl"
-                      >
-                        <strong>חומר נלווה:</strong> {item.accompanyingMaterial}
-                      </Typography>
-                    </>
-                  )}
-                  <Typography
-                    variant="body1"
-                    style={{ marginRight: "10px" }}
-                    dir="rtl"
-                  >
-                    <strong>הערה:</strong> {item.note}
-                  </Typography>
-                </Box>
-              </Collapse>
-            ))}
-          </>
-        )}
-=======
         <DataGrid
           rows={paginatedItems}
           columns={columns}
@@ -1197,17 +976,19 @@ const DataTable = observer(() => {
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  <strong>הערה:</strong>  {item.note}
+                  <strong>מספר ימי השאלה:</strong>  {item.numberOfDaysOfQuetion}
                 </Typography>
               )}
-             
+             {!item.itemType === TypeEnum.PHYSICALITEM &&
               <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
+              variant="body1"
+              style={{ marginRight: "10px" }}
+              dir="rtl"
               >
                 מהדורה: {item.edition}
               </Typography>
+              }
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1215,6 +996,8 @@ const DataTable = observer(() => {
               >
                 סידרה: {item.series}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1222,20 +1005,17 @@ const DataTable = observer(() => {
               >
                 מספר בסידרה: {item.numOfSeries}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                {/* מוציא לאור: {item.publisher}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              > */}
                 שנה עברית: {item.hebrewPublicationYear}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1243,6 +1023,7 @@ const DataTable = observer(() => {
               >
                 שפה: {item.language}
               </Typography>
+              {/* } */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1250,6 +1031,7 @@ const DataTable = observer(() => {
               >
                 הערה: {item.note}
               </Typography>
+
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1257,6 +1039,7 @@ const DataTable = observer(() => {
               >
                 רמה: {item.itemLevel}
               </Typography>
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -1264,11 +1047,11 @@ const DataTable = observer(() => {
               >
                 חומר נלווה: {item.accompanyingMaterial}
               </Typography>
+              {/* } */}
             </Box>
           </Collapse>
         ))}
 
->>>>>>> master
       </div>
       {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
