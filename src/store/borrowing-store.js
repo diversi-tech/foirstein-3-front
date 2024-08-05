@@ -33,10 +33,10 @@ class BorrowingStore {
       );
       let dataStudents = await resStudents.json();
       this.bookList = itemStore.mediaList.filter(
-        (item) => item.isApproved === true && item.ItemTypa == "book"
+        (item) => item.isApproved === true && item.itemType == 0
       );
       this.physicalList = itemStore.mediaList.filter(
-        (item) => item.isApproved === true && item.ItemTypa == "physical"
+        (item) => item.isApproved === true && item.itemType == 0
       );
       runInAction(() => {
         this.borrowingList = this.extractRawData(data);

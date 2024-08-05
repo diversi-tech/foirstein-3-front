@@ -51,18 +51,34 @@ export default function borrowing() {
           justifyContent: "center",
         }}
       >
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-        >
-          {permissions == "book" ? (
+        {permissions == "LibrarianBook" ? (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
             <Tab label="מוצר" {...a11yProps(0)} disabled />
-          ) : (
+            <Tab label="ספר" {...a11yProps(1)} />
+          </Tabs>
+        ) : permissions == "Librarian" ? (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
             <Tab label="מוצר" {...a11yProps(0)} />
-          )}
-          <Tab label="ספר" {...a11yProps(1)} />
-        </Tabs>
+            <Tab label="ספר" {...a11yProps(1)} />
+          </Tabs>
+        ) : (
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+          >
+            <Tab label="מוצר" {...a11yProps(0)} disabled />
+            <Tab label="ספר" {...a11yProps(1)} disabled />
+          </Tabs>
+        )}
       </Box>
       <CustomTabPanel value={value} index={0}>
         <Borrowing buttonName={"physical"} />

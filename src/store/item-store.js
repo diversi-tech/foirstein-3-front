@@ -120,21 +120,9 @@ class ItemStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch('https://localhost:7297/api/Item');
+            const res = await fetch(baseURL);
             const obj = await res.json();
-            // ככה לעשות
-            // this.mediaList = obj.data["items"];
-            // this.mediaList2 = obj.data["physicalItems"];
-
-            //////////
-
             this.mediaList = obj.data;
-            // console.log("list media: ", this.mediaList);
-            // const res2 = await fetch(`${url}`);
-            // const obj2 = await res2.data;
-            // this.mediaList2 = obj2.res2;
-            // this.mediaList2=[...obj, ...obj2];
-
         }
         catch (error) {
             console.error('Failed to fetch media:', error);
@@ -298,7 +286,7 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
-            // debugger
+            
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {

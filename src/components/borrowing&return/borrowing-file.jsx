@@ -30,13 +30,13 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
-const Borrowing = observer(({buttonName}) => {
+const Borrowing = observer(({ buttonName }) => {
   const [formData, setFormData] = useState({
     // id: "50",
     date: "",
     student: "",
     item: "",
-    librarian:{getUserIdNumFromToken},
+    librarian: { getUserIdNumFromToken },
     amount: "",
     remarks: "",
   });
@@ -44,7 +44,7 @@ const Borrowing = observer(({buttonName}) => {
   const [studentInputValue, setStudentInputValue] = useState("");
   const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
-const [amountErrors,setAmountErors]=useState(false);
+  const [amountErrors, setAmountErors] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       await borrowingStore.fetchBorrowing();
@@ -52,13 +52,12 @@ const [amountErrors,setAmountErors]=useState(false);
     fetchData();
   }, []);
 
-  // const formatDate = (date) => {
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const month = String(date.getMonth() + 1).padStart(2, "0");
-  //   const year = date.getFullYear();
-  //   return `${day}/${month}/${year}`;
-  // };
-  // formData.date = formatDate(new Date());
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const handleChange = (event, value, name) => {
     switch (name) {
@@ -122,7 +121,7 @@ const [amountErrors,setAmountErors]=useState(false);
       )}
       <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
-          תאריך: {formData.date.toString("dd/mm/yyyy")}
+          תאריך: {formatDate(new Date())}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
