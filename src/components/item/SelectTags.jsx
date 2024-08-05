@@ -32,11 +32,6 @@ const MenuProps = {
     },
 };
 
-// Define RTL theme
-const rtlTheme = createTheme({
-    direction: 'rtl', // Set text direction to right-to-left
-});
-
 function getStyles(id, selectedTags, theme) {
     return {
         fontWeight:
@@ -77,7 +72,7 @@ export default function IconSelectTags({ handleAddItemTag }) {
     };
 
     useEffect(() => {
-        setTags(tagStore.getTagsList); // Make sure this returns an array of objects
+        setTags(tagStore.getTagsList); 
     }, [tagStore.tagList]);
 
     useEffect(() => {
