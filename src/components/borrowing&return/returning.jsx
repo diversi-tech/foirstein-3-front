@@ -44,12 +44,22 @@ export default function returning() {
   return (
     <Box sx={{ width: "100%" }}>
       <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-          display: "flex",
-          justifyContent: "center",
-        }}
+sx={{
+  width: "100%",
+  maxWidth: 600,
+  "& .MuiTabs-indicator": {
+    backgroundColor: "#0D1E46",
+  },
+  "& .MuiTab-root": {
+    color: "#DCDCDC",
+    "&.Mui-selected": {
+      color: "#0D1E46",
+    },
+  },
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}}
       >
         {permissions == "LibrarianBook" ? (
           <Tabs
