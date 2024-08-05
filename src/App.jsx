@@ -32,12 +32,15 @@ function App() {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
-  
+
   useEffect(() => {
     const checkToken = async () => {
       const isValid = await validateToken();
-      if (!isValid) {
+      if (isValid) {
+        console.log("go to other domain!!!!!!")
         window.location.href = 'https://login.foirstein.diversitech.co.il';
+        console.log("go to other domain!!!!!!")
+
       }
     };
 
