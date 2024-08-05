@@ -3,10 +3,10 @@
 // export default AccessibilityOptions;
 import React, { useState, useEffect } from 'react';
 import { Button, Drawer, Switch, FormControlLabel, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/system';
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 
-const useStyles = makeStyles({
+const useStyles = styled({
   drawer: {
     width: 270, // גודל קטן יותר
     padding: 22, // מרווח קטן יותר
