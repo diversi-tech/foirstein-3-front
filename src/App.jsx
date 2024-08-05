@@ -32,6 +32,7 @@ function App() {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+  
   useEffect(() => {
     const checkToken = async () => {
       const isValid = await validateToken();
