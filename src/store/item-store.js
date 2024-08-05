@@ -321,8 +321,8 @@ class ItemStore {
         const token = sessionStorage.getItem('jwt');
         if (!token) return false;
         try {
-          debugger
           const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+          console.log(`token::::::`,response)
           return response;
         } catch (error) {
           console.error('Error validating token:', error);

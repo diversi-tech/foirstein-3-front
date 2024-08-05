@@ -10,7 +10,7 @@ import {
 import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
-import { getUserIdNumFromToken } from "../decipheringToken";
+import {getUserIdFromTokenid} from "../decipheringToken"
 import itemStore from "../../store/item-store";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
@@ -36,7 +36,7 @@ const Borrowing = observer(({ buttonName }) => {
     date: "",
     student: "",
     item: "",
-    librarian: { getUserIdNumFromToken },
+    librarian: "",
     amount: "",
     remarks: "",
   });
@@ -45,11 +45,13 @@ const Borrowing = observer(({ buttonName }) => {
   const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
   const [amountErrors, setAmountErors] = useState(false);
+  const [libraryId,setLibraryId]=useState(getUserIdFromTokenid());
   useEffect(() => {
     const fetchData = async () => {
       await borrowingStore.fetchBorrowing();
     };
     fetchData();
+    setLibraryId(getUserIdFromTokenid());
   }, []);
 
   const formatDate = (date) => {
@@ -90,7 +92,7 @@ const Borrowing = observer(({ buttonName }) => {
       date: new Date().toISOString(),
       studentID: formData.student,
       bookId: formData.item,
-      librarianId: formData.librarian,
+      librarianId: 7,
       amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
       remarks: formData.remarks,
     };
@@ -122,6 +124,9 @@ const Borrowing = observer(({ buttonName }) => {
       <FormStyled onSubmit={borrowing} noValidate>
         <Typography variant="subtitle1" gutterBottom>
           תאריך: {formatDate(new Date())}
+        </Typography>
+        <Typography>
+          ספרנית: {libraryId}
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>
