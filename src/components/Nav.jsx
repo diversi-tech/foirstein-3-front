@@ -260,7 +260,7 @@ export const Nav = observer(() => {
               </Popper>
             </>
           )}
-          {(role === 'Librarian' || role === 'Admin' && (
+          {(role === 'Librarian' || role === 'Admin'  && (
             <>
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                 ניהול משתמשים
@@ -299,6 +299,8 @@ export const Nav = observer(() => {
                             <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
                             <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
                             <MenuItem onClick={() => navigate('/items/borrowingItems')}>פריטים מושאלים</MenuItem>
+                            <MenuItem onClick={() => navigate('/borrowing')}>טופס השאלה</MenuItem>
+                            <MenuItem onClick={() => navigate('/returning')}>טופס החזרה</MenuItem>
                           </MenuList>
                         </ClickAwayListener>
                       </Paper>
