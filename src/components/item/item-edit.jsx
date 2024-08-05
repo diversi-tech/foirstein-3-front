@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
 import Swal from 'sweetalert2';
-import LevelEnum from '../LevelEum';
+import {LevelEnum} from '../Enums';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 import {
   TextField, Button, Dialog, DialogActions, DialogContent, 

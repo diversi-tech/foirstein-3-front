@@ -25,6 +25,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import IconSelectTags from './SelectTags'
 import CancelIcon from '@mui/icons-material/Cancel';
+import { TypeEnum } from "../Enums";
 
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
@@ -321,19 +322,21 @@ const DataTable = observer(() => {
     }
     if (filterType === "book") {
       setTypeTab('book');
-      console.log("book");
-      return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      // return items.filter((item) =>item.filePath && !item.filePath.includes("https"));
+      return items.filter((item) => item.itemType === TypeEnum.BOOK);
     }
     if (filterType === 'object') {
       setTypeTab('object');
       console.log('object');
-      return items.filter((item) => item.amount);
+      // return items.filter((item) => item.amount);
+    return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
+
     }
     console.log("file");
     setTypeTab('file');
-    const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
-    console.log(y1);
-    return items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    // const y1 = items.filter((item) =>item.filePath&& item.filePath.includes("https"));
+    // console.log(y1);
+      return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -469,7 +472,7 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-         if(params.row.author){
+        //  if(params.row.author){
           const item = params.row;
         return (
 
@@ -490,7 +493,7 @@ const DataTable = observer(() => {
           </div>
         );}
       },
-    },
+    // },
     {
       field: "icon",
       headerName: "",
@@ -807,8 +810,10 @@ const DataTable = observer(() => {
       ),
     },
   ].filter(column => {
+    // if (TypeEnum.FILE && column.field === "publishingYear") return false;
     if (typeTab === "file" && column.field === "publishingYear") return false;
     if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    // if (TypeEnum.PHYSICALITEM && (column.field === "publishingYear" || column.field === "author")) return false;
     return true; })
 
   const paginatedItems = filteredItems ? filteredItems.slice(
@@ -819,7 +824,7 @@ const DataTable = observer(() => {
   return (
     <>
       <div className="itemListDiv" dir="rtl">
-        <h2 align="center">תרשימת קבצים</h2>
+        <h2 align="center">רשימת קבצים</h2>
         <Grid
           container
           spacing={2}
@@ -925,17 +930,19 @@ const DataTable = observer(() => {
                   style={{ marginRight: "10px" }}
                   dir="rtl"
                 >
-                  <strong>הערה:</strong>  {item.note}
+                  <strong>מספר ימי השאלה:</strong>  {item.numberOfDaysOfQuetion}
                 </Typography>
               )}
-             
+             {!item.itemType === TypeEnum.PHYSICALITEM &&
               <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
+              variant="body1"
+              style={{ marginRight: "10px" }}
+              dir="rtl"
               >
                 מהדורה: {item.edition}
               </Typography>
+              }
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -943,6 +950,8 @@ const DataTable = observer(() => {
               >
                 סידרה: {item.series}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -950,20 +959,17 @@ const DataTable = observer(() => {
               >
                 מספר בסידרה: {item.numOfSeries}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                {/* מוציא לאור: {item.publisher}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ marginRight: "10px" }}
-                dir="rtl"
-              > */}
                 שנה עברית: {item.hebrewPublicationYear}
               </Typography>
+              {/* } */}
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -971,6 +977,7 @@ const DataTable = observer(() => {
               >
                 שפה: {item.language}
               </Typography>
+              {/* } */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -978,6 +985,7 @@ const DataTable = observer(() => {
               >
                 הערה: {item.note}
               </Typography>
+
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -985,6 +993,7 @@ const DataTable = observer(() => {
               >
                 רמה: {item.itemLevel}
               </Typography>
+              {/* {!TypeEnum.PHYSICALITEM&& */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -992,6 +1001,7 @@ const DataTable = observer(() => {
               >
                 חומר נלווה: {item.accompanyingMaterial}
               </Typography>
+              {/* } */}
             </Box>
           </Collapse>
         ))}
