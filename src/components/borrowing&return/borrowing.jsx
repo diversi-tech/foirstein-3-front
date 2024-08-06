@@ -32,7 +32,16 @@ function a11yProps(index) {
 }
 export default function borrowing() {
   const [value, setValue] = React.useState(-1);
-  const [permissions, setPermissions] = React.useState(getPermissionsFromToken());
+  const [permissions, setPermissions] = React.useState(() => {
+    try {
+      const perms = getPermissionsFromToken();
+      console.log('Permissions:', perms);
+      return perms || [];
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return [];
+    }
+  });
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -56,7 +65,7 @@ export default function borrowing() {
           width: "100%",
         }}
       >
-        {permissions.include("Book") && permissions.include("Physical") ? (
+        {permissions.includes("Book") && permissions.include("Physical") ? (
           <Tabs
             value={value}
             onChange={handleChange}
@@ -65,7 +74,7 @@ export default function borrowing() {
             <Tab label="חפץ" {...a11yProps(0)} />
             <Tab label="ספר" {...a11yProps(1)} />
           </Tabs>
-        ) : permissions.include("Physical") ? (
+        ) : permissions.includes("Physical") ? (
           <Tabs
             value={value}
             onChange={handleChange}
@@ -74,7 +83,7 @@ export default function borrowing() {
             <Tab label="חפץ" {...a11yProps(0)} />
             <Tab label="ספר" {...a11yProps(1)} disabled/>
           </Tabs>
-        ) : permissions.include("Book")?(
+        ) : permissions.includes("Book")?(
           <Tabs
             value={value}
             onChange={handleChange}
