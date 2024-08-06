@@ -30,6 +30,19 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
+const CustomTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    "&.Mui-focused fieldset": {
+      borderColor: "#0D1E46", // Border color on focus
+    },
+  },
+  "& .MuiInputLabel-root": {
+    "&.Mui-focused": {
+      color: "#0D1E46", // Label color on focus
+    },
+  },
+}));
+
 const Borrowing = observer(({ buttonName }) => {
   const [formData, setFormData] = useState({
     date: "",
@@ -42,7 +55,7 @@ const Borrowing = observer(({ buttonName }) => {
   const [studentInputValue, setStudentInputValue] = useState("");
   const [items, setItems] = useState(false);
   const [students, setStudents] = useState(false);
-  const [amountErrors, setAmountErors] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,30 +96,33 @@ const Borrowing = observer(({ buttonName }) => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.student) newErrors.student = "זהו שדה חובה.";
+    if (!formData.item) newErrors.item = "זהו שדה חובה.";
+    if (buttonName === "physical" && !formData.amount)
+      newErrors.amount = "זהו שדה חובה.";
+    return newErrors;
+  };
+
   const borrowing = async (event) => {
     event.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     const dataToSend = {
       date: new Date().toISOString(),
       studentID: formData.student,
       bookId: formData.item,
       librarianId: getUserIdFromTokenid(),
-      amount: parseInt(formData.amount, 10), // המרת amount למספר אם לא כבר
+      amount: parseInt(formData.amount, 10),
       remarks: formData.remarks,
     };
     await borrowingStore.addBorrowing(dataToSend);
   };
-  const validateAmount = () => {
-    const physicals = borrowingStore.borrowingList.filter(
-      (p) => p.bookId == formData.item
-    );
-    const item = borrowingStore.bookList.find((b) => b.id == formData.item);
-    let sum = 0;
-    physicals.map((p) => (sum += p.amount));
-    if (item.amount - sum < formData.amount) {
-      return "הכמות המבוקשת לא זמינה";
-    }
-    return null;
-  };
+
   return (
     <Fields_rtl>
       <ContainerStyled component="main" maxWidth="xs" dir="rtl">
@@ -151,13 +167,15 @@ const Borrowing = observer(({ buttonName }) => {
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     id="student"
                     name="student"
                     label="תלמידה"
                     variant="outlined"
                     fullWidth
+                    error={!!errors.student}
+                    helperText={errors.student}
                     onFocus={() => setStudents(true)}
                     onBlur={() => setStudents(false)}
                   />
@@ -200,13 +218,15 @@ const Borrowing = observer(({ buttonName }) => {
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="פריט"
                     id="item"
                     name="item"
                     variant="outlined"
                     fullWidth
+                    error={!!errors.item}
+                    helperText={errors.item}
                     onFocus={() => setItems(true)}
                     onBlur={() => setItems(false)}
                   />
@@ -219,7 +239,7 @@ const Borrowing = observer(({ buttonName }) => {
             </Grid>
             {buttonName == "physical" && (
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   variant="outlined"
                   type="number"
                   fullWidth
@@ -227,6 +247,8 @@ const Borrowing = observer(({ buttonName }) => {
                   label="כמות"
                   name="amount"
                   value={formData.amount}
+                  error={!!errors.amount}
+                  helperText={errors.amount}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === "" || !isNaN(value)) {
@@ -241,7 +263,7 @@ const Borrowing = observer(({ buttonName }) => {
               </Grid>
             )}
             <Grid item xs={12}>
-              <TextField
+              <CustomTextField
                 variant="outlined"
                 fullWidth
                 multiline

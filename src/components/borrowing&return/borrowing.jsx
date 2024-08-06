@@ -7,7 +7,6 @@ import Borrowing from "./borrowing-file";
 import { getRoleFromToken } from "../decipheringToken";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -20,46 +19,42 @@ function CustomTabPanel(props) {
     </div>
   );
 }
-
 CustomTabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
-
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-
 export default function borrowing() {
   const [value, setValue] = React.useState(-1);
   const [permissions, setPermissions] = React.useState(getRoleFromToken());
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   return (
     <Box sx={{ width: "100%" }}>
       <Box
-sx={{
-  width: "100%",
-  maxWidth: 600,
-  "& .MuiTabs-indicator": {
-    backgroundColor: "#0D1E46",
-  },
-  "& .MuiTab-root": {
-    color: "#DCDCDC",
-    "&.Mui-selected": {
-      color: "#0D1E46",
-    },
-  },
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-}}
+        sx={{
+          "& .MuiTabs-indicator": {
+            backgroundColor: "#FFD700",
+          },
+          "& .MuiTab-root": {
+            color: "#0D1E46",
+            "&.Mui-selected": {
+              color: "#0D1E46",
+            },
+          },
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
       >
         {permissions == "LibrarianBook" ? (
           <Tabs
@@ -91,7 +86,9 @@ sx={{
         )}
       </Box>
       {value === -1 ? (
-        <Box sx={{ p: 3, textAlign: 'center' }}>בחר לשונית כדי להציג את התוכן</Box>
+        <Box sx={{ p: 3, textAlign: "center" }}>
+          בחר לשונית כדי להציג את התוכן
+        </Box>
       ) : (
         <>
           <CustomTabPanel value={value} index={0}>
