@@ -3,6 +3,7 @@ import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
 import Swal from 'sweetalert2';
 import {LevelEnum} from '../Enums';
+import { TypeEnum } from '../Enums';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 // import StarBorderIcon from '@mui/icons-material/StarBorder';
 // import StarIcon from '@mui/icons-material/Star';
@@ -239,6 +240,16 @@ export default function ItemEdit({ mediaItem, onClose }) {
             return 'האם פריט זה מומלץ?';
     }
 }; 
+
+const getTypeText = (value) => {
+  if(value === 0)
+    return 'קובץ דיגיטלי'
+   if(value === 1)
+    return 'ספר'
+   if(value === 2)
+    return 'חפץ'
+  // return TypeEnum[value];
+};
 
 const handleRecommendationToggle = () => {
   setFormData((prevData) => ({
@@ -570,12 +581,14 @@ const handleRecommendationToggle = () => {
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}
-           <Box display="flex" alignItems="center" mt={2}>
-            <Typography>סוג פריט:</Typography>
-            <Typography ml={1} variant="body2" color="textSecondary">
-              {formData.itemType}
-            </Typography>
-          </Box>
+  
+<Box display="flex" alignItems="center" mt={2}>
+  <Typography>סוג פריט:</Typography>
+  <Typography ml={1} variant="body2" color="textSecondary">
+    {getTypeText(formData.itemType)}
+  </Typography>
+</Box>
+
           {/* <Grid item xs={12} display="flex" alignItems="center" justifyContent="center"> */}
                                 <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
                                 <IconButton onClick={handleRecommendationToggle}>

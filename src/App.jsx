@@ -38,14 +38,17 @@ function App() {
   //     const isValid = await validateToken();
   //     if (!isValid) {
   //       console.log("go to other domain!!!!!!")
-  //       window.location.href = 'https://login.foirstein.diversitech.co.il';
+  //       window.location.replace ('https://login.foirstein.diversitech.co.il') ;
   //       console.log("go to other domain!!!!!!")
 
   //     }
+  //     else
+  //     console.log("valid tokennnn");
   //   };
 
   //   checkToken();
   // }, []);
+  
   // useEffect(() => {
   //   // פונקציה למחיקת הטוקן מהקוקי
   //   function deleteTokenCookie() {

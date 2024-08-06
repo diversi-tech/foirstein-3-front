@@ -8,6 +8,7 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
+import { getRoleFromToken} from '../decipheringToken';
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
@@ -97,6 +98,7 @@ const DataTable = observer(() => {
         setIsLoading(false);
       }
     };
+    // handlePremmision();
 
     fetchData();
   }, [itemStore, tagStore]); // Dependencies: triggers fetchData when itemStore or tagStore changes
@@ -262,6 +264,17 @@ const DataTable = observer(() => {
     itemStore.add = true;
   };
 
+  // const handlePermission = (item) => {
+  //   const permission = getRoleFromToken();
+  //   if(permission != null){
+  //     if (permission === 'Book' && item.itemType !== TypeEnum.BOOK) return false;
+  //     if (permission === 'File' && item.itemType !== TypeEnum.FILE) return false;
+  //     if (permission === 'PhysicalItem' && item.itemType !== TypeEnum.PHYSICALITEM) return false;
+  //   }
+  //   return true;
+
+  // }
+  
   const handleClickEdit = (item) => {
     setEditedItem(item);
     setEditOpen(true);
@@ -319,6 +332,18 @@ const DataTable = observer(() => {
       return "מדף/קובץ/כמות";
     }
   };
+
+  const nameLevle = (level) => {
+    if(level === 0 )
+      return 'גבוהה';
+    if(level === 1 )
+      return 'נמוכה';
+    if(level === 2 )
+      return 'כיתה';
+    if(level === 3 )
+      return 'גיל הרך';
+  };
+  
 
   const [typeTab, setTypeTab] = useState('all');
   const filterItems = (items) => {
@@ -772,34 +797,43 @@ const DataTable = observer(() => {
       align: "left",
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "left",
-            alignItems: "left",
-            gap: "8px",
-          }}
-        >
-          <Tooltip title="ערוך">
-            <IconButton
-              color="#0D1E46"
-              onClick={() => handleClickEdit(params.row)}
-              style={{ color: "#0D1E46" }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="מחק">
-            <IconButton
-              onClick={() => handleDelete(params.row)}
-              style={{ color: "#0D1E46" }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-      ),
+      renderCell: (params) => {
+        // const isPermitted = handlePermission(params.row);
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "left",
+              alignItems: "left",
+              gap: "8px",
+            }}
+          >
+            <Tooltip title="ערוך">
+              <span>
+                <IconButton
+                  color="#0D1E46"
+                  onClick={() => handleClickEdit(params.row)}
+                  style={{ color: "#0D1E46" }}
+                  // disabled={!isPermitted}
+                >
+                  <EditIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="מחק">
+              <span>
+                <IconButton
+                  onClick={() => handleDelete(params.row)}
+                  style={{ color: "#0D1E46" }}
+                  // disabled={!isPermitted}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </div>
+        );
+      },
     },
     {
       align: "right",
@@ -855,7 +889,7 @@ const DataTable = observer(() => {
   ].filter(column => {
     // if (TypeEnum.FILE && column.field === "publishingYear") return false;
     if (typeTab === "file" && column.field === "publishingYear") return false;
-    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author" || column.field === "status")) return false;
     // if (TypeEnum.PHYSICALITEM && (column.field === "publishingYear" || column.field === "author")) return false;
     return true;
   })
@@ -1030,12 +1064,21 @@ const DataTable = observer(() => {
               </Typography>
 
               <Typography
+  variant="body1"
+  style={{ marginRight: "10px" }}
+  dir="rtl"
+>
+  <strong> רמה: </strong>{nameLevle(item.itemLevel)}
+</Typography>
+
+              {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
+              <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                <strong> רמה: </strong>{item.itemLevel}
-              </Typography>
+               <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
+              </Typography>}
               {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
