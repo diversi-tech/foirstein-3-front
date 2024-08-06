@@ -24,6 +24,7 @@ export const getRoleFromToken = () => {
       return null;
     }
   };
+  
   export const getUserNameFromToken = () => {
     if (!token) return null;
     try {
@@ -62,13 +63,15 @@ export const getRoleFromToken = () => {
 
 
   export const validateToken = async () => {
-    const token = sessionStorage.getItem('jwt');
-    if (!token) return false;
+    debugger
+    const token1 = getCookie('jwt');
+    if (!token1) return false;
     try {
-      
-      const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
-      console.log(response,"response")
-      console.log("token data===>",response.data)
+      const response = await axios.post('https://foirstein-1-back.onrender.com/api/Users/validate-token', token1, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data.isValid;
     } catch (error) {
       console.error('Error validating token:', error);

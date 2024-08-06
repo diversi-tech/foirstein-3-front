@@ -2,8 +2,6 @@
 import { Nav } from "./Nav";
 
 import Footer from "./footer";
-
-import { useEffect } from "react";
 import DataTable from "./item/BorrowingItemsList";
 
 import React from 'react';
@@ -35,7 +33,8 @@ import StudentRequest from './studentRequest/student-request';
 import { Tooltip } from '@mui/material';
 import AccessibilityOptions from "./AccessibilityOptions";
 import { AccessibilityProvider } from "./AccessibilityContext";
-
+import { useEffect, useState } from "react";
+import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
 
 const baseDomain='.foirstein.diversitech.co.il/#/'
@@ -48,6 +47,22 @@ function ExternalRedirect({ url }) {
   return null;
 }
 export const Routing = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
+  const role = isLoggedIn ? getRoleFromToken() : null;
+  useEffect(() => {
+    setIsLoggedIn(!!getCookie('jwt'));
+  }, []);
+  const checkToken = async () => {
+        const isValid = await validateToken();
+        if (!isValid) {
+          console.log("go to other domain!!!!!!")
+          window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+          console.log("go to other domain!!!!!!")
+  
+        }
+        else
+        console.log("valid tokennnn");
+      };
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -59,10 +74,16 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
-          <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
+          { (!isLoggedIn || role=='Student') && (
+                  window.location.replace ('https://login.foirstein.diversitech.co.il') 
+                )}
 
+          {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
+
+           <Route path="/" element={<Box ><ItemList /></Box>} />)}
+
+          <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
-        <Route path="/" element={<div><ItemList /></div>} />
         <Route path="/Librarian" element={<div><ItemList /></div>} />
         <Route path="/items" element={<Box ><ItemList /></Box>} />
         <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
@@ -96,8 +117,6 @@ export const Routing = () => {
         <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
         <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
-
-        
           </Routes>
           <Footer />
         </div>

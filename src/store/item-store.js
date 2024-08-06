@@ -172,9 +172,9 @@ class ItemStore {
                 body: mediaData,
             });
             if (res.status === 200) {
-                this.isErrorObject = false;
+                this.isError = false;
             } else {
-                this.isErrorObject = false;
+                this.isError = true;
             }
             this.fetchMedia();
         } catch (error) {

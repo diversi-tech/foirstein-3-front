@@ -6,14 +6,14 @@ import SideNav from "./components/side_nav"
 import { Routing } from './components/Routing'
 import { useEffect } from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
-
+import {validateToken} from './components/decipheringToken';
 import React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 function App() {
   useEffect(() => {
     // האזנה להודעות postMessage
     const handleMessage = (event) => {
-      console.log('Received message:', event)
+  
       const allowedOrigins = [
         'https://login.foirstein.diversitech.co.il',  // דומיין הפרויקט הראשי
         'https://diversi-tech.github.io',
@@ -32,7 +32,23 @@ function App() {
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+//to route the user when he is not connected
+  // useEffect(() => {
+  //   const checkToken = async () => {
+  //     const isValid = await validateToken();
+  //     if (!isValid) {
+  //       console.log("go to other domain!!!!!!")
+  //       window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+  //       console.log("go to other domain!!!!!!")
 
+  //     }
+  //     else
+  //     console.log("valid tokennnn");
+  //   };
+
+  //   checkToken();
+  // }, []);
+  
   // useEffect(() => {
   //   // פונקציה למחיקת הטוקן מהקוקי
   //   function deleteTokenCookie() {

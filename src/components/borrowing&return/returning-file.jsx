@@ -10,9 +10,9 @@ import {
 import { styled } from "@mui/system";
 import borrowingStore from "../../store/borrowing-store";
 import { observer } from "mobx-react-lite";
-import { getUserIdNumFromToken } from "../decipheringToken";
-import { toJS } from "mobx";
 import Fields_rtl from "../tag/fields_rtl";
+import { toJS } from "mobx";
+
 const ContainerStyled = styled(Container)(({ theme }) => ({
   marginTop: theme.spacing(5),
   display: "flex",
@@ -30,6 +30,19 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
+const CustomTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    "&.Mui-focused fieldset": {
+      borderColor: "#0D1E46", // Border color on focus
+    },
+  },
+  "& .MuiInputLabel-root": {
+    "&.Mui-focused": {
+      color: "#0D1E46", // Label color on focus
+    },
+  },
+}));
+
 const Returning = observer(({ buttonName }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString(),
@@ -41,6 +54,7 @@ const Returning = observer(({ buttonName }) => {
   const [studentInputValue, setStudentInputValue] = useState("");
   const [books, setBooks] = useState(false);
   const [students, setStudents] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,11 +95,24 @@ const Returning = observer(({ buttonName }) => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.student) newErrors.student = "זהו שדה חובה.";
+    if (!formData.book) newErrors.item = "זהו שדה חובה.";
+    if (buttonName === "physical" && !formData.amount)
+      newErrors.amount = "זהו שדה חובה.";
+    return newErrors;
+  };
+
   const getBorrowing = async () => {
     await borrowingStore.fetchBorrowing();
     let list = toJS(borrowingStore.borrowingList);
     const borrowing = list.find((b) => {
-      return b.studentId == formData.student && b.bookId == formData.book;
+      return (
+        b.librarianId == formData.librarian &&
+        b.studentId == formData.student &&
+        b.bookId == formData.book
+      );
     });
     if (borrowing) return borrowing;
     else borrowingStore.failure("!ההשאלה לא קיימת");
@@ -93,6 +120,11 @@ const Returning = observer(({ buttonName }) => {
 
   const returning = async (event) => {
     event.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     const borrowing = await getBorrowing();
     if (borrowing.amount != formData.amount) {
       borrowing.amount -= formData.amount;
@@ -114,7 +146,7 @@ const Returning = observer(({ buttonName }) => {
             החזרת חפצים
           </Typography>
         )}
-        <FormStyled onSubmit={returning} noValidate>
+        <FormStyled onSubmit={returning}>
           <Typography variant="subtitle1" gutterBottom>
             תאריך: {formatDate(new Date())}
           </Typography>
@@ -146,13 +178,15 @@ const Returning = observer(({ buttonName }) => {
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     id="student"
                     name="student"
                     label="תלמידה"
                     variant="outlined"
                     fullWidth
+                    error={!!errors.student}
+                    helperText={errors.student}
                     onFocus={() => setStudents(true)}
                     onBlur={() => setStudents(false)}
                   />
@@ -195,13 +229,15 @@ const Returning = observer(({ buttonName }) => {
                   </li>
                 )}
                 renderInput={(params) => (
-                  <TextField
+                  <CustomTextField
                     {...params}
                     label="ספר"
                     id="book"
                     name="book"
                     variant="outlined"
                     fullWidth
+                    error={!!errors.item}
+                    helperText={errors.item}
                     onFocus={() => setBooks(true)}
                     onBlur={() => setBooks(false)}
                   />
@@ -215,7 +251,7 @@ const Returning = observer(({ buttonName }) => {
 
             {buttonName == "physical" && (
               <Grid item xs={12}>
-                <TextField
+                <CustomTextField
                   variant="outlined"
                   type="number"
                   fullWidth
@@ -223,6 +259,8 @@ const Returning = observer(({ buttonName }) => {
                   label="כמות"
                   name="amount"
                   value={formData.amount}
+                  error={!!errors.amount}
+                  helperText={errors.amount}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (value === "" || !isNaN(value)) {
