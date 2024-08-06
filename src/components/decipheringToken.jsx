@@ -24,6 +24,7 @@ export const getRoleFromToken = () => {
       return null;
     }
   };
+  
   export const getUserNameFromToken = () => {
     if (!token) return null;
     try {

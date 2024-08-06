@@ -1,9 +1,9 @@
 // src/LevelEnum.js
 const LevelEnum = Object.freeze({
-  PRESCHOOL: 'גיל הרך',
-  LOW: 'נמוכה',
-  HIGH: 'גבוהה',
-  CLASS: 'כיתה'
+  PRESCHOOL: 0,
+  LOW: 1,
+  HIGH: 2,
+  CLASS: 3
 });
 
 const TypeEnum = Object.freeze({
