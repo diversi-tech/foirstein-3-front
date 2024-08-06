@@ -98,7 +98,7 @@ const Returning = observer(({ buttonName }) => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.student) newErrors.student = "זהו שדה חובה.";
-    if (!formData.item) newErrors.item = "זהו שדה חובה.";
+    if (!formData.book) newErrors.item = "זהו שדה חובה.";
     if (buttonName === "physical" && !formData.amount)
       newErrors.amount = "זהו שדה חובה.";
     return newErrors;
