@@ -48,6 +48,11 @@ function ExternalRedirect({ url }) {
   return null;
 }
 export const Routing = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
+  const role = isLoggedIn ? getRoleFromToken() : null;
+  useEffect(() => {
+    setIsLoggedIn(!!getCookie('jwt'));
+  }, []);
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -59,10 +64,12 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
+          {!isLoggedIn || role=='Student'  && (
+            <Route path="/" element={<Login/>} />)}
+          {isLoggedIn && role=='Admin'|| role=='Librarian'  &&(
+             <Route path="/" element={<div><ItemList /></div>} />)}
           <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
-
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
-        <Route path="/" element={<div><ItemList /></div>} />
         <Route path="/Librarian" element={<div><ItemList /></div>} />
         <Route path="/items" element={<Box ><ItemList /></Box>} />
         <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
@@ -96,8 +103,6 @@ export const Routing = () => {
         <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
         <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
         <Route path="*" element={<h1>Page Not Found</h1>} />
-
-        
           </Routes>
           <Footer />
         </div>
