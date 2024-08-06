@@ -35,7 +35,7 @@ function a11yProps(index) {
 }
 
 export default function returning() {
-  const [value, setValue] = React.useState(-1);
+  const [value, setValue] = React.useState(0);
   const [permissions, setPermissions] = React.useState(getRoleFromToken());
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -44,59 +44,42 @@ export default function returning() {
   return (
     <Box sx={{ width: "100%" }}>
       <Box
-sx={{
-  width: "100%",
-  maxWidth: 600,
-  "& .MuiTabs-indicator": {
-    backgroundColor: "#0D1E46",
-  },
-  "& .MuiTab-root": {
-    color: "#DCDCDC",
-    "&.Mui-selected": {
-      color: "#0D1E46",
-    },
-  },
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-}}
+        sx={{
+          "& .MuiTabs-indicator": {
+            backgroundColor: "#FFD700",
+          },
+          "& .MuiTab-root": {
+            color: "#0D1E46",
+            "&.Mui-selected": {
+              color: "#0D1E46",
+            },
+          },
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
       >
-        {permissions == "LibrarianBook" ? (
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-          >
-            <Tab label="חפץ" {...a11yProps(0)} disabled />
-            <Tab label="ספר" {...a11yProps(1)} />
-          </Tabs>
-        ) : permissions == "Librarian" ? (
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-          >
-            <Tab label="חפץ" {...a11yProps(0)} />
-            <Tab label="ספר" {...a11yProps(1)} />
-          </Tabs>
-        ) : (
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-          >
-            <Tab label="חפץ" {...a11yProps(0)} disabled />
-            <Tab label="ספר" {...a11yProps(1)} disabled />
-          </Tabs>
-        )}
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
+          {permissions == "book" ? (
+            <Tab label="מוצר" {...a11yProps(0)} disabled />
+          ) : (
+            <Tab label="מוצר" {...a11yProps(0)} />
+          )}
+          <Tab label="ספר" {...a11yProps(1)} />
+        </Tabs>
       </Box>
-      <CustomTabPanel value={value} index={1}>
-        <Returning buttonName={"book"} />
-      </CustomTabPanel>
       <CustomTabPanel value={value} index={0}>
         <Returning buttonName={"physical"} />
       </CustomTabPanel>
-
+      <CustomTabPanel value={value} index={1}>
+        <Returning buttonName={"book"} />
+      </CustomTabPanel>
     </Box>
   );
 }

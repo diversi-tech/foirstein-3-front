@@ -32,11 +32,6 @@ const MenuProps = {
     },
 };
 
-// Define RTL theme
-const rtlTheme = createTheme({
-    direction: 'rtl', // Set text direction to right-to-left
-});
-
 function getStyles(id, selectedTags, theme) {
     return {
         fontWeight:
@@ -77,7 +72,7 @@ export default function IconSelectTags({ handleAddItemTag }) {
     };
 
     useEffect(() => {
-        setTags(tagStore.getTagsList); // Make sure this returns an array of objects
+        setTags(tagStore.getTagsList); 
     }, [tagStore.tagList]);
 
     useEffect(() => {
@@ -109,11 +104,8 @@ export default function IconSelectTags({ handleAddItemTag }) {
                 fullScreen={fullScreen}
                 open={addTagOpen}
                 onClose={handleCloseTagClick}
-                aria-labelledby="responsive-dialog-title"
-            >
-                <DialogTitle id="responsive-dialog-title">
-                    {"בחרי את התגיות הרצויות"}
-                </DialogTitle>
+                aria-labelledby="responsive-dialog-title">
+                <DialogTitle id="responsive-dialog-title">{"בחרי את התגיות הרצויות"} </DialogTitle>
                 <DialogContent>
                     <FormControl sx={{ m: 1, width: 300 }}>
                         <InputLabel id="demo-multiple-chip-label">תגיות</InputLabel>
@@ -129,19 +121,15 @@ export default function IconSelectTags({ handleAddItemTag }) {
                                     {selected.map((id) => (
                                         <Chip
                                             key={id}
-                                            label={tags.find((tag) => tag.id === id)?.name || id}
-                                        />
-                                    ))}
+                                            label={tags.find((tag) => tag.id === id)?.name || id} />))}
                                 </Box>
                             )}
-                            MenuProps={MenuProps}
-                        >
+                            MenuProps={MenuProps}>
                             {tags.map((tag) => (
                                 <MenuItem
                                     key={tag.id}
                                     value={tag.id} // שמור את ה-ID בתור הערך של MenuItem
-                                    style={getStyles(tag.id, selectedTags, theme)}
-                                >
+                                    style={getStyles(tag.id, selectedTags, theme)}>
                                     {tag.name}
                                 </MenuItem>
                             ))}
@@ -149,12 +137,8 @@ export default function IconSelectTags({ handleAddItemTag }) {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleAddTags}>
-                        הוסף
-                    </Button>
-                    <Button onClick={handleCloseTagClick} autoFocus>
-                        ביטול
-                    </Button>
+                    <Button autoFocus onClick={handleAddTags}> הוסף  </Button>
+                    <Button onClick={handleCloseTagClick} autoFocus>ביטול</Button>
                 </DialogActions>
             </Dialog>
         </>
