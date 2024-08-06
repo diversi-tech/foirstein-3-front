@@ -33,19 +33,22 @@ function App() {
     };
   }, []);
 //to route the user when he is not connected
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const isValid = await validateToken();
-  //     if (!isValid) {
-  //       console.log("go to other domain!!!!!!")
-  //       window.location.href = 'https://login.foirstein.diversitech.co.il';
-  //       console.log("go to other domain!!!!!!")
+  useEffect(() => {
+    const checkToken = async () => {
+      const isValid = await validateToken();
+      if (!isValid) {
+        console.log("go to other domain!!!!!!")
+        window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+        console.log("go to other domain!!!!!!")
 
-  //     }
-  //   };
+      }
+      else
+      console.log("valid tokennnn");
+    };
 
-  //   checkToken();
-  // }, []);
+    checkToken();
+  }, []);
+  
   // useEffect(() => {
   //   // פונקציה למחיקת הטוקן מהקוקי
   //   function deleteTokenCookie() {
