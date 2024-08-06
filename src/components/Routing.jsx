@@ -78,9 +78,10 @@ export const Routing = () => {
                   window.location.replace ('https://login.foirstein.diversitech.co.il') 
                 )}
 
-          {isLoggedIn && role=='Admin'|| role=='Librarian'  &&(
+          {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
 
-             <Route path="/" element={<div><ItemList /></div>} />)}
+           <Route path="/" element={<Box ><ItemList /></Box>} />)}
+
           <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
         <Route path="/Librarian" element={<div><ItemList /></div>} />
