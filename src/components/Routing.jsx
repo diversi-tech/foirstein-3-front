@@ -2,8 +2,6 @@
 import { Nav } from "./Nav";
 
 import Footer from "./footer";
-
-import { useEffect } from "react";
 import DataTable from "./item/BorrowingItemsList";
 
 import React from 'react';
@@ -35,7 +33,8 @@ import StudentRequest from './studentRequest/student-request';
 import { Tooltip } from '@mui/material';
 import AccessibilityOptions from "./AccessibilityOptions";
 import { AccessibilityProvider } from "./AccessibilityContext";
-
+import { useEffect, useState } from "react";
+import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
 
 const baseDomain='.foirstein.diversitech.co.il/#/'
@@ -53,6 +52,17 @@ export const Routing = () => {
   useEffect(() => {
     setIsLoggedIn(!!getCookie('jwt'));
   }, []);
+  const checkToken = async () => {
+        const isValid = await validateToken();
+        if (!isValid) {
+          console.log("go to other domain!!!!!!")
+          window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+          console.log("go to other domain!!!!!!")
+  
+        }
+        else
+        console.log("valid tokennnn");
+      };
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -64,9 +74,12 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
-          {!isLoggedIn || role=='Student'  && (
-            <Route path="/" element={<Login/>} />)}
+          { (!isLoggedIn || role=='Student') && (
+                  window.location.replace ('https://login.foirstein.diversitech.co.il') 
+                )}
+
           {isLoggedIn && role=='Admin'|| role=='Librarian'  &&(
+
              <Route path="/" element={<div><ItemList /></div>} />)}
           <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
