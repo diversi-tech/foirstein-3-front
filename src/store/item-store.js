@@ -1,7 +1,7 @@
-import { makeAutoObservable, observable, action, computed } from 'mobx';
+import { makeAutoObservable, observable, action, computed, runInAction } from 'mobx';
 import { toJS } from 'mobx';
 
-const baseURL='https://libererisas-backend.onrender.com/api/Item';
+const baseURL = 'https://libererisas-backend.onrender.com/api/Item';
 // const baseURL = 'https://localhost:7297/api/Item';
 // const url = 'https://localhost:7297/api/PhysicalItem';
 
@@ -15,10 +15,12 @@ class ItemStore {
     isDeleteTag;
     isError;
     isApprov = false;
+    uploadedProduct = null;
 
     constructor() {
         makeAutoObservable(this, {
             isDeleteItem: observable,
+            uploadedProduct: observable,
             isDeleteTag: observable,
             mediaList: observable,
             isAdd: observable,
@@ -35,12 +37,26 @@ class ItemStore {
             approvalItem: action,
             deniedItem: action,
             deleteMedia: action,
-            isAddItemTag:observable,
-            addItemTag:action
+            isAddItemTag: observable,
+            addItemTag: action,
+            uploadMediaObject: action, setUploadedProduct: action,
+            fetchMedia: action,
+            uploadMediaFile: action,
+            uploadMediaBook: action,
         });
+
+        //this.setUploadedProduct();
         this.fetchPendingItems();
         this.fetchMedia();
     }
+
+    setUploadedProduct = (product) => {
+        runInAction(() => {
+            console.log("Setting uploadedProduct in store:", product);
+            this.uploadedProduct = product;
+        });
+    };
+
 
     async deleteTag(itemId, tagId) {
         console.log("hiiDeleteTag");
@@ -163,38 +179,66 @@ class ItemStore {
             console.error('Failed to upload media:', error);
             this.isError = true;
         }
+
     }
 
-    async uploadMediaObject(mediaData) {
-        try {
-            const res = await fetch("https://localhost:7297/api/Item/physicalItem", {
-                method: 'POST',
-                body: mediaData,
-            });
-            if (res.status === 200) {
-                this.isError = false;
-            } else {
-                this.isError = true;
-            }
-            this.fetchMedia();
-        } catch (error) {
-            console.error('Failed to upload media:', error);
-            this.isError = true;
-        }
-    }
+    // async uploadMediaObject(mediaData) {
+    //     try {
+    //         const res = await fetch("https://localhost:7297/api/Item/physicalItem", {
+    //             method: 'POST',
+    //             body: mediaData,
+    //         });
+    //         if (res.status === 200) {
+    //             this.isError = false;
+    //             const data = res.json();
+    //             this.fetchMedia();
+    //             return data;
+    //         } else {
+    //             this.isError = true;
+    //             return null;
+    //         }
+
+    //     } catch (error) {
+    //         console.error('Failed to upload media:', error);
+    //         this.isError = true;
+    //         return null;
+
+    //     }
+    // }
 
 
-    // async deleteObject(mediaId) {
+
+
+
+    // // async deleteObject(mediaId) {
+    // //     console.log("hiiDeleteMedia!!!!!!!!");
+    // //     try {
+    // //         const res = await fetch(`${baseURL}/${mediaId}`, {
+    // //             method: 'DELETE'
+    // //         });
+    // //         if (res.status === 200) {
+    // //             this.isDeleteObject = true;
+    // //         }
+    // //         else {
+    // //             this.isDeleteObject = false;
+    // //         }
+    // //         this.fetchMedia();
+    // //     } catch (error) {
+    // //         console.error('Failed to delete media:', error);
+    // //     }
+    // // }
+
+    // async deleteMedia(mediaId) {
     //     console.log("hiiDeleteMedia!!!!!!!!");
     //     try {
     //         const res = await fetch(`${baseURL}/${mediaId}`, {
     //             method: 'DELETE'
     //         });
     //         if (res.status === 200) {
-    //             this.isDeleteObject = true;
+    //             this.isDeleteItem = true;
     //         }
     //         else {
-    //             this.isDeleteObject = false;
+    //             this.isDeleteItem = false;
     //         }
     //         this.fetchMedia();
     //     } catch (error) {
@@ -202,29 +246,50 @@ class ItemStore {
     //     }
     // }
 
-    async deleteMedia(mediaId) {
-        console.log("hiiDeleteMedia!!!!!!!!");
+    async uploadMediaObject(mediaData) {
         try {
-            const res = await fetch(`${baseURL}/${mediaId}`, {
-                method: 'DELETE'
+            const res = await fetch("https://localhost:7297/api/Item/physicalItem", {
+                method: 'POST',
+                body: mediaData,
             });
+
+            const data = await res.json(); // לוודא שהתוכן מפורק כ-JSON
+            console.log("Response from server:", data); // להדפיס את התוכן מהשרת
+
             if (res.status === 200) {
-                this.isDeleteItem = true;
+                runInAction(() => {
+                    this.isError = false;
+                    this.setUploadedProduct({
+                        id: data.data.id,
+                        title: data.data.title,
+                        location: data.data.filePath,
+                    });
+                    this.fetchMedia();
+                });
+                return data;
+            } else {
+                runInAction(() => {
+                    this.isError = true;
+                    console.log('isError', this.isError);
+                    
+                });
+                return null;
             }
-            else {
-                this.isDeleteItem = false;
-            }
-            this.fetchMedia();
         } catch (error) {
-            console.error('Failed to delete media:', error);
+            console.error('Failed to upload media:', error);
+            runInAction(() => {
+                this.isError = true;
+            });
+            return null;
         }
     }
+
 
     async updateMediaObject(mediaId, mediaData) {
         try {
             console.log("formData: ", mediaData, "beforeFetch");
             // const res = await fetch(`${baseURL}/physicalItem/${mediaId}`, {
-                const res = await fetch(`https://localhost:7297/api/Item/physicalItem/${mediaId}`, {
+            const res = await fetch(`https://localhost:7297/api/Item/physicalItem/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });
@@ -287,7 +352,7 @@ class ItemStore {
     }
     async addItemTag(itemId, tagId) {
         try {
-            
+
             const res = await fetch(`${baseURL}/${itemId}/${tagId}`, {
                 method: 'POST',
                 headers: {
@@ -310,28 +375,28 @@ class ItemStore {
     updateItem(updatedItem) {
         const index = this.mediaList.findIndex(item => item.id === updatedItem.id);
         if (index > -1) {
-          this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
+            this.mediaList[index] = { ...this.mediaList[index], ...updatedItem };
         }
-      }
+    }
 
 
 
 
 
-        validateToken = async () => {
+    validateToken = async () => {
         const token = sessionStorage.getItem('jwt');
         if (!token) return false;
         try {
-          const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
-          console.log(`token::::::`,response)
-          return response;
+            const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+            console.log(`token::::::`, response)
+            return response;
         } catch (error) {
-          console.error('Error validating token:', error);
-          return false;
+            console.error('Error validating token:', error);
+            return false;
         }
-      };
-  
-      
+    };
+
+
 }
 const itemStore = new ItemStore();
 export default itemStore;

@@ -8,7 +8,7 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
-import { getRoleFromToken} from '../decipheringToken';
+import { getRoleFromToken } from '../decipheringToken';
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
@@ -32,7 +32,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import { LevelEnum } from "../Enums";
-
+import { height } from "@mui/system";
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
   const [deleteTag, setDeleteTag] = useState(null);
@@ -113,7 +113,7 @@ const DataTable = observer(() => {
     // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
-    console.log("items:" + JSON.stringify(itemStore.mediaList));
+    // console.log("items:" + JSON.stringify(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
 
 
@@ -274,7 +274,7 @@ const DataTable = observer(() => {
   //   return true;
 
   // }
-  
+
   const handleClickEdit = (item) => {
     setEditedItem(item);
     setEditOpen(true);
@@ -334,16 +334,16 @@ const DataTable = observer(() => {
   };
 
   const nameLevle = (level) => {
-    if(level === 0 )
+    if (level === 0)
       return 'גבוהה';
-    if(level === 1 )
+    if (level === 1)
       return 'נמוכה';
-    if(level === 2 )
+    if (level === 2)
       return 'כיתה';
-    if(level === 3 )
+    if (level === 3)
       return 'גיל הרך';
   };
-  
+
 
   const [typeTab, setTypeTab] = useState('all');
   const filterItems = (items) => {
@@ -361,11 +361,11 @@ const DataTable = observer(() => {
     }
     if (filterType === 'object') {
       setTypeTab('object');
-    return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
+      return items.filter((item) => item.itemType === TypeEnum.PHYSICALITEM);
 
     }
     setTypeTab('file');
-      return items.filter((item) => item.itemType === TypeEnum.FILE);
+    return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -377,8 +377,8 @@ const DataTable = observer(() => {
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
         const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item))
-        console.log("tag: " + JSON.stringify(tag))
+        // console.log("item: " + JSON.stringify(item))
+        // console.log("tag: " + JSON.stringify(tag))
         try {
           await itemStore.addItemTag(itemId, tagId);
           if (itemStore.isAddItemTag) {
@@ -406,7 +406,7 @@ const DataTable = observer(() => {
       });
       setSelectedItems([]);
     } catch (error) {
-      console.log("fail in handleAddTagsToItems: " + error);
+      // console.log("fail in handleAddTagsToItems: " + error);
     }
   };
 
@@ -549,7 +549,7 @@ const DataTable = observer(() => {
           }}
         >
           {params.row.userID ? (params.row.userID) : ('')}
-          {console.log("params.row.userID", params.row.userID)}
+          {/* {console.log("params.row.userID", params.row.userID)} */}
 
         </div>
       )
@@ -718,12 +718,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
-                  {console.log("item.tags", item.tags)} 
-                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+                  {/* {console.log("item.tags", item.tags)}
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)} */}
 
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
-                    console.log("tegg", tag)
+                    //console.log("tegg", tag)
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -814,7 +814,7 @@ const DataTable = observer(() => {
                   color="#0D1E46"
                   onClick={() => handleClickEdit(params.row)}
                   style={{ color: "#0D1E46" }}
-                  // disabled={!isPermitted}
+                // disabled={!isPermitted}
                 >
                   <EditIcon />
                 </IconButton>
@@ -825,7 +825,7 @@ const DataTable = observer(() => {
                 <IconButton
                   onClick={() => handleDelete(params.row)}
                   style={{ color: "#0D1E46" }}
-                  // disabled={!isPermitted}
+                // disabled={!isPermitted}
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -840,13 +840,13 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid container  sx={{
+        <Grid container sx={{
           display: 'flex',
           justifyContent: 'flex-end', // הזזת הכפתורים ימינה
           alignItems: 'center',
           spacing: 2, // הוספת רווחים בין רכיבי ה-Grid
         }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center',justifyContent: 'flex-end',spacing: 4 }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', justifyContent: 'flex-end', spacing: 4 }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
@@ -964,38 +964,45 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-        <DataGrid
-          rows={paginatedItems}
-          columns={columns}
-          pageSize={rowsPerPage}
-          disableSelectionOnClick
-          localeText={localeText}
-          autoHeight
-          style={{ overflow: "hidden" }}
-          pagination={false} // Disable DataGrid pagination
-          hideFooterPagination
-          position="sticky"
-          hideFooter
-        />
-        <Box textAlign="center" marginTop={2}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Pagination
-              dir="ltr"
-              count={Math.ceil(totalItems / rowsPerPage)}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              color="primary"
-              shape="rounded"
-              renderItem={(item) => <PaginationItem {...item} />}
-            />
-          </Stack>
-        </Box>
+        {isLoading ? (
+
+          <Box display="flex" justifyContent = 'center' alignItems = "center" height = "400px">
+            <CircularProgress />
+          </Box>
+        ) : (<>
+          <DataGrid
+            rows={paginatedItems}
+            columns={columns}
+            pageSize={rowsPerPage}
+            disableSelectionOnClick
+            localeText={localeText}
+            autoHeight
+            style={{ overflow: "hidden" }}
+            pagination={false} // Disable DataGrid pagination
+            hideFooterPagination
+            position="sticky"
+            hideFooter
+          />
+          <Box textAlign="center" marginTop={2}>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(totalItems / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
+          </Box>
+        </>)}
         {paginatedItems.map((item) => (
           // {!typeTab === "object" &&
 
@@ -1064,21 +1071,21 @@ const DataTable = observer(() => {
               </Typography>
 
               <Typography
-  variant="body1"
-  style={{ marginRight: "10px" }}
-  dir="rtl"
->
-  <strong> רמה: </strong>{nameLevle(item.itemLevel)}
-</Typography>
-
-              {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
-              <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-               <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
-              </Typography>}
+                <strong> רמה: </strong>{nameLevle(item.itemLevel)}
+              </Typography>
+
+              {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
+                <Typography
+                  variant="body1"
+                  style={{ marginRight: "10px" }}
+                  dir="rtl"
+                >
+                  <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
+                </Typography>}
               {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
