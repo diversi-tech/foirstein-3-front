@@ -248,7 +248,7 @@ class ItemStore {
 
     async uploadMediaObject(mediaData) {
         try {
-            const res = await fetch("https://localhost:7297/api/Item/physicalItem", {
+            const res = await fetch(`${baseURL}/physicalItem`, {
                 method: 'POST',
                 body: mediaData,
             });
