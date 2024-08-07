@@ -183,25 +183,6 @@ class ItemStore {
         }
     }
 
-
-    // async deleteObject(mediaId) {
-    //     console.log("hiiDeleteMedia!!!!!!!!");
-    //     try {
-    //         const res = await fetch(`${baseURL}/${mediaId}`, {
-    //             method: 'DELETE'
-    //         });
-    //         if (res.status === 200) {
-    //             this.isDeleteObject = true;
-    //         }
-    //         else {
-    //             this.isDeleteObject = false;
-    //         }
-    //         this.fetchMedia();
-    //     } catch (error) {
-    //         console.error('Failed to delete media:', error);
-    //     }
-    // }
-
     async deleteMedia(mediaId) {
         console.log("hiiDeleteMedia!!!!!!!!");
         try {

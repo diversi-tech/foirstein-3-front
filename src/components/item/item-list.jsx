@@ -54,39 +54,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-
-  // useEffect(() => {
-  //   itemStore.fetchMedia();
-  //   tagStore.fetchTag();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await itemStore.fetchMedia();
-  //       await tagStore.fetchTag();
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
-  // }, [tagStore.tagList]);
-
-  // useEffect(() => {
-  //   setFilteredItems(filterItems(itemStore.mediaList));
-  //   setPage(1);
-  //   console.log("items:" + JSON.stringify(itemStore.mediaList));
-  // }, [itemStore.mediaList, filterType]);
-
-  // Fetch data and handle loading state
-
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -136,9 +103,7 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const deleteSuccess = await itemStore.deleteMedia(item.id);
-
-          if (deleteSuccess) {
+           await itemStore.deleteMedia(item.id);
             Swal.fire({
               title: "נמחק בהצלחה",
               text: "הפריט נמחק בהצלחה",
@@ -148,9 +113,6 @@ const DataTable = observer(() => {
             });
             // עדכן את רשימת הפריטים אחרי מחיקה
             itemStore.fetchMedia();
-          } else {
-            throw new Error("מחיקה נכשלה");
-          }
         } catch (error) {
           Swal.fire({
             title: "שגיאה",
@@ -264,16 +226,16 @@ const DataTable = observer(() => {
     itemStore.add = true;
   };
 
-  // const handlePermission = (item) => {
-  //   const permission = getRoleFromToken();
-  //   if(permission != null){
-  //     if (permission === 'Book' && item.itemType !== TypeEnum.BOOK) return false;
-  //     if (permission === 'File' && item.itemType !== TypeEnum.FILE) return false;
-  //     if (permission === 'PhysicalItem' && item.itemType !== TypeEnum.PHYSICALITEM) return false;
-  //   }
-  //   return true;
+  const handlePermission = (item) => {
+    const permission = getRoleFromToken();
+    if(permission != null){
+      if (permission === 'Book' && item.itemType !== TypeEnum.BOOK) return false;
+      if (permission === 'File' && item.itemType !== TypeEnum.FILE) return false;
+      if (permission === 'PhysicalItem' && item.itemType !== TypeEnum.PHYSICALITEM) return false;
+    }
+    return true;
 
-  // }
+  }
   
   const handleClickEdit = (item) => {
     setEditedItem(item);
@@ -334,16 +296,15 @@ const DataTable = observer(() => {
   };
 
   const nameLevle = (level) => {
-    if(level === 0 )
+    if(level === 2 )
       return 'גבוהה';
     if(level === 1 )
       return 'נמוכה';
-    if(level === 2 )
-      return 'כיתה';
     if(level === 3 )
+      return 'כיתה';
+    if(level === 0 )
       return 'גיל הרך';
   };
-  
 
   const [typeTab, setTypeTab] = useState('all');
   const filterItems = (items) => {
@@ -357,12 +318,10 @@ const DataTable = observer(() => {
     if (filterType === "book") {
       setTypeTab('book');
       return items.filter((item) => item.itemType === TypeEnum.BOOK);
-
     }
     if (filterType === 'object') {
       setTypeTab('object');
     return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
-
     }
     setTypeTab('file');
       return items.filter((item) => item.itemType === TypeEnum.FILE);
@@ -601,7 +560,6 @@ const DataTable = observer(() => {
         </div>
       ),
     },
-
     {
       field: "status",
       headerName: "סטטוס",
@@ -798,7 +756,7 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderCell: (params) => {
-        // const isPermitted = handlePermission(params.row);
+        const isPermitted = handlePermission(params.row);
         return (
           <div
             style={{
@@ -814,7 +772,7 @@ const DataTable = observer(() => {
                   color="#0D1E46"
                   onClick={() => handleClickEdit(params.row)}
                   style={{ color: "#0D1E46" }}
-                  // disabled={!isPermitted}
+                  disabled={!isPermitted}
                 >
                   <EditIcon />
                 </IconButton>
@@ -825,7 +783,7 @@ const DataTable = observer(() => {
                 <IconButton
                   onClick={() => handleDelete(params.row)}
                   style={{ color: "#0D1E46" }}
-                  // disabled={!isPermitted}
+                  disabled={!isPermitted}
                 >
                   <DeleteIcon />
                 </IconButton>
