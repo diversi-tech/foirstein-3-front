@@ -208,45 +208,26 @@ class ItemStore {
 
 
 
-
-
-    // // async deleteObject(mediaId) {
-    // //     console.log("hiiDeleteMedia!!!!!!!!");
-    // //     try {
-    // //         const res = await fetch(`${baseURL}/${mediaId}`, {
-    // //             method: 'DELETE'
-    // //         });
-    // //         if (res.status === 200) {
-    // //             this.isDeleteObject = true;
-    // //         }
-    // //         else {
-    // //             this.isDeleteObject = false;
-    // //         }
-    // //         this.fetchMedia();
-    // //     } catch (error) {
-    // //         console.error('Failed to delete media:', error);
-    // //     }
-    // // }
-
-    // async deleteMedia(mediaId) {
-    //     console.log("hiiDeleteMedia!!!!!!!!");
-    //     try {
-    //         const res = await fetch(`${baseURL}/${mediaId}`, {
-    //             method: 'DELETE'
-    //         });
-    //         if (res.status === 200) {
-    //             this.isDeleteItem = true;
-    //         }
-    //         else {
-    //             this.isDeleteItem = false;
-    //         }
-    //         this.fetchMedia();
-    //     } catch (error) {
-    //         console.error('Failed to delete media:', error);
-    //     }
-    // }
+    async deleteMedia(mediaId) {
+         console.log("hiiDeleteMedia!!!!!!!!");
+        try {
+             const res = await fetch(`${baseURL}/${mediaId}`, {
+                 method: 'DELETE'
+             });
+             if (res.status === 200) {
+                 this.isDeleteItem = true;
+             }
+             else {
+                 this.isDeleteItem = false;
+             }
+             this.fetchMedia();
+         } catch (error) {
+             console.error('Failed to delete media:', error);
+         }
+     }
 
     async uploadMediaObject(mediaData) {
+
         try {
             const res = await fetch(`${baseURL}/physicalItem`, {
                 method: 'POST',
@@ -288,8 +269,8 @@ class ItemStore {
     async updateMediaObject(mediaId, mediaData) {
         try {
             console.log("formData: ", mediaData, "beforeFetch");
-            // const res = await fetch(`${baseURL}/physicalItem/${mediaId}`, {
-            const res = await fetch(`https://localhost:7297/api/Item/physicalItem/${mediaId}`, {
+            const res = await fetch(`${baseURL}/physicalItem/${mediaId}`, {
+            // const res = await fetch(`/physicalItem/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
             });
