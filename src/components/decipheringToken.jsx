@@ -104,9 +104,10 @@ export const getRoleFromToken = () => {
       
        // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
 
-      return {
-        permissions: permissions || []
-      };
+      // return {
+      //   permissions: permissions || []
+      // };
+      return permissions || [];
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
