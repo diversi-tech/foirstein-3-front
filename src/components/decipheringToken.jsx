@@ -99,8 +99,8 @@ export const getRoleFromToken = () => {
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
       const permissions = decoded['permission'];
       console.log(permissions);
-      console.log(permissions.include("Book"));
-      permissions.include("Physical");
+      console.log("book: "+permissions.includes("Book"));
+      console.log("physical: "+permissions.includes("Physical"));
       
        // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
       return {
