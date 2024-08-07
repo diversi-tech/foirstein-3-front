@@ -14,12 +14,17 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
+      const response =  axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+    
+      console.log("token data===>",response.data)
+      console.log(`the roll from token`,decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']);
       return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;
     }
   };
+  
   export const getUserNameFromToken = () => {
     if (!token) return null;
     try {
@@ -32,7 +37,7 @@ export const getRoleFromToken = () => {
     }
   };
   export const getUserIdFromToken = () => {
-    debugger
+    
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);
@@ -58,19 +63,24 @@ export const getRoleFromToken = () => {
 
 
   export const validateToken = async () => {
-    const token = sessionStorage.getItem('jwt');
-    if (!token) return false;
+    debugger
+    const token1 = getCookie('jwt');
+    if (!token1) return false;
     try {
-      debugger
-      const response = await axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+      const response = await axios.post('https://foirstein-1-back.onrender.com/api/Users/validate-token', token1, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data.isValid;
     } catch (error) {
       console.error('Error validating token:', error);
       return false;
     }
   };
+
   export const getUserIdNumFromToken = () => {
-    debugger
+    
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);
@@ -87,7 +97,12 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const permissions = decoded['permissions']; // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
+      const permissions = decoded['permission'];
+      console.log(permissions);
+      console.log(permissions.include("Book"));
+      permissions.include("Physical");
+      
+       // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
       return {
         permissions: permissions || []
       };

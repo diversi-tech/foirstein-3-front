@@ -28,13 +28,21 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TagStore from "../../store/tag-store";
 import TagAdd from "./tag-add";
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import Fields_rtl from "./fields_rtl";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(2),
+  textAlign: "center",
+  borderBottom: `1px solid ${theme.palette.grey[200]}`, // גבול קל עדין
+}));
+
+const HeaderTableCell = styled(StyledTableCell)(({ theme }) => ({
+  backgroundColor: theme.palette.grey[100], // צבע רקע עדין
+  fontWeight: "bold", // הדגשה קלה של הטקסט
+  borderBottom: `1px solid ${theme.palette.grey[300]}`, // גבול עדין
   textAlign: "center",
 }));
 
@@ -127,7 +135,7 @@ const TagList = observer(() => {
     if (deleteItem) {
       await TagStore.deleteTag(deleteItem.id);
       dialogClose("deleteOpen");
-      dialogClose("confirmDeleteOpen")
+      dialogClose("confirmDeleteOpen");
     }
   };
 
@@ -158,8 +166,8 @@ const TagList = observer(() => {
       <Grid item xs={12} md={8} lg={6}>
         <Paper elevation={3}>
           <Box padding={2}>
-            <Box textAlign="center" marginTop={3}>
-              <Button variant="contained" color="primary" onClick={tagAdd}>
+            <Box textAlign="center" marginTop={3} marginBottom={3}>
+              <Button variant="contained" style={{background:"#0D1E46"}} onClick={tagAdd}>
                 <AddCircleOutlineIcon />
                 יצירת תג חדש
               </Button>
@@ -168,7 +176,7 @@ const TagList = observer(() => {
               <Table aria-label="תגים">
                 <TableBody>
                   <StickyTableRow>
-                    <StyledTableCell
+                    <HeaderTableCell
                       onClick={toggleSort}
                       style={{ cursor: "pointer" }}
                     >
@@ -184,9 +192,9 @@ const TagList = observer(() => {
                           <ArrowDropDownIcon style={{ marginLeft: 4 }} />
                         )}
                       </Box>
-                    </StyledTableCell>
-                    <StyledTableCell>עריכה</StyledTableCell>
-                    <StyledTableCell>מחיקה</StyledTableCell>
+                    </HeaderTableCell>
+                    <HeaderTableCell>עריכה</HeaderTableCell>
+                    <HeaderTableCell>מחיקה</HeaderTableCell>
                   </StickyTableRow>
                   {currentTags.map((row) => (
                     <TableRow key={row.id}>
@@ -195,6 +203,7 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
+                          style={{ color: "#0D1E46" }}
                           onClick={() => dialogOpen("editOpen", row)}
                         >
                           <EditIcon />
@@ -202,6 +211,7 @@ const TagList = observer(() => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <Button
+                          style={{ color: "#0D1E46" }}
                           onClick={() => dialogOpen("deleteOpen", row)}
                         >
                           <DeleteIcon />
@@ -285,13 +295,22 @@ const TagList = observer(() => {
         <DialogTitle>אישור מחיקה</DialogTitle>
         <DialogContent>
           <Typography>התג הזה משויך לפריטים הבאים:</Typography>
-          <Box sx={{ maxHeight: 200, overflow: 'auto', padding: 1, border: '1px solid #ddd' }}>
-          <List>
-            {itemsUsingTag.map((item) => (
-              <ListItem key={item.id}><ArrowLeftIcon/> {item.title}</ListItem>
-            ))}
-          </List>
-        </Box>
+          <Box
+            sx={{
+              maxHeight: 200,
+              overflow: "auto",
+              padding: 1,
+              border: "1px solid #ddd",
+            }}
+          >
+            <List>
+              {itemsUsingTag.map((item) => (
+                <ListItem key={item.id}>
+                  <ArrowLeftIcon /> {item.title}
+                </ListItem>
+              ))}
+            </List>
+          </Box>
           <Typography>האם אתה בטוח שברצונך למחוק את התג הזה?</Typography>
         </DialogContent>
         <DialogActions>

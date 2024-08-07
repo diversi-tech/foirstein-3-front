@@ -13,7 +13,6 @@ import itemStore from '../store/item-store';
 import MailIcon from '@mui/icons-material/Mail';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-
 // function getCookie(name) {
 //   const value = `; ${document.cookie}`;
 //   const parts = value.split(`; ${name}=`);
@@ -177,15 +176,7 @@ export const Nav = observer(() => {
     }
     return '';
   };
-  const handleProfileClickSavedItemsScreen = () => {
-    navigate('/SavedItemsScreen');
-    handleMenuClose();
-  };
 
-const handleProfileClickToRequestStatus = () => {
-    navigate('/StatusListView');
-    handleMenuClose();
-  };
   return (
     <Root>
       <NavBar position="fixed">
@@ -261,7 +252,6 @@ const handleProfileClickToRequestStatus = () => {
                           <MenuItem onClick={() => navigate('/changePermission')}>שינוי הרשאות</MenuItem>
                           <MenuItem onClick={() => navigate('/Charts')}>גרפים</MenuItem>
                           <MenuItem onClick={() => navigate('/ManagerDashboard')}>דוחות</MenuItem>
-                        
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
@@ -270,10 +260,12 @@ const handleProfileClickToRequestStatus = () => {
               </Popper>
             </>
           )}
-   
-          {(role === 'Librarian' || role === 'Admin')  && ( 
+<<<<<<< HEAD
+          {(role === 'Librarian' || role === 'Admin' || 1==1 && (
+=======
+          {(role === 'Librarian' || role === 'Admin'  && (
+>>>>>>> master
             <>
-            
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
                 ניהול משתמשים
               </StyledLink>
@@ -311,8 +303,6 @@ const handleProfileClickToRequestStatus = () => {
                             <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
                             <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
                             <MenuItem onClick={() => navigate('/items/borrowingItems')}>פריטים מושאלים</MenuItem>
-                            <MenuItem onClick={() => navigate('/borrowing')}>טופס השאלה</MenuItem>
-                            <MenuItem onClick={() => navigate('/returning')}>טופס החזרה</MenuItem>
                           </MenuList>
                         </ClickAwayListener>
                       </Paper>
@@ -326,7 +316,7 @@ const handleProfileClickToRequestStatus = () => {
                          הרשאות ספרנית
                       </StyledLink> */}
             </>
-          )}
+          ))}
           <LeftSection>
             <Grid container spacing={4} style={{ width: '40%', marginLeft: '40px' }}>
               <Grid item xs={6}>
@@ -376,8 +366,6 @@ const handleProfileClickToRequestStatus = () => {
                 >
                   <MenuItem onClick={handleProfileClick}>ניהול חשבון</MenuItem>
                   <MenuItem onClick={handleLogout}>התנתקות</MenuItem>
-                  <MenuItem onClick={handleProfileClickToRequestStatus}>בקשות סטטוס</MenuItem>
-                  <MenuItem onClick={handleProfileClickSavedItemsScreen}>מאגר אישי </MenuItem>
                 </Menu>
               </>
             ) : (
