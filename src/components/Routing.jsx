@@ -37,8 +37,8 @@ import { useEffect, useState } from "react";
 import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
 
-const baseDomain = '.foirstein.diversitech.co.il/#/'
-const loginDomain = `https://login${baseDomain}`
+const baseDomain='.foirstein.diversitech.co.il/#/'
+const loginDomain=`https://login${baseDomain}`
 
 function ExternalRedirect({ url }) {
   useEffect(() => {
@@ -52,18 +52,20 @@ export const Routing = () => {
   useEffect(() => {
     setIsLoggedIn(!!getCookie('jwt'));
   }, []);
-
+  //delete!!!!!!!!!!!!
+  //  var isLoggedIn=true;
+  // var role='Admin';
   const checkToken = async () => {
-    const isValid = await validateToken();
-    if (!isValid) {
-      console.log("go to other domain!!!!!!")
-      window.location.replace('https://login.foirstein.diversitech.co.il');
-      console.log("go to other domain!!!!!!")
-
-    }
-    else
-      console.log("valid tokennnn");
-  };
+        const isValid = await validateToken();
+        if (!isValid) {
+          console.log("go to other domain!!!!!!")
+          window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+          console.log("go to other domain!!!!!!")
+  
+        }
+        else
+        console.log("valid tokennnn");
+      };
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -75,49 +77,49 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
-            {(!isLoggedIn || role == 'Student') && (
-              window.location.replace('https://login.foirstein.diversitech.co.il')
-            )}
+          { (!isLoggedIn || role=='Student') && (
+                  window.location.replace ('https://login.foirstein.diversitech.co.il') 
+                )}
 
-            {(isLoggedIn && (role == 'Admin' || role == 'Librarian')) && (
+          {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
 
-              <Route path="/" element={<Box ><ItemList /></Box>} />)}
+           <Route path="/" element={<Box ><ItemList /></Box>} />)}
 
-            <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
-            {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
-            <Route path="/Librarian" element={<div><ItemList /></div>} />
-            <Route path="/items" element={<Box ><ItemList /></Box>} />
-            <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
-            <Route path="/items/add" element={<Box ><ItemAdd /></Box>} />
-            <Route path="/tag-list" element={<Box><TagList /></Box>} />
-            <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
-            <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} />
-            <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
-            <Route path="/returning" element={<Box><Returning /></Box>} />
-            <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
-            <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
-            <Route path="/returning" element={<Box><Returning /></Box>} />
-            <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
-            <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
-            <Route path='/Charts' element={<ExternalRedirect url={`${loginDomain}Charts`} />} />
-            <Route path='/changePermission' element={<ExternalRedirect url={`${loginDomain}changePermission`} />} />
-            <Route path='/UserManagementComponent' element={<ExternalRedirect url={`${loginDomain}UserManagementComponent`} />} />
-            <Route path='/login' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='/profile' element={<ExternalRedirect url={`${loginDomain}profile"`} />} />
-            <Route path='/profileform' element={<ExternalRedirect url={`${loginDomain}profileform`} />} />
-            <Route path='/ManagerDashboard' element={<ExternalRedirect url={`${loginDomain}ManagerDashboard`} />} />
-            <Route path='/view-reports' element={<ExternalRedirect url={`${loginDomain}view-reports`} />} />
-            <Route path='/report/:reportId' element={<ExternalRedirect url={`${loginDomain}report/`} />} />
-            <Route path='login/register' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='login/security-question' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='/reset-password' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='/password-reset-success' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='/passwordRecovery' element={<ExternalRedirect url={`${loginDomain}login`} />} />
-            <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
-            <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
-            <Route path="*" element={<h1>Page Not Found</h1>} />
+          <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
+          {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
+        <Route path="/Librarian" element={<div><ItemList /></div>} />
+        <Route path="/items" element={<Box ><ItemList /></Box>} />
+        <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
+        <Route path="/items/add" element={<Box ><ItemAdd /></Box>} />
+        <Route path="/tag-list" element={<Box><TagList /></Box>} />
+        <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
+        <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} /> 
+        <Route path="/returning" element={<Box><Returning /></Box>} /> 
+        <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
+        <Route path="/returning" element={<Box><Returning /></Box>} />
+        <Route path='/search' element={<ExternalRedirect url={`${loginDomain}search`} />} />
+        <Route path='/ActivityLog' element={<ExternalRedirect url={`${loginDomain}ActivityLog`} />} />
+        <Route path='/Charts' element={<ExternalRedirect url={`${loginDomain}Charts`} />} />
+        <Route path='/changePermission' element={<ExternalRedirect url={`${loginDomain}changePermission`} />} />
+        <Route path='/UserManagementComponent' element={<ExternalRedirect url={`${loginDomain}UserManagementComponent`} />} />
+        <Route path='/login' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/profile' element={<ExternalRedirect url={`${loginDomain}profile"`} />} />
+        <Route path='/profileform' element={<ExternalRedirect url={`${loginDomain}profileform`} />} />
+        <Route path='/ManagerDashboard' element={<ExternalRedirect url={`${loginDomain}ManagerDashboard`} />} />
+        <Route path='/view-reports' element={<ExternalRedirect url={`${loginDomain}view-reports`} />} />
+        <Route path='/report/:reportId' element={<ExternalRedirect url={`${loginDomain}report/`} />} />
+        <Route path='login/register' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/reset-password' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/password-reset-success' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question/reset-password/password-reset-success/logi' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='login/security-question/reset-password/password-reset-success/login/home' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/passwordRecovery' element={<ExternalRedirect url={`${loginDomain}login`} />} />
+        <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
+        <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
+        <Route path="*" element={<h1>Page Not Found</h1>} />
           </Routes>
           <Footer />
         </div>
