@@ -97,7 +97,7 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const permissions = decoded['permissions'];
+      const permissions = decoded['permission'];
       console.log(permissions);
       console.log(permissions.include("Book"));
       permissions.include("Physical");
