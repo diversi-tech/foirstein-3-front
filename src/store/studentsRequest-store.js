@@ -6,8 +6,7 @@ import {
   action,
 } from "mobx";
 import Swal from "sweetalert2";
-const baseUrl1 = "https://libererisas-backend.onrender.com/api/AddNewRequest";
-const baseUrl = "https://localhost:7297/api/AddNewRequest";
+const baseUrl = "https://libererisas-backend.onrender.com/api/";
 
 // Utility function to extract raw data
 const extractRawData = (proxyObject) => {
@@ -23,7 +22,6 @@ class StudentsRequestStore {
   isUpdate = false;
   isError = false;
   isDelete = false;
-  add = false;
   message = "הקובץ עודכן בהצלחה!";
 
   constructor() {
@@ -38,12 +36,11 @@ class StudentsRequestStore {
   }
   async fetchRequest(){
     try {
-      const res = await fetch(baseUrl);
+      const res = await fetch(`${baseUrl}BorrowRequest`);
+      console.log("BorrowApprovalReques");
       const data = await res.json();
-   
       // const rows = extractRawData(data.data); 
       // return rows;
-      console.log(data,"datafetchRequest");
       return data;
     } catch (error) {
       console.error("Failed to fetch data:", error);

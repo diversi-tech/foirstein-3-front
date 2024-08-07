@@ -1,8 +1,9 @@
 import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
-const baseURL='https://localhost:7297/api/AddNewRequest';
-const url = 'https://librerisas-bafkend.onrender.com/api/Object';
+const baseUrl='https://libererisas-backend.onrender.com/api/AddNewRequest';
+// const baseUrl1 = "https://localhost:7297/api/AddNewRequest";
+// const url = 'https://librerisas-bafkend.onrender.com/api/Object';
 
 class AddNewRequestStore {
 
@@ -51,8 +52,9 @@ class AddNewRequestStore {
 
     async fetchMedia() {
         try {
-            const res = await fetch(`${baseURL}`);
+            const res = await fetch(baseUrl);
             const obj = await res.json();
+            // console.log(obj,"obj");
             // ככה לעשות
             // this.mediaList = obj.data["item"];
             // this.mediaList2 = obj.data["object"];
@@ -126,23 +128,23 @@ class AddNewRequestStore {
         }
     }
 
-    // async deleteObject(mediaId) {
-    //     console.log("hiiDeleteMedia!!!!!!!!");
-    //     try {
-    //         const res = await fetch(`${url}/${mediaId}`, {
-    //             method: 'DELETE'
-    //         });
-    //         if (res.status === 200) {
-    //             this.isDeleteObject = true;
-    //         }
-    //         else {
-    //             this.isDeleteObject = false;
-    //         }
-    //         this.fetchMedia();
-    //     } catch (error) {
-    //         console.error('Failed to delete media:', error);
-    //     }
-    // }
+    async deleteObject(mediaId) {
+        console.log("hiiDeleteMedia!!!!!!!!");
+        try {
+            const res = await fetch(`${baseUrl}/${mediaId}`, {
+                method: 'DELETE'
+            });
+            if (res.status === 200) {
+                this.isDeleteObject = true;
+            }
+            else {
+                this.isDeleteObject = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+    }
 
     // async deleteMedia(mediaId) {
     //     console.log("hiiDeleteMedia!!!!!!!!");

@@ -896,7 +896,7 @@ const DataTable = observer(() => {
           </Collapse>
         ))}
       </div>
-      {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
+      {editedItem && <ItemEdit numOfDay={false} mediaItem={editedItem} onClose={handleClose} />}
       {itemStore.add && <ItemAdd />}
     </>
   );

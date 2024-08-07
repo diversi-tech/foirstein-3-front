@@ -9,7 +9,9 @@ import {
   DialogTitle, Select, MenuItem, InputLabel, FormControl, Typography, useMediaQuery, useTheme, OutlinedInput, Box, Chip, Checkbox, ListItemText, IconButton
 } from '@mui/material';
 
-export default function ItemEdit({ mediaItem, onClose }) {
+export default function ItemEdit({numOfDay, mediaItem, onClose }) {
+  
+  console.log(numOfDay,"numOfDay={false}");
   const tagMap = tagStore.tagList.reduce((map, tag) => {
     map[tag.id] = tag.name;
     return map;
@@ -127,7 +129,9 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
     // formDataToSend.append('numberOfCopies', formData.numberOfCopies);
-    formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion);
+    (numOfDay === false)?
+    formDataToSend.append('numberOfDaysOfQuestion', formData.numberOfDaysOfQuestion):
+    formDataToSend.append('numberOfDaysOfQuestion', -1)
     // formDataToSend.append('copiesThatCanBeBorrowed', formData.copiesThatCanBeBorrowed);
 
     formDataToSend.append('publishingYear', formData.publishingYear);
@@ -147,8 +151,10 @@ export default function ItemEdit({ mediaItem, onClose }) {
     }).then(async(result) => {
       if (result.isConfirmed) {
         if (link){
+
           await itemStore.updateMediaFile(formData.id, formDataToSend);
           console.log("id: ",formData.id);
+          console.log("formData: ",formData);
         } 
        else {
          await itemStore.updateMediaBook(formData.id, formDataToSend);
@@ -427,7 +433,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
                 </Select>
               </FormControl>
             {/* </Grid> */}
-           {!formData.filePath.includes('https') &&
+           {!formData.filePath.includes('https') && numOfDay === false &&
            <TextField
             margin="dense"
             label="מספר ימי השאלה"

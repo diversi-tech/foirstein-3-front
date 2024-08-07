@@ -33,6 +33,7 @@ const AddNewRequest = observer(() => {
   const [openRows, setOpenRows] = useState({});
   const [selectedItems, setSelectedItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
+  const [deleteItem, setDeleteItem] = useState(null);
   const [filterType, setFilterType] = useState("all");
   const [page, setPage] = useState(1);
   const rowsPerPage = 6;
@@ -54,16 +55,16 @@ const AddNewRequest = observer(() => {
     // setSendItem(false);
     // setSendTag(false);
     // setDeleteOpen(false);
-    // setDeleteItem(null);
+     setDeleteItem(null);
     // setDeleteTag(null);
     // setEditOpen(false);
     setEditedItem(null);
     // setDeleteTagOpen(false);
     // setAddTagOpen(false);
   };
-  const handleClickAdd = () => {
-    addNewRequestStore.add = true;
-  };
+  // const handleClickAdd = () => {
+  //   addNewRequestStore.add = true;
+  // };
 
   const handleDelete = (item) => {
     setDeleteItem(item);
@@ -79,11 +80,12 @@ const AddNewRequest = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          if (item.author == null) {
+          // if (item.author == null) {
             await addNewRequestStore.deleteObject(item.id);
-          } else {
-            await addNewRequestStore.deleteMedia(item.id);
-          }
+          
+          // else {
+          //   await addNewRequestStore.deleteMedia(item.id);
+          // }
           Swal.fire({
             title: "נמחק בהצלחה",
             text: "הפריט נמחק בהצלחה",
@@ -130,11 +132,11 @@ const AddNewRequest = observer(() => {
           await Promise.all(
             selectedItems.map(async (itemId) => {
               const item = addNewRequestStore.mediaList.find(item => item.id === itemId);
-              if (item.author == null) {
+              // if (item.author == null) {
                 await addNewRequestStore.deleteObject(itemId);
-              } else {
-                await addNewRequestStore.deleteMedia(itemId);
-              }
+              // } else {
+              //   await addNewRequestStore.deleteMedia(itemId);
+              // }
             })
           );
           Swal.fire({
@@ -232,6 +234,7 @@ const columns = [
     flex: 0.5,
     align: "right",
     disableColumnMenu: true,
+    style:{overflow: "hidden" },
     sortable: false,
     renderHeader: () => (
       <Checkbox
@@ -292,20 +295,20 @@ const columns = [
     },
   },
 
-  // {
-  //   field: "icon",
-  //   headerName: "",
-  //   flex: 0.5,
-  //   align: "right",
-  //   disableColumnMenu: true,
-  //   sortable: false,
-  //   renderCell: (params) =>
-  //     !params.row.filePath.includes("https") ? (
-  //       <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
-  //     ) : (
-  //       <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
-  //     ),
-  // },
+  {
+    field: "icon",
+    headerName: "",
+    flex: 0.5,
+    align: "right",
+    disableColumnMenu: true,
+    sortable: false,
+    renderCell: (params) =>
+      !params.row.filePath.includes("https") ? (
+        <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
+      ) : (
+        <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
+      ),
+  },
 
   { field: "title", headerName: "כותרת", flex: 1, align: "right" },
   { field: "description", headerName: "תיאור", flex: 1, align: "right" },
@@ -332,27 +335,27 @@ const columns = [
   //     </div>
   //   ),
   // },
-  {
-      field: "status",
-      headerName: "סטטוס",
-      flex: 1,
-      align: "right",
-      sortable: false,
-      renderCell: (params) => (
-        <div
-          style={{
-            textAlign: "right",
-            width: "100%",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            // color: params.row.isApproved ? "#2C6B2F" : "#E57373",
-          }}
-        >
-          {/* {params.row.isApproved ? "מאושר" : "ממתין לאישור"} */}
-        </div>
-      ),
-    },
+  // {
+  //     field: "status",
+  //     headerName: "סטטוס",
+  //     flex: 1,
+  //     align: "right",
+  //     sortable: false,
+  //     renderCell: (params) => (
+  //       <div
+  //         style={{
+  //           textAlign: "right",
+  //           width: "100%",
+  //           whiteSpace: "nowrap",
+  //           overflow: "hidden",
+  //           textOverflow: "ellipsis",
+  //           // color: params.row.isApproved ? "#2C6B2F" : "#E57373",
+  //         }}
+  //       >
+  //         {/* {params.row.isApproved ? "מאושר" : "ממתין לאישור"} */}
+  //       </div>
+  //     ),
+  //   },
     {
       field: "filePath",
       headerName: getHeaderName(typeTab),
@@ -422,11 +425,12 @@ const columns = [
       sortable: false,
       renderHeader: () => (
         <Grid container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
+          {/* <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}> */}
+          {selectedItems.length > 0
+                 && (  <Button
               style={{
                 backgroundColor: "#0D1E46",
-                color: "#FFD700",
+                color: "white",
                 padding: '4px 8px',
                 minWidth: '40px',
                 minHeight: '40px',
@@ -437,27 +441,28 @@ const columns = [
                 },
               }}
               onClick={
-                selectedItems.length > 0
-                  ? handleDeleteSelectedItems
-                  : handleClickAdd
+             handleDeleteSelectedItems
+                  // : handleClickAdd
               }
             >
-              {selectedItems.length > 0 ? (
+              {selectedItems.length > 0 && (
                 <Tooltip title="למחיקת פריטים מרובים">
                   <DeleteIcon style={{ fontSize: '25px' }} />
                 </Tooltip>
-              ) : (
-                <Tooltip title="להוספת פריט חדש" arrow>
-                  <AddIcon style={{ fontSize: '25px' }} />
-                </Tooltip>
-              )}
-            </Button>
-          </Grid>
-          {selectedItems.length > 0 && (
+              ) 
+              // : (
+                // <Tooltip title="להוספת פריט חדש" arrow>
+                //   <AddIcon style={{ fontSize: '25px' }} />
+                // </Tooltip>
+              // )
+            }
+            </Button>)}
+          {/* </Grid> */}
+          {/* {selectedItems.length > 0 && (
             <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center' }}>
               <IconSelectTags handleAddItemTag={handleAddTagsToItems} style={{ fontSize: '20px' }} />
             </Grid>
-          )}
+          )} */}
         </Grid>
       ),
     },
@@ -476,7 +481,7 @@ const columns = [
         style={{ overflow: "hidden" }}
         pagination={false} // Disable DataGrid pagination
         hideFooterPagination
-        checkboxSelection
+        // checkboxSelection
         position="sticky"
         hideFooter
       />
@@ -502,7 +507,7 @@ const columns = [
         {paginatedItems.map((item) => (
           <Collapse in={openRows[item.id]} timeout="auto" unmountOnExit>
             <Box display="flex" dir="rtl" margin={1}>
-              {!item.filePath.includes("https") && (
+              {/* {!item.filePath.includes("https") && (
                 <Typography
                   variant="body1"
                   style={{ marginRight: "10px" }}
@@ -510,7 +515,7 @@ const columns = [
                 >
                   מספר ימי השאלה:{item.numberOfDaysOfQuestion}
                 </Typography>
-              )}
+              )} */}
               <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
@@ -573,8 +578,8 @@ const columns = [
         ))}
     </div>
 
-    {addNewRequestStore.add && <ItemAdd />}
-    {editedItem && <ItemEdit mediaItem={editedItem} onClose={handleClose} />}
+    {/* {addNewRequestStore.add && <ItemAdd />} */}
+    {editedItem && <ItemEdit numOfDay={true} mediaItem={editedItem} onClose={handleClose} />}
     </CacheProvider>
   );
 
