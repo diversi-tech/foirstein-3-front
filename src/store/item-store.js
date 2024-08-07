@@ -295,6 +295,7 @@ class ItemStore {
             const res = await fetch(`${baseURL}/book/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
+                
             });
             console.log("formData: ", mediaData, "afterFetch");
             this.fetchMedia();
