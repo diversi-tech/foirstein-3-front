@@ -41,6 +41,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     // amount: mediaItem.amount,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
     edition: mediaItem.edition,
+    // available: mediaItem.available,
     series: mediaItem.series,
     numOfSeries: mediaItem.numOfSeries,
     language: mediaItem.language,
@@ -56,13 +57,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
   const [res, setRes] = useState(false);
-  const [availability, setAvailability] = useState('');
+  const [availability, setAvailability] = useState(formData.available);
   const [selectedValue, setSelectedValue] = useState('');
 
 
-  const handleChangeAvailable = (event) => {
-    setAvailability(event.target.value);
-  };
+  // const handleChangeAvailable = (event) => {
+  //   setAvailability(event.target.value);
+  // };
 
   useEffect(() => {
     checkLink();
@@ -116,13 +117,29 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [selectedLevel, setSelectedLevel] = useState(formData.itemLevel);
   // const [addTagOpen, SetAddTagOpen] = useState(false);
 
-  const handleChangeSelect = (e) => {
-    setSelectedLevel(e.target.value);
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value
-    }));
+  const handleChangeSelect = (event) => {
+    setSelectedLevel(event.target.value);
+    const { target: { value } } = event;
+    if(value === 'גיל הרך'){
+    setFormData((prevData)=>({
+      ...prevData,
+      itemLevel: 0
+    }));}
+    if(value === 'נמוכה'){
+      setFormData((prevData)=>({
+        ...prevData,
+        itemLevel: 1
+      }));}
+      if(value === 'גבוהה'){
+        setFormData((prevData)=>({
+          ...prevData,
+          itemLevel: 2
+        }));}
+        if(value === 'כיתה'){
+          setFormData((prevData)=>({
+            ...prevData,
+            itemLevel: 3
+          }));}
   };
   // const getRecommendationText = () => {
   //  if (formData.amount){return 'האם החפץ מומלץ';} 
@@ -150,96 +167,89 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('note', formData.note);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-
-    if (!formData.author)
-      formDataToSend.append('amount', formData.amount);
-    if (formData.author) {
-      formDataToSend.append('author', formData.author);
-      formDataToSend.append('edition', formData.edition);
-      formDataToSend.append('series', formData.series);
-      formDataToSend.append('numOfSeries', formData.numOfSeries);
-      formDataToSend.append('language', formData.language);
-      formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
-      formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
-      formDataToSend.append('publishingYear', formData.publishingYear);
-      formDataToSend.append('isApproved', formData.isApproved);
-      if (formData.file) {
-        formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
+    
+    if(!formData.author)
+    formDataToSend.append('amount', formData.amount);
+    if(formData.author){
+    formDataToSend.append('author', formData.author);
+    formDataToSend.append('edition', formData.edition);
+    formDataToSend.append('series', formData.series);
+    formDataToSend.append('available', formData.available);
+    formDataToSend.append('numOfSeries', formData.numOfSeries);
+    formDataToSend.append('language', formData.language);
+    formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
+    formDataToSend.append('hebrewPublicationYear', formData.hebrewPublicationYear);
+    formDataToSend.append('publishingYear', formData.publishingYear);
+    formDataToSend.append('isApproved', formData.isApproved);
+    if (formData.file) {
+      formDataToSend.append('filePath', formData.file); // Append the file directly as IFormFile
+    } else {
+      formDataToSend.append('filePath', formData.filePath); // Use existing filePath
+    } 
+  }
+  else{
+    formDataToSend.append('author', null);
+    formDataToSend.append('edition', null);
+    formDataToSend.append('series',null);
+    formDataToSend.append('numOfSeries', 0);
+    formDataToSend.append('language', null);
+    formDataToSend.append('note', null);
+    formDataToSend.append('accompanyingMaterial', null);
+    // formDataToSend.append('itemLevel', 0);
+    formDataToSend.append('hebrewPublicationYear', null);
+    formDataToSend.append('publishingYear', null);
+    formDataToSend.append('isApproved', null);
+    formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
+    if (formData.file) {
+      formDataToSend.append('filePath', null); // Append the file directly as IFormFile
+    } else {
+      formDataToSend.append('filePath', null); // Use existing filePath
+    } 
+  }
+  onClose();
+Swal.fire({
+  title: "?האם ברצונך לעדכן את הנתונים",
+  showDenyButton: true,
+  confirmButtonText: "אישור",
+  denyButtonText: `ביטול`
+}).then(async (result) => {
+  if (result.isConfirmed) {
+    try {
+      if (link) {
+         await itemStore.updateMediaFile(formData.id, formDataToSend);
+        console.log("id: ", formData.id);
+      } else if (!formData.author) {
+         await itemStore.updateMediaObject(formData.id, formDataToSend);
       } else {
-        formDataToSend.append('filePath', formData.filePath); // Use existing filePath
+         await itemStore.updateMediaBook(formData.id, formDataToSend);
+        console.log("id: ", formData.id);
       }
+        Swal.fire({
+          icon: "success",
+          title: "השינויים נשמרו בהצלחה",
+          showConfirmButton: false,
+          timer: 1500
+        });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "שגיאה",
+        text: "העדכון נכשל, נסה שוב מאוחר יותר",
+        showConfirmButton: true
+      });
+      console.error("Error updating item:", error); // הודעת שגיאה בקונסול
     }
-    else {
-      formDataToSend.append('author', null);
-      formDataToSend.append('edition', null);
-      formDataToSend.append('series', null);
-      formDataToSend.append('numOfSeries', 0);
-      formDataToSend.append('language', null);
-      formDataToSend.append('note', null);
-      formDataToSend.append('accompanyingMaterial', null);
-      // formDataToSend.append('itemLevel', 0);
-      formDataToSend.append('hebrewPublicationYear', null);
-      formDataToSend.append('publishingYear', null);
-      formDataToSend.append('isApproved', null);
-      formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-      if (formData.file) {
-        formDataToSend.append('filePath', null); // Append the file directly as IFormFile
-      } else {
-        formDataToSend.append('filePath', null); // Use existing filePath
-      }
-    }
-    // const handleUpdate = async (formData) => {
-    onClose();
+  } else if (result.isDenied) {
     Swal.fire({
-      title: "?האם ברצונך לעדכן את הנתונים",
-      showDenyButton: true,
-      confirmButtonText: "אישור",
-      denyButtonText: `ביטול`
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          if (link) {
-            await itemStore.updateMediaFile(formData.id, formDataToSend);
-            console.log("id: ", formData.id);
-          } else if (!formData.author) {
-            await itemStore.updateMediaObject(formData.id, formDataToSend);
-          } else {
-            await itemStore.updateMediaBook(formData.id, formDataToSend);
-            console.log("id: ", formData.id);
-          }
-          Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-        } catch (error) {
-          Swal.fire({
-            icon: "error",
-            title: "שגיאה",
-            text: "העדכון נכשל, נסה שוב מאוחר יותר",
-            showConfirmButton: true
-          });
-          console.error("Error updating item:", error); // הודעת שגיאה בקונסול
-        }
-      } else if (result.isDenied) {
-        Swal.fire({
-          icon: "info",
-          title: "לא נשמרו שינויים",
-          showConfirmButton: false,
-          timer: 1500
-        });
-      }
-      else
-        Swal.fire({
-          icon: "error",
-          title: "אופס... תקלה בעת שמירת השינויים",
-          showConfirmButton: false,
-          timer: 1500
-        });
+      icon: "info",
+      title: "לא נשמרו שינויים",
+      showConfirmButton: false,
+      timer: 1500
     });
-  };
-
+  }
+});
+  }
+  
   const getRecommendationText = (value) => {
     switch (value) {
       case 'book':
@@ -351,19 +361,19 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
+{!formData.filePath.includes('https') && formData.author && formData.publishingYear !== 0 && formData.publishingYear &&
+  <TextField
+    margin="dense"
+    label="שנת הוצאה לועזית"
+    type="number"
+    fullWidth
+    name="publishingYear"
+    value={formData.publishingYear !== 0 ? formData.publishingYear : ''}
+    onChange={handleChange}
+    inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+  />
+}
 
-          {!formData.filePath.includes('https') && formData.author &&
-            <TextField
-              margin="dense"
-              label="שנת הוצאה לועזית"
-              type="text"
-              fullWidth
-              name="publishingYear"
-              value={formData.publishingYear}
-              onChange={handleChange}
-              inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-            />
-          }
           {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
             <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
           )}
@@ -428,7 +438,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
               type="text"
               fullWidth
               name="filePath"
-              value={formData.filePath}
+              value={formData.filePath != 0? formData.filePath: ''}
               onChange={handleChange}
               inputProps={{ minLength: 1, maxLength: 17 }}
               disabled={link}
@@ -562,23 +572,23 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-          {formData.author &&
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="availability-label">זמינות</InputLabel>
-              <Select
-                margin="dense"
-                labelId="availability-label"
-                id="availability-select"
-                value={availability}
-                label="זמינות"
-                onChange={handleChangeAvailable}
-              >
-                <MenuItem value="available">זמין</MenuItem>
-                <MenuItem value="notAvailable">לא זמין</MenuItem>
-              </Select>
-            </FormControl>}
-
-          <TextField
+          {/* {formData.author&&
+          <FormControl fullWidth margin="dense">
+           <InputLabel id="availability-label">זמינות</InputLabel>
+          <Select
+            margin="dense"
+        labelId="availability-label"
+        id="availability-select"
+        value={availability}
+        label="זמינות"
+        onChange={handleChangeAvailable}
+      >
+        <MenuItem value="available">זמין</MenuItem>
+        <MenuItem value="notAvailable">לא זמין</MenuItem>
+      </Select>
+      </FormControl>} */}
+     
+            <TextField
             margin="dense"
             label="הערות"
             type="text"
@@ -592,20 +602,17 @@ export default function ItemEdit({ mediaItem, onClose }) {
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}
-
-          <Box display="flex" alignItems="center" mt={2}>
-            <Typography>סוג פריט:</Typography>
-            <Typography ml={1} variant="body2" color="textSecondary">
-              {getTypeText(formData.itemType)}
-            </Typography>
-          </Box>
-
-          {/* <Grid item xs={12} display="flex" alignItems="center" justifyContent="center"> */}
-          <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
-          <IconButton onClick={handleRecommendationToggle}>
-            {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
-          </IconButton>
-          {/* </Grid> */}
+  
+<Box display="flex" alignItems="center" mt={2}>
+  <Typography>סוג פריט:</Typography>
+  <Typography ml={1} variant="body2" color="textSecondary">
+    {getTypeText(formData.itemType)}
+  </Typography>
+</Box>
+      <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
+      <IconButton onClick={handleRecommendationToggle}>
+          {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
+      </IconButton>
         </DialogContent>
         <DialogActions style={{ position: 'sticky', bottom: 0, background: '#fff', zIndex: 1 }}>
           <Button onClick={onClose} style={{ color: '#468585' }}>
