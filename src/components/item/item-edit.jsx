@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
 import Swal from 'sweetalert2';
-import {LevelEnum} from '../Enums';
+import { LevelEnum } from '../Enums';
 import { TypeEnum } from '../Enums';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 // import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -147,6 +147,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
   //  else if(formData.edition){return 'האם הספר מומלץ';}  
   // }
 
+  const LevelEnumMapping = {
+    [LevelEnum.PRESCHOOL]: "גיל הרך",
+    [LevelEnum.LOW]: "נמוכה",
+    [LevelEnum.HIGH]: "גבוהה",
+    [LevelEnum.CLASS]: "כיתה"
+};
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formDataToSend = new FormData();
@@ -245,35 +252,35 @@ Swal.fire({
   
   const getRecommendationText = (value) => {
     switch (value) {
-        case 'book':
-            return 'האם הספר מומלץ?';
-        case 'file':
-            return 'האם הקובץ מומלץ?';
-        case 'object':
-            return 'האם המוצר מומלץ?';
-        default:
-            return 'האם פריט זה מומלץ?';
+      case 'book':
+        return 'האם הספר מומלץ?';
+      case 'file':
+        return 'האם הקובץ מומלץ?';
+      case 'object':
+        return 'האם המוצר מומלץ?';
+      default:
+        return 'האם פריט זה מומלץ?';
     }
-}; 
+  };
 
-const getTypeText = (value) => {
-  if(value === 0)
-    return 'קובץ דיגיטלי'
-   if(value === 1)
-    return 'ספר'
-   if(value === 2)
-    return 'חפץ'
-  // return TypeEnum[value];
-};
+  const getTypeText = (value) => {
+    if (value === 0)
+      return 'קובץ דיגיטלי'
+    if (value === 1)
+      return 'ספר'
+    if (value === 2)
+      return 'חפץ'
+    // return TypeEnum[value];
+  };
 
-const handleRecommendationToggle = () => {
-  setFormData((prevData) => ({
+  const handleRecommendationToggle = () => {
+    setFormData((prevData) => ({
       ...prevData,
       recommended: !prevData.recommended,
       userID: prevData.userID + 1,
 
-  }));
-};
+    }));
+  };
 
   const checkLink = () => {
     const filePath = formData.filePath;
@@ -531,37 +538,36 @@ const handleRecommendationToggle = () => {
           {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
           )}
-          
-              <FormControl fullWidth margin="dense">
-                <InputLabel id="level-select-label">רמה</InputLabel>
-                <Select
-                  labelId="level-select-label"
-                  id="level-select"
-                  name="itemLevel"
-                 value={formData.itemLevel}
-                  // value={selectedLevel}
-                  onChange={handleChangeSelect}
-                  input={<OutlinedInput label="רמה" />}
-                >
-                  {Object.values(LevelEnum).map((level) => (
-                    <MenuItem key={level} value={level}>
-                      {level}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-         
-           {!formData.filePath.includes('https')&& 
-           <TextField
-            margin="dense"
-            label="מספר ימי השאלה"
-            type="number"
-            fullWidth
-            name="numberOfDaysOfQuestion"
-            value={formData.numberOfDaysOfQuestion}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
+
+          <FormControl fullWidth margin="dense">
+            <InputLabel id="level-select-label">רמה</InputLabel>
+            <Select
+              labelId="level-select-label"
+              id="level-select"
+              name="itemLevel"
+              value={selectedLevel}
+              onChange={handleChangeSelect}
+              input={<OutlinedInput label="רמה" />}
+            >
+              {Object.keys(LevelEnum).map((key) => (
+                <MenuItem key={LevelEnum[key]} value={LevelEnum[key]}>
+                  {LevelEnumMapping[LevelEnum[key]]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {!formData.filePath.includes('https') &&
+            <TextField
+              margin="dense"
+              label="מספר ימי השאלה"
+              type="number"
+              fullWidth
+              name="numberOfDaysOfQuestion"
+              value={formData.numberOfDaysOfQuestion}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, inputMode: 'numeric', pattern: '[0-9]*' }}
+              required
             />}
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
@@ -590,9 +596,9 @@ const handleRecommendationToggle = () => {
             name="note"
             value={formData.note}
             onChange={handleChange}
-            inputProps={{ minLength:2, maxLength: 35}}
+            inputProps={{ minLength: 2, maxLength: 35 }}
             required
-            />
+          />
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}

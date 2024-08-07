@@ -97,7 +97,12 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const permissions = decoded['permissions']; // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
+      const permissions = decoded['permissions'];
+      console.log(permissions);
+      console.log(permissions.include("Book"));
+      permissions.include("Physical");
+      
+       // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
       return {
         permissions: permissions || []
       };

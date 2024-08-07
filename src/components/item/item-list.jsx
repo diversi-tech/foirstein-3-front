@@ -8,7 +8,7 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
-import { getRoleFromToken} from '../decipheringToken';
+import { getRoleFromToken } from '../decipheringToken';
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
@@ -32,7 +32,38 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import { LevelEnum } from "../Enums";
-
+export const localeText = {
+  // תרגום של אפשרויות המיון והפילטור לעברית
+  columnMenuSortAsc: "מיון לפי סדר עולה",
+  columnMenuSortDesc: "מיון לפי סדר יורד",
+  columnMenuFilter: "סינון",
+  columnMenuHideColumn: "הסתר עמודה",
+  columnMenuUnsort: "בטל מיון",
+  noRowsLabel: "אין פריטים להצגה",
+  columnMenuManageColumns: "ניהול עמודות",
+  filterPanelAddFilter: "הוסף מסנן",
+  filterPanelDeleteIconLabel: "מחק",
+  filterPanelLinkOperator: "אופרטור לוגי",
+  filterPanelOperators: "אופרטור",
+  filterPanelOperatorAnd: "וגם",
+  filterPanelOperatorOr: "או",
+  filterPanelColumns: "עמודות",
+  filterPanelInputLabel: "ערך",
+  filterPanelInputPlaceholder: "סנן ערך",
+  filterOperatorContains: "מכיל",
+  filterOperatorEquals: "שווה",
+  filterOperatorStartsWith: "מתחיל ב",
+  filterOperatorEndsWith: "מסתיים ב",
+  filterOperatorIs: "הוא",
+  filterOperatorNot: "אינו",
+  filterOperatorAfter: "אחרי",
+  filterOperatorOnOrAfter: "ב או אחרי",
+  filterOperatorBefore: "לפני",
+  filterOperatorOnOrBefore: "ב או לפני",
+  filterOperatorIsEmpty: "ריק",
+  filterOperatorIsNotEmpty: "אינו ריק",
+  filterOperatorIsAnyOf: "הוא אחד מ",
+};
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
   const [deleteTag, setDeleteTag] = useState(null);
@@ -80,7 +111,7 @@ const DataTable = observer(() => {
     // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
-    console.log("items:" + JSON.stringify(itemStore.mediaList));
+    // console.log("items:" + JSON.stringify(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
 
 
@@ -298,7 +329,7 @@ const DataTable = observer(() => {
   const nameLevle = (level) => {
     if(level === 2 )
       return 'גבוהה';
-    if(level === 1 )
+    if (level === 1)
       return 'נמוכה';
     if(level === 3 )
       return 'כיתה';
@@ -324,7 +355,7 @@ const DataTable = observer(() => {
     return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
     }
     setTypeTab('file');
-      return items.filter((item) => item.itemType === TypeEnum.FILE);
+    return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -336,8 +367,8 @@ const DataTable = observer(() => {
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
         const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item))
-        console.log("tag: " + JSON.stringify(tag))
+        // console.log("item: " + JSON.stringify(item))
+        // console.log("tag: " + JSON.stringify(tag))
         try {
           await itemStore.addItemTag(itemId, tagId);
           if (itemStore.isAddItemTag) {
@@ -365,42 +396,11 @@ const DataTable = observer(() => {
       });
       setSelectedItems([]);
     } catch (error) {
-      console.log("fail in handleAddTagsToItems: " + error);
+      // console.log("fail in handleAddTagsToItems: " + error);
     }
   };
 
-  const localeText = {
-    // תרגום של אפשרויות המיון והפילטור לעברית
-    columnMenuSortAsc: "מיון לפי סדר עולה",
-    columnMenuSortDesc: "מיון לפי סדר יורד",
-    columnMenuFilter: "סינון",
-    columnMenuHideColumn: "הסתר עמודה",
-    columnMenuUnsort: "בטל מיון",
-    noRowsLabel: "אין פריטים להצגה",
-    columnMenuManageColumns: "ניהול עמודות",
-    filterPanelAddFilter: "הוסף מסנן",
-    filterPanelDeleteIconLabel: "מחק",
-    filterPanelLinkOperator: "אופרטור לוגי",
-    filterPanelOperators: "אופרטור",
-    filterPanelOperatorAnd: "וגם",
-    filterPanelOperatorOr: "או",
-    filterPanelColumns: "עמודות",
-    filterPanelInputLabel: "ערך",
-    filterPanelInputPlaceholder: "סנן ערך",
-    filterOperatorContains: "מכיל",
-    filterOperatorEquals: "שווה",
-    filterOperatorStartsWith: "מתחיל ב",
-    filterOperatorEndsWith: "מסתיים ב",
-    filterOperatorIs: "הוא",
-    filterOperatorNot: "אינו",
-    filterOperatorAfter: "אחרי",
-    filterOperatorOnOrAfter: "ב או אחרי",
-    filterOperatorBefore: "לפני",
-    filterOperatorOnOrBefore: "ב או לפני",
-    filterOperatorIsEmpty: "ריק",
-    filterOperatorIsNotEmpty: "אינו ריק",
-    filterOperatorIsAnyOf: "הוא אחד מ",
-  };
+  
   const columns = [
     {
       field: "checkbox",
@@ -508,7 +508,7 @@ const DataTable = observer(() => {
           }}
         >
           {params.row.userID ? (params.row.userID) : ('')}
-          {console.log("params.row.userID", params.row.userID)}
+          {/* {console.log("params.row.userID", params.row.userID)} */}
 
         </div>
       )
@@ -676,12 +676,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
-                  {console.log("item.tags", item.tags)} 
-                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+                  {/* {console.log("item.tags", item.tags)}
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)} */}
 
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
-                    console.log("tegg", tag)
+                    //console.log("tegg", tag)
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -798,13 +798,13 @@ const DataTable = observer(() => {
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid container  sx={{
+        <Grid container sx={{
           display: 'flex',
           justifyContent: 'flex-end', // הזזת הכפתורים ימינה
           alignItems: 'center',
           spacing: 2, // הוספת רווחים בין רכיבי ה-Grid
         }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center',justifyContent: 'flex-end',spacing: 4 }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', justifyContent: 'flex-end', spacing: 4 }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
@@ -922,38 +922,45 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-        <DataGrid
-          rows={paginatedItems}
-          columns={columns}
-          pageSize={rowsPerPage}
-          disableSelectionOnClick
-          localeText={localeText}
-          autoHeight
-          style={{ overflow: "hidden" }}
-          pagination={false} // Disable DataGrid pagination
-          hideFooterPagination
-          position="sticky"
-          hideFooter
-        />
-        <Box textAlign="center" marginTop={2}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Pagination
-              dir="ltr"
-              count={Math.ceil(totalItems / rowsPerPage)}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              color="primary"
-              shape="rounded"
-              renderItem={(item) => <PaginationItem {...item} />}
-            />
-          </Stack>
-        </Box>
+        {isLoading ? (
+
+          <Box display="flex" justifyContent = 'center' alignItems = "center" height = "400px">
+            <CircularProgress />
+          </Box>
+        ) : (<>
+          <DataGrid
+            rows={paginatedItems}
+            columns={columns}
+            pageSize={rowsPerPage}
+            disableSelectionOnClick
+            localeText={localeText}
+            autoHeight
+            style={{ overflow: "hidden" }}
+            pagination={false} // Disable DataGrid pagination
+            hideFooterPagination
+            position="sticky"
+            hideFooter
+          />
+          <Box textAlign="center" marginTop={2}>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(totalItems / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
+          </Box>
+        </>)}
         {paginatedItems.map((item) => (
           // {!typeTab === "object" &&
 
@@ -1022,21 +1029,21 @@ const DataTable = observer(() => {
               </Typography>
 
               <Typography
-  variant="body1"
-  style={{ marginRight: "10px" }}
-  dir="rtl"
->
-  <strong> רמה: </strong>{nameLevle(item.itemLevel)}
-</Typography>
-
-              {item.itemType != TypeEnum.PHYSICALITEM &&item.itemType != TypeEnum.FILE &&
-              <Typography
                 variant="body1"
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-               <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
-              </Typography>}
+                <strong> רמה: </strong>{nameLevle(item.itemLevel)}
+              </Typography>
+
+              {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
+                <Typography
+                  variant="body1"
+                  style={{ marginRight: "10px" }}
+                  dir="rtl"
+                >
+                  <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
+                </Typography>}
               {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
