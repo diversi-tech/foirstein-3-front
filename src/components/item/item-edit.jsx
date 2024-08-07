@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import itemStore from '../../store/item-store';
 import tagStore from '../../store/tag-store';
 import Swal from 'sweetalert2';
-import {LevelEnum} from '../Enums';
+import { LevelEnum } from '../Enums';
+import { TypeEnum } from '../Enums';
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material';
 // import StarBorderIcon from '@mui/icons-material/StarBorder';
 // import StarIcon from '@mui/icons-material/Star';
@@ -40,6 +41,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
     // amount: mediaItem.amount,
     numberOfDaysOfQuestion: mediaItem.numberOfDaysOfQuestion,
     edition: mediaItem.edition,
+    // available: mediaItem.available,
     series: mediaItem.series,
     numOfSeries: mediaItem.numOfSeries,
     language: mediaItem.language,
@@ -55,13 +57,13 @@ export default function ItemEdit({ mediaItem, onClose }) {
   const [isFormValid, setIsFormValid] = useState(true);
   const [openI, setOpenI] = useState(true);
   const [res, setRes] = useState(false);
-  const [availability, setAvailability] = useState('');
+  const [availability, setAvailability] = useState(formData.available);
   const [selectedValue, setSelectedValue] = useState('');
 
 
-  const handleChangeAvailable = (event) => {
-    setAvailability(event.target.value);
-  };
+  // const handleChangeAvailable = (event) => {
+  //   setAvailability(event.target.value);
+  // };
 
   useEffect(() => {
     checkLink();
@@ -117,12 +119,40 @@ export default function ItemEdit({ mediaItem, onClose }) {
 
   const handleChangeSelect = (event) => {
     setSelectedLevel(event.target.value);
+    const { target: { value } } = event;
+    if(value === 'גיל הרך'){
+    setFormData((prevData)=>({
+      ...prevData,
+      itemLevel: 0
+    }));}
+    if(value === 'נמוכה'){
+      setFormData((prevData)=>({
+        ...prevData,
+        itemLevel: 1
+      }));}
+      if(value === 'גבוהה'){
+        setFormData((prevData)=>({
+          ...prevData,
+          itemLevel: 2
+        }));}
+        if(value === 'כיתה'){
+          setFormData((prevData)=>({
+            ...prevData,
+            itemLevel: 3
+          }));}
   };
   // const getRecommendationText = () => {
   //  if (formData.amount){return 'האם החפץ מומלץ';} 
   //  else if(new URL(formData.filePath)){return 'האם הקובץ מומלץ';}
   //  else if(formData.edition){return 'האם הספר מומלץ';}  
   // }
+
+  const LevelEnumMapping = {
+    [LevelEnum.PRESCHOOL]: "גיל הרך",
+    [LevelEnum.LOW]: "נמוכה",
+    [LevelEnum.HIGH]: "גבוהה",
+    [LevelEnum.CLASS]: "כיתה"
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -137,13 +167,14 @@ export default function ItemEdit({ mediaItem, onClose }) {
     formDataToSend.append('itemLevel', formData.itemLevel);
     formDataToSend.append('note', formData.note);
     formData.tags.forEach(tagId => formDataToSend.append('tags[]', tagId));
-
+    
     if(!formData.author)
     formDataToSend.append('amount', formData.amount);
     if(formData.author){
     formDataToSend.append('author', formData.author);
     formDataToSend.append('edition', formData.edition);
     formDataToSend.append('series', formData.series);
+    formDataToSend.append('available', formData.available);
     formDataToSend.append('numOfSeries', formData.numOfSeries);
     formDataToSend.append('language', formData.language);
     formDataToSend.append('accompanyingMaterial', formData.accompanyingMaterial);
@@ -175,79 +206,81 @@ export default function ItemEdit({ mediaItem, onClose }) {
       formDataToSend.append('filePath', null); // Use existing filePath
     } 
   }
-  // const handleUpdate = async (formData) => {
-    onClose();
-    Swal.fire({
-      title: "?האם ברצונך לעדכן את הנתונים",
-      showDenyButton: true,
-      confirmButtonText: "אישור",
-      denyButtonText: `ביטול`
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          if (link) {
-            await itemStore.updateMediaFile(formData.id, formDataToSend);
-            console.log("id: ", formData.id);
-          } else if (!formData.author) {
-            await itemStore.updateMediaObject(formData.id, formDataToSend);
-          } else {
-            await itemStore.updateMediaBook(formData.id, formDataToSend);
-            console.log("id: ", formData.id);
-          }
-          Swal.fire({
-            icon: "success",
-            title: "השינויים נשמרו בהצלחה",
-            showConfirmButton: false,
-            timer: 1500
-          });
-        } catch (error) {
-          Swal.fire({
-            icon: "error",
-            title: "שגיאה",
-            text: "העדכון נכשל, נסה שוב מאוחר יותר",
-            showConfirmButton: true
-          });
-          console.error("Error updating item:", error); // הודעת שגיאה בקונסול
-        }
-      } else if (result.isDenied) {
+  onClose();
+Swal.fire({
+  title: "?האם ברצונך לעדכן את הנתונים",
+  showDenyButton: true,
+  confirmButtonText: "אישור",
+  denyButtonText: `ביטול`
+}).then(async (result) => {
+  if (result.isConfirmed) {
+    try {
+      if (link) {
+         await itemStore.updateMediaFile(formData.id, formDataToSend);
+        console.log("id: ", formData.id);
+      } else if (!formData.author) {
+         await itemStore.updateMediaObject(formData.id, formDataToSend);
+      } else {
+         await itemStore.updateMediaBook(formData.id, formDataToSend);
+        console.log("id: ", formData.id);
+      }
         Swal.fire({
-          icon: "info",
-          title: "לא נשמרו שינויים",
+          icon: "success",
+          title: "השינויים נשמרו בהצלחה",
           showConfirmButton: false,
           timer: 1500
         });
-      }
-      else
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "אופס... תקלה בעת שמירת השינויים",
-        showConfirmButton: false,
-        timer: 1500
+        title: "שגיאה",
+        text: "העדכון נכשל, נסה שוב מאוחר יותר",
+        showConfirmButton: true
       });
-  });
-};
+      console.error("Error updating item:", error); // הודעת שגיאה בקונסול
+    }
+  } else if (result.isDenied) {
+    Swal.fire({
+      icon: "info",
+      title: "לא נשמרו שינויים",
+      showConfirmButton: false,
+      timer: 1500
+    });
+  }
+});
+  }
   
   const getRecommendationText = (value) => {
     switch (value) {
-        case 'book':
-            return 'האם הספר מומלץ?';
-        case 'file':
-            return 'האם הקובץ מומלץ?';
-        case 'object':
-            return 'האם המוצר מומלץ?';
-        default:
-            return 'האם פריט זה מומלץ?';
+      case 'book':
+        return 'האם הספר מומלץ?';
+      case 'file':
+        return 'האם הקובץ מומלץ?';
+      case 'object':
+        return 'האם המוצר מומלץ?';
+      default:
+        return 'האם פריט זה מומלץ?';
     }
-}; 
+  };
 
-const handleRecommendationToggle = () => {
-  setFormData((prevData) => ({
+  const getTypeText = (value) => {
+    if (value === 0)
+      return 'קובץ דיגיטלי'
+    if (value === 1)
+      return 'ספר'
+    if (value === 2)
+      return 'חפץ'
+    // return TypeEnum[value];
+  };
+
+  const handleRecommendationToggle = () => {
+    setFormData((prevData) => ({
       ...prevData,
       recommended: !prevData.recommended,
       userID: prevData.userID + 1,
 
-  }));
-};
+    }));
+  };
 
   const checkLink = () => {
     const filePath = formData.filePath;
@@ -328,19 +361,19 @@ const handleRecommendationToggle = () => {
           {formData.author && formData.author.length < 2 && (
             <Typography color="error">המחבר חייב להכיל לפחות 2 תווים</Typography>
           )}
+{!formData.filePath.includes('https') && formData.author && formData.publishingYear !== 0 && formData.publishingYear &&
+  <TextField
+    margin="dense"
+    label="שנת הוצאה לועזית"
+    type="number"
+    fullWidth
+    name="publishingYear"
+    value={formData.publishingYear !== 0 ? formData.publishingYear : ''}
+    onChange={handleChange}
+    inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
+  />
+}
 
-          {!formData.filePath.includes('https') && formData.author &&
-            <TextField
-              margin="dense"
-              label="שנת הוצאה לועזית"
-              type="text"
-              fullWidth
-              name="publishingYear"
-              value={formData.publishingYear}
-              onChange={handleChange}
-              inputProps={{ minLength: 4, maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' }}
-            />
-          }
           {formData.publishingYear && formData.publishingYear.length === 4 && !isNaN(parseInt(formData.publishingYear)) && parseInt(formData.publishingYear) > new Date().getFullYear() && (
             <Typography color="error">יש להכניס שנת הוצאה תקינה </Typography>
           )}
@@ -405,7 +438,7 @@ const handleRecommendationToggle = () => {
               type="text"
               fullWidth
               name="filePath"
-              value={formData.filePath}
+              value={formData.filePath != 0? formData.filePath: ''}
               onChange={handleChange}
               inputProps={{ minLength: 1, maxLength: 17 }}
               disabled={link}
@@ -505,42 +538,41 @@ const handleRecommendationToggle = () => {
           {formData.accompanyingMaterial && formData.accompanyingMaterial.length < 3 && (
             <Typography color="error">חומר נלווה חייב להכיל לפחות 3 תווים </Typography>
           )}
-          
-              <FormControl fullWidth margin="dense">
-                <InputLabel id="level-select-label">רמה</InputLabel>
-                <Select
-                  labelId="level-select-label"
-                  id="level-select"
-                  name="itemLevel"
-                 // value={formData.itemLevel}
-                  value={selectedLevel}
-                  onChange={handleChangeSelect}
-                  input={<OutlinedInput label="רמה" />}
-                >
-                  {Object.values(LevelEnum).map((level) => (
-                    <MenuItem key={level} value={level}>
-                      {level}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-         
-           {!formData.filePath.includes('https')&& 
-           <TextField
-            margin="dense"
-            label="מספר ימי השאלה"
-            type="number"
-            fullWidth
-            name="numberOfDaysOfQuestion"
-            value={formData.numberOfDaysOfQuestion}
-            onChange={handleChange}
-            inputProps={{ minLength:1,  inputMode: 'numeric', pattern: '[0-9]*'}}
-            required
+
+          <FormControl fullWidth margin="dense">
+            <InputLabel id="level-select-label">רמה</InputLabel>
+            <Select
+              labelId="level-select-label"
+              id="level-select"
+              name="itemLevel"
+              value={selectedLevel}
+              onChange={handleChangeSelect}
+              input={<OutlinedInput label="רמה" />}
+            >
+              {Object.keys(LevelEnum).map((key) => (
+                <MenuItem key={LevelEnum[key]} value={LevelEnum[key]}>
+                  {LevelEnumMapping[LevelEnum[key]]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {!formData.filePath.includes('https') &&
+            <TextField
+              margin="dense"
+              label="מספר ימי השאלה"
+              type="number"
+              fullWidth
+              name="numberOfDaysOfQuestion"
+              value={formData.numberOfDaysOfQuestion}
+              onChange={handleChange}
+              inputProps={{ minLength: 1, inputMode: 'numeric', pattern: '[0-9]*' }}
+              required
             />}
           {formData.numberOfDaysOfQuestion && formData.numberOfDaysOfQuestion.length < 1 && (
             <Typography color="error">מספר ימי השאלה חייב להכיל לפחות מספר אחד </Typography>
           )}
-          {formData.author&&
+          {/* {formData.author&&
           <FormControl fullWidth margin="dense">
            <InputLabel id="availability-label">זמינות</InputLabel>
           <Select
@@ -554,7 +586,7 @@ const handleRecommendationToggle = () => {
         <MenuItem value="available">זמין</MenuItem>
         <MenuItem value="notAvailable">לא זמין</MenuItem>
       </Select>
-      </FormControl>}
+      </FormControl>} */}
      
             <TextField
             margin="dense"
@@ -564,24 +596,23 @@ const handleRecommendationToggle = () => {
             name="note"
             value={formData.note}
             onChange={handleChange}
-            inputProps={{ minLength:2, maxLength: 35}}
+            inputProps={{ minLength: 2, maxLength: 35 }}
             required
-            />
+          />
           {formData.note && formData.note.length < 3 && (
             <Typography color="error">הערות חייבת להכיל לפחות 3 תווים </Typography>
           )}
-           <Box display="flex" alignItems="center" mt={2}>
-            <Typography>סוג פריט:</Typography>
-            <Typography ml={1} variant="body2" color="textSecondary">
-              {formData.itemType}
-            </Typography>
-          </Box>
-          {/* <Grid item xs={12} display="flex" alignItems="center" justifyContent="center"> */}
-                                <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
-                                <IconButton onClick={handleRecommendationToggle}>
-                                    {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
-                                </IconButton>
-                            {/* </Grid> */}
+  
+<Box display="flex" alignItems="center" mt={2}>
+  <Typography>סוג פריט:</Typography>
+  <Typography ml={1} variant="body2" color="textSecondary">
+    {getTypeText(formData.itemType)}
+  </Typography>
+</Box>
+      <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
+      <IconButton onClick={handleRecommendationToggle}>
+          {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
+      </IconButton>
         </DialogContent>
         <DialogActions style={{ position: 'sticky', bottom: 0, background: '#fff', zIndex: 1 }}>
           <Button onClick={onClose} style={{ color: '#468585' }}>

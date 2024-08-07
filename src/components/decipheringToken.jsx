@@ -24,6 +24,7 @@ export const getRoleFromToken = () => {
       return null;
     }
   };
+  
   export const getUserNameFromToken = () => {
     if (!token) return null;
     try {
@@ -96,7 +97,13 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const permissions = decoded['permissions']; // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
+      const permissions = decoded['permission'];
+      console.log(permissions);
+      // console.log("book: "+permissions.includes("Book"));
+      // console.log("physical: "+permissions.includes("Physical"));
+      
+       // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
+
       return {
         permissions: permissions || []
       };

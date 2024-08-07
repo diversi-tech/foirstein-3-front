@@ -8,6 +8,7 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import CategoryIcon from '@mui/icons-material/Category';
 import ItemSearch from "./item-search";
+import { getRoleFromToken } from '../decipheringToken';
 import {
   IconButton, Tooltip, useTheme, Paper, Box, useMediaQuery, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, Grid, Tabs, Tab, Checkbox, Stack, Pagination, PaginationItem,
@@ -31,7 +32,38 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import { LevelEnum } from "../Enums";
-
+export const localeText = {
+  // תרגום של אפשרויות המיון והפילטור לעברית
+  columnMenuSortAsc: "מיון לפי סדר עולה",
+  columnMenuSortDesc: "מיון לפי סדר יורד",
+  columnMenuFilter: "סינון",
+  columnMenuHideColumn: "הסתר עמודה",
+  columnMenuUnsort: "בטל מיון",
+  noRowsLabel: "אין פריטים להצגה",
+  columnMenuManageColumns: "ניהול עמודות",
+  filterPanelAddFilter: "הוסף מסנן",
+  filterPanelDeleteIconLabel: "מחק",
+  filterPanelLinkOperator: "אופרטור לוגי",
+  filterPanelOperators: "אופרטור",
+  filterPanelOperatorAnd: "וגם",
+  filterPanelOperatorOr: "או",
+  filterPanelColumns: "עמודות",
+  filterPanelInputLabel: "ערך",
+  filterPanelInputPlaceholder: "סנן ערך",
+  filterOperatorContains: "מכיל",
+  filterOperatorEquals: "שווה",
+  filterOperatorStartsWith: "מתחיל ב",
+  filterOperatorEndsWith: "מסתיים ב",
+  filterOperatorIs: "הוא",
+  filterOperatorNot: "אינו",
+  filterOperatorAfter: "אחרי",
+  filterOperatorOnOrAfter: "ב או אחרי",
+  filterOperatorBefore: "לפני",
+  filterOperatorOnOrBefore: "ב או לפני",
+  filterOperatorIsEmpty: "ריק",
+  filterOperatorIsNotEmpty: "אינו ריק",
+  filterOperatorIsAnyOf: "הוא אחד מ",
+};
 const DataTable = observer(() => {
   const [deleteItem, setDeleteItem] = useState(null);
   const [deleteTag, setDeleteTag] = useState(null);
@@ -53,39 +85,6 @@ const DataTable = observer(() => {
   const [tagsList, setTagsList] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
 
-
-  // useEffect(() => {
-  //   itemStore.fetchMedia();
-  //   tagStore.fetchTag();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await itemStore.fetchMedia();
-  //       await tagStore.fetchTag();
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-  // useEffect(() => {
-  //   setTagsList(tagStore.getTagsList); // Make sure this returns an array of objects
-  // }, [tagStore.tagList]);
-
-  // useEffect(() => {
-  //   setFilteredItems(filterItems(itemStore.mediaList));
-  //   setPage(1);
-  //   console.log("items:" + JSON.stringify(itemStore.mediaList));
-  // }, [itemStore.mediaList, filterType]);
-
-  // Fetch data and handle loading state
-
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -97,6 +96,7 @@ const DataTable = observer(() => {
         setIsLoading(false);
       }
     };
+    // handlePremmision();
 
     fetchData();
   }, [itemStore, tagStore]); // Dependencies: triggers fetchData when itemStore or tagStore changes
@@ -111,7 +111,7 @@ const DataTable = observer(() => {
     // const combinedItems = [...itemStore.mediaList, ...itemStore.mediaList2]; // שילוב שני המערכים
     setFilteredItems(filterItems(itemStore.mediaList));
     setPage(1);
-    console.log("items:" + JSON.stringify(itemStore.mediaList));
+    // console.log("items:" + JSON.stringify(itemStore.mediaList));
   }, [itemStore.mediaList, filterType]);
 
 
@@ -134,9 +134,7 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const deleteSuccess = await itemStore.deleteMedia(item.id);
-
-          if (deleteSuccess) {
+           await itemStore.deleteMedia(item.id);
             Swal.fire({
               title: "נמחק בהצלחה",
               text: "הפריט נמחק בהצלחה",
@@ -146,9 +144,6 @@ const DataTable = observer(() => {
             });
             // עדכן את רשימת הפריטים אחרי מחיקה
             itemStore.fetchMedia();
-          } else {
-            throw new Error("מחיקה נכשלה");
-          }
         } catch (error) {
           Swal.fire({
             title: "שגיאה",
@@ -262,6 +257,17 @@ const DataTable = observer(() => {
     itemStore.add = true;
   };
 
+  const handlePermission = (item) => {
+    const permission = getRoleFromToken();
+    if(permission != null){
+      if (permission === 'Book' && item.itemType !== TypeEnum.BOOK) return false;
+      if (permission === 'File' && item.itemType !== TypeEnum.FILE) return false;
+      if (permission === 'PhysicalItem' && item.itemType !== TypeEnum.PHYSICALITEM) return false;
+    }
+    return true;
+
+  }
+  
   const handleClickEdit = (item) => {
     setEditedItem(item);
     setEditOpen(true);
@@ -320,6 +326,17 @@ const DataTable = observer(() => {
     }
   };
 
+  const nameLevle = (level) => {
+    if(level === 2 )
+      return 'גבוהה';
+    if (level === 1)
+      return 'נמוכה';
+    if(level === 3 )
+      return 'כיתה';
+    if(level === 0 )
+      return 'גיל הרך';
+  };
+
   const [typeTab, setTypeTab] = useState('all');
   const filterItems = (items) => {
     if (!items) {
@@ -332,15 +349,13 @@ const DataTable = observer(() => {
     if (filterType === "book") {
       setTypeTab('book');
       return items.filter((item) => item.itemType === TypeEnum.BOOK);
-
     }
     if (filterType === 'object') {
       setTypeTab('object');
     return items.filter((item) =>item.itemType === TypeEnum.PHYSICALITEM);
-
     }
     setTypeTab('file');
-      return items.filter((item) => item.itemType === TypeEnum.FILE);
+    return items.filter((item) => item.itemType === TypeEnum.FILE);
   };
 
   const totalItems = filteredItems ? filteredItems.length : 0;
@@ -352,8 +367,8 @@ const DataTable = observer(() => {
       selectedItems.map(async (itemId) => {
         const item = filteredItems.find(item => item.id === itemId);
         const tag = tagsList.find(tag => tag.id === tagId);
-        console.log("item: " + JSON.stringify(item))
-        console.log("tag: " + JSON.stringify(tag))
+        // console.log("item: " + JSON.stringify(item))
+        // console.log("tag: " + JSON.stringify(tag))
         try {
           await itemStore.addItemTag(itemId, tagId);
           if (itemStore.isAddItemTag) {
@@ -381,42 +396,11 @@ const DataTable = observer(() => {
       });
       setSelectedItems([]);
     } catch (error) {
-      console.log("fail in handleAddTagsToItems: " + error);
+      // console.log("fail in handleAddTagsToItems: " + error);
     }
   };
 
-  const localeText = {
-    // תרגום של אפשרויות המיון והפילטור לעברית
-    columnMenuSortAsc: "מיון לפי סדר עולה",
-    columnMenuSortDesc: "מיון לפי סדר יורד",
-    columnMenuFilter: "סינון",
-    columnMenuHideColumn: "הסתר עמודה",
-    columnMenuUnsort: "בטל מיון",
-    noRowsLabel: "אין פריטים להצגה",
-    columnMenuManageColumns: "ניהול עמודות",
-    filterPanelAddFilter: "הוסף מסנן",
-    filterPanelDeleteIconLabel: "מחק",
-    filterPanelLinkOperator: "אופרטור לוגי",
-    filterPanelOperators: "אופרטור",
-    filterPanelOperatorAnd: "וגם",
-    filterPanelOperatorOr: "או",
-    filterPanelColumns: "עמודות",
-    filterPanelInputLabel: "ערך",
-    filterPanelInputPlaceholder: "סנן ערך",
-    filterOperatorContains: "מכיל",
-    filterOperatorEquals: "שווה",
-    filterOperatorStartsWith: "מתחיל ב",
-    filterOperatorEndsWith: "מסתיים ב",
-    filterOperatorIs: "הוא",
-    filterOperatorNot: "אינו",
-    filterOperatorAfter: "אחרי",
-    filterOperatorOnOrAfter: "ב או אחרי",
-    filterOperatorBefore: "לפני",
-    filterOperatorOnOrBefore: "ב או לפני",
-    filterOperatorIsEmpty: "ריק",
-    filterOperatorIsNotEmpty: "אינו ריק",
-    filterOperatorIsAnyOf: "הוא אחד מ",
-  };
+  
   const columns = [
     {
       field: "checkbox",
@@ -524,7 +508,7 @@ const DataTable = observer(() => {
           }}
         >
           {params.row.userID ? (params.row.userID) : ('')}
-          {console.log("params.row.userID", params.row.userID)}
+          {/* {console.log("params.row.userID", params.row.userID)} */}
 
         </div>
       )
@@ -576,7 +560,6 @@ const DataTable = observer(() => {
         </div>
       ),
     },
-
     {
       field: "status",
       headerName: "סטטוס",
@@ -693,12 +676,12 @@ const DataTable = observer(() => {
                     horizontal: 'right',
                   }}
                 >
-                  {console.log("item.tags", item.tags)} 
-                  {console.log("tagStore.getTagsList", tagStore.getTagsList)}
+                  {/* {console.log("item.tags", item.tags)}
+                  {console.log("tagStore.getTagsList", tagStore.getTagsList)} */}
 
                   {item.tags.map((tagId) => {
                     const tag = tagStore.getTagsList.find((tag) => tag.id === tagId);
-                    console.log("tegg", tag)
+                    //console.log("tegg", tag)
                     if (tag) {
                       return (
                         <Typography key={tag.id}
@@ -772,47 +755,56 @@ const DataTable = observer(() => {
       align: "left",
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "left",
-            alignItems: "left",
-            gap: "8px",
-          }}
-        >
-          <Tooltip title="ערוך">
-            <IconButton
-              color="#0D1E46"
-              onClick={() => handleClickEdit(params.row)}
-              style={{ color: "#0D1E46" }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="מחק">
-            <IconButton
-              onClick={() => handleDelete(params.row)}
-              style={{ color: "#0D1E46" }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-      ),
+      renderCell: (params) => {
+        const isPermitted = handlePermission(params.row);
+        return (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "left",
+              alignItems: "left",
+              gap: "8px",
+            }}
+          >
+            <Tooltip title="ערוך">
+              <span>
+                <IconButton
+                  color="#0D1E46"
+                  onClick={() => handleClickEdit(params.row)}
+                  style={{ color: "#0D1E46" }}
+                  disabled={!isPermitted}
+                >
+                  <EditIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="מחק">
+              <span>
+                <IconButton
+                  onClick={() => handleDelete(params.row)}
+                  style={{ color: "#0D1E46" }}
+                  disabled={!isPermitted}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </div>
+        );
+      },
     },
     {
       align: "right",
       disableColumnMenu: true,
       sortable: false,
       renderHeader: () => (
-        <Grid container  sx={{
+        <Grid container sx={{
           display: 'flex',
           justifyContent: 'flex-end', // הזזת הכפתורים ימינה
           alignItems: 'center',
           spacing: 2, // הוספת רווחים בין רכיבי ה-Grid
         }}>
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center',justifyContent: 'flex-end',spacing: 4 }}>
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'center', justifyContent: 'flex-end', spacing: 4 }}>
             <Button
               style={{
                 backgroundColor: "#0D1E46",
@@ -855,7 +847,7 @@ const DataTable = observer(() => {
   ].filter(column => {
     // if (TypeEnum.FILE && column.field === "publishingYear") return false;
     if (typeTab === "file" && column.field === "publishingYear") return false;
-    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author")) return false;
+    if (typeTab === "object" && (column.field === "publishingYear" || column.field === "author" || column.field === "status")) return false;
     // if (TypeEnum.PHYSICALITEM && (column.field === "publishingYear" || column.field === "author")) return false;
     return true;
   })
@@ -930,38 +922,45 @@ const DataTable = observer(() => {
             </CacheProvider>
           </Grid>
         </Grid>
-        <DataGrid
-          rows={paginatedItems}
-          columns={columns}
-          pageSize={rowsPerPage}
-          disableSelectionOnClick
-          localeText={localeText}
-          autoHeight
-          style={{ overflow: "hidden" }}
-          pagination={false} // Disable DataGrid pagination
-          hideFooterPagination
-          position="sticky"
-          hideFooter
-        />
-        <Box textAlign="center" marginTop={2}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Pagination
-              dir="ltr"
-              count={Math.ceil(totalItems / rowsPerPage)}
-              page={page}
-              onChange={handleChangePage}
-              variant="outlined"
-              color="primary"
-              shape="rounded"
-              renderItem={(item) => <PaginationItem {...item} />}
-            />
-          </Stack>
-        </Box>
+        {isLoading ? (
+
+          <Box display="flex" justifyContent = 'center' alignItems = "center" height = "400px">
+            <CircularProgress />
+          </Box>
+        ) : (<>
+          <DataGrid
+            rows={paginatedItems}
+            columns={columns}
+            pageSize={rowsPerPage}
+            disableSelectionOnClick
+            localeText={localeText}
+            autoHeight
+            style={{ overflow: "hidden" }}
+            pagination={false} // Disable DataGrid pagination
+            hideFooterPagination
+            position="sticky"
+            hideFooter
+          />
+          <Box textAlign="center" marginTop={2}>
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Pagination
+                dir="ltr"
+                count={Math.ceil(totalItems / rowsPerPage)}
+                page={page}
+                onChange={handleChangePage}
+                variant="outlined"
+                color="primary"
+                shape="rounded"
+                renderItem={(item) => <PaginationItem {...item} />}
+              />
+            </Stack>
+          </Box>
+        </>)}
         {paginatedItems.map((item) => (
           // {!typeTab === "object" &&
 
@@ -1034,8 +1033,17 @@ const DataTable = observer(() => {
                 style={{ marginRight: "10px" }}
                 dir="rtl"
               >
-                <strong> רמה: </strong>{item.itemLevel}
+                <strong> רמה: </strong>{nameLevle(item.itemLevel)}
               </Typography>
+
+              {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
+                <Typography
+                  variant="body1"
+                  style={{ marginRight: "10px" }}
+                  dir="rtl"
+                >
+                  <strong>חומר נלווה:</strong>  {item.accompanyingMaterial}
+                </Typography>}
               {item.itemType != TypeEnum.PHYSICALITEM && item.itemType != TypeEnum.FILE &&
                 <Typography
                   variant="body1"
