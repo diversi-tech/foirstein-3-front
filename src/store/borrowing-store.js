@@ -73,9 +73,9 @@ class BorrowingStore {
         body: JSON.stringify(BorrowingData),
       });
       if (res.status === 200) {
-        this.success("!נוסף בהצלחה");
+        this.success("!ההשאלה עודכנה בהצלחה");
       } else {
-        this.failure("!ההוספה נכשלה");
+        this.failure("!ההשאלה נכשלה");
       }
       this.fetchBorrowing();
     } catch (error) {
@@ -92,9 +92,9 @@ class BorrowingStore {
         body: JSON.stringify(BorrowingData),
       });
       if (res.status === 200) {
-        this.success("!עודכן בהצלחה");
+        this.success("!כמות הפריטים שהוחזרו עודכנה בהצלחה");
       } else {
-        this.failure("!העדכון נכשל");
+        this.failure("!עדכון ההחזרה נכשל");
       }
       this.fetchBorrowing();
     } catch (error) {
@@ -109,9 +109,9 @@ class BorrowingStore {
         method: "DELETE",
       });
       if (res.status === 200) {
-        this.success("!נמחק בהצלחה");
+        this.success("!הוחזר בהצלחה");
       } else {
-        this.failure("!המחיקה נכשלה");
+        this.failure("!ההחזרה נכשלה");
       }
       this.fetchBorrowing();
     } catch (error) {
