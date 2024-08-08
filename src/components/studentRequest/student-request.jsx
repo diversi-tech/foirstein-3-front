@@ -10,26 +10,20 @@ import requestStore from "../../store/studentsRequest-store";
 import { getUserIdFromTokenid } from "../decipheringToken";
 import Swal from "sweetalert2";
 import CallMissedOutgoingIcon from '@mui/icons-material/CallMissedOutgoing';
-
 import {
   Button,
   ButtonGroup,
   Checkbox,
- 
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Grid,
-  // Box,
-  // Collapse,
   IconButton,
   Modal,
   Tab,
   Tabs,
-  // TableCell,
-  // TableRow,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -39,9 +33,12 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CheckBox } from "@mui/icons-material";
 import { Box } from "@mui/system";
-// import { CacheProvider } from "@emotion/react";
-// import ItemSearch from "../item/item-search";
 import { TypeEnum } from "../Enums";
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import SecurityIcon from '@mui/icons-material/Security';
+import CategoryIcon from '@mui/icons-material/Category';
 const localeText = {
   // תרגום של אפשרויות המיון והפילטור לעברית
   columnMenuSortAsc: "מיון לפי סדר עולה",
@@ -81,10 +78,19 @@ const StudentDetailsModal = ({ open, handleClose, student }) => (
         <Typography variant="h6" component="h2" textAlign={'center'}>
         פרטי התלמידה
         </Typography> 
-        <Typography> שם: {student.studentFname}</Typography>
+         <Typography>
+         <PersonIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+           {`שם :${student.studentFname} ${student.studentSname}`}
+       </Typography>
         <Typography>תעודת זהות: {student.studentTZ}</Typography>
-        <Typography>מייל: {student.studentEmail}</Typography>
-        <Typography>טלפון: {student.studentPhoneNumber}</Typography>
+        <Typography>
+          <PhoneIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+        {`טלפון :${student.studentPhoneNumber}`}
+        </Typography>
+        <Typography>
+           <EmailIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+          {`מייל :${student.studentEmail}`}
+        </Typography>
         <Typography>מספר הבקשות: {student.studentRequestCount}</Typography>
         <Typography>מחיר: {student.totalPrice}</Typography>
         <Typography>תאריך הבקשה: {formatDate(student.fromDate)}</Typography>
@@ -93,7 +99,22 @@ const StudentDetailsModal = ({ open, handleClose, student }) => (
       <Button onClick={handleClose} sx={{ mt: 2 }}>סגור</Button>
     </Box>
   </Modal>
-
+  // <Typography>
+  //         <PersonIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+  //         {`שם :${librarian.librarianFname} ${librarian.librarianSname}`}
+  //       </Typography>
+  //       <Typography>
+  //         <EmailIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+  //         {`מייל :${librarian.librarianEmail}`}
+  //       </Typography>
+  //       <Typography>
+  //         <PhoneIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+  //         {`טלפון :${librarian.librarianPhoneNumber}`}
+  //       </Typography>
+  //       <Typography>
+  //         <SecurityIcon sx={{ height: '1em', marginLeft: '5px', verticalAlign: 'middle' }} />
+  //         {`הרשאה :${librarian.librarianRole}`}
+  //       </Typography>
 );
 function formatDate(dateString) {
   const dateObj = new Date(dateString);
@@ -112,18 +133,11 @@ const StudentRequest = observer(() => {
   const [selectedRequest, setSelectedRequest] =useState([]);
   const [rows, setRows] = React.useState([]);
   const [studentDetails, setStudentDetails] = useState(null);
-  // const [openRows, setOpenRows] = React.useState({});
   const [filterType, setFilterType] = React.useState("all");
   const [typeTab, setTypeTab] = React.useState('all');
-  // const [filterType, setFilterType] = React.useState("all");
   const [filteredRequest, setFilteredRequest] = React.useState([]);
   const rowsPerPage = 9;
-  // const handleExpandClick = (requestId) => {
-  //   setOpenRows((prevOpenRows) => ({
-  //     ...prevOpenRows,
-  //     [requestId]: !prevOpenRows[requestId],
-  //   }));
-  // };
+
   const handleSelectItem = (request) => {
     setSelectedRequest((prevSelectedItems) => {
       console.log("!!!!!!!", request);
@@ -135,18 +149,7 @@ const StudentRequest = observer(() => {
       }
     });
   };
-  // const extractRawData=(proxyObject) =>{
-  //   if (proxyObject != undefined && proxyObject.data != null) {
-  //     console.log("Extracting data from proxy object:", proxyObject.data);
-  //     return proxyObject.data;
-  //   } else {
-  //     console.log(
-  //       "Returning original object as it's not a proxy:",
-  //       proxyObject
-  //     );
-  //     return proxyObject;
-  //   }
-  // }
+
   React.useEffect(() => {
     setFilteredRequest(filterRequest(requestStore.requestList));
     setPage(1);
@@ -201,12 +204,19 @@ const StudentRequest = observer(() => {
       align: "center",
       disableColumnMenu: true,
       sortable: false,
-      renderCell: (params) =>
-        !params.row.itemType ? (
-          <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
-        ) : (
-          <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
-        ),
+      // renderCell: (params) =>
+      //   !params.row.itemType ? (
+      //     <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
+      //   ) : (
+      //     <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
+      //   ),
+        renderCell: (params) => {
+          switch (params.row.itemType) {
+            case 'book': return <MenuBookRoundedIcon sx={{ color: "#0D1E46" }}/>
+            case 'file': return <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }}/>
+            case 'physical': <CategoryIcon sx={{ color: "#0D1E46" }}/>
+          }
+        },
     },
     {
       field: "requestId",
@@ -215,13 +225,7 @@ const StudentRequest = observer(() => {
       headerAlign: "center",
       align: "center",
     },
-    {
-      field: "itemTitle",
-      headerName: "שם פריט",
-      flex: 0.75,
-      headerAlign: "center",
-      align: "center",
-    },
+    
     {
       field: "studentFname",
       headerName: "שם משתמש ",
@@ -247,14 +251,15 @@ const StudentRequest = observer(() => {
       },
     },
     {
-      field: "totalPrice",
-      headerName: "תאריך אישור",
-      flex: 1,
+      field: "itemTitle",
+      headerName: "שם פריט",
+      flex: 0.75,
       headerAlign: "center",
       align: "center",
     },
+    
     {
-      field: "untilDate",
+      field: "fromDate",
       headerName: "תאריך בקשה",
       flex: 1,
       headerAlign: "center",
@@ -263,6 +268,13 @@ const StudentRequest = observer(() => {
         const formattedDate = formatDate(params.value); // Replace `formatDate` with your actual formatting function
             return formattedDate;
           },
+    },
+    {
+      field: "untilDate",
+      headerName: "תאריך החזרה",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
     },
     {
       field: "cc",
@@ -289,20 +301,12 @@ const StudentRequest = observer(() => {
     };
     getRequests();
   }, requestStore.getRequest);
-  // React.useEffect(() => {
-  //   console.log("Request List:", requestStore.requestList);
-  //   console.log("Selected Requests:", selectedRequest);
-  // }, [requestStore.requestList, selectedRequest]);
+
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
-  // const handleSearch = (searchTerm) => {
-  //   const filtered = requestStore.getRequest.filter((item) =>
-  //     item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-  //   setFilteredRequest(filteredRequest(filtered));
-  // };
+
   const filterRequest = (request) => {
     if (!request) {
       return [];
@@ -410,7 +414,6 @@ const StudentRequest = observer(() => {
       </div>
       <Stack spacing={2} direction="row" justifyContent="center" sx={{ mt: 2 }}>
         <Pagination
-          // count={Math.ceil(rows.length / pageSize)}
           page={page}
           onChange={handlePageChange}
           dir="ltr"
@@ -497,7 +500,6 @@ function AlertDialog({ requestId }) {
       }
     }
   };
-  // console.log("requestid",requestId);
 
   return (
     <React.Fragment>
@@ -523,12 +525,6 @@ function AlertDialog({ requestId }) {
             border: "none",
           }}
         >
-          {/* <CheckCircleIcon style={{
-            marginBottom: '0',
-            fontSize: '20px',
-            alignSelf: 'center',
-            marginTop: '4px'
-          }} /> */}
           <span
             style={{
               marginTop: "2px",
@@ -556,12 +552,6 @@ function AlertDialog({ requestId }) {
             border: "none",
           }}
         >
-          {/* <CancelIcon style={{
-            marginBottom: '0',
-            fontSize: '20px',
-            alignSelf: 'center',
-            marginTop: '4px'
-          }} /> */}
           <span
             style={{
               marginTop: "2px",
