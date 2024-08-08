@@ -32,6 +32,7 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
+            messegeApprove: observable,
             pendingItemsList: observable,
             fetchPendingItems: action,
             approvalItem: action,
@@ -102,11 +103,16 @@ class ItemStore {
             console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
-                // this.message = " הפריט אושר";
+                 this.messegeApprove = " הפריט אושר";
                 await itemStore.fetchPendingItems();
             }
+            else if (res.status === 403) {
+                const errorData = await res.json(); 
+                console.error("Error:", errorData.message);
+                this.messegeApprove = "אין לך הרשאה לאשר את הפריט הזה."; 
+            } 
             else {
-                // this.message = "אישור פריט לא הצליח"
+                 this.messegeApprove = "אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {

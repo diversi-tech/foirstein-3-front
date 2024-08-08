@@ -245,8 +245,15 @@ async function approval(itemId) {
           timer: 1500
         });
       }
-        
-
+      else if(itemStore.messegeApprove==="אין לך הרשאה לאשר את הפריט הזה.")
+      {
+         Swal.fire({
+          icon: "error",
+          title: "אין לך הרשאה לאשר את הפריט הזה.",
+          showConfirmButton: false,
+          timer: 1500
+        }); 
+      }
       else
         Swal.fire({
           icon: "error",
