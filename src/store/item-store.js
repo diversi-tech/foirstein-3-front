@@ -206,8 +206,6 @@ class ItemStore {
     //     }
     // }
 
-
-
     async deleteMedia(mediaId) {
          console.log("hiiDeleteMedia!!!!!!!!");
         try {
