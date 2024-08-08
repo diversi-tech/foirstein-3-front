@@ -84,8 +84,6 @@ function createData(item) {
       moreDetails: moreDetails,
   };
 }
-
-
 function Row(props) {
   const { row, onEdit } = props;
   const [open, setOpen] = React.useState(false);
