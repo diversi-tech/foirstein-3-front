@@ -47,25 +47,51 @@ function ExternalRedirect({ url }) {
   return null;
 }
 export const Routing = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
-  const role = isLoggedIn ? getRoleFromToken() : null;
-  useEffect(() => {
-    setIsLoggedIn(!!getCookie('jwt'));
-  }, []);
-  //delete!!!!!!!!!!!!
-  //  var isLoggedIn=true;
-  // var role='Admin';
-  const checkToken = async () => {
-        const isValid = await validateToken();
-        if (!isValid) {
-          console.log("go to other domain!!!!!!")
-          window.location.replace ('https://login.foirstein.diversitech.co.il') ;
-          console.log("go to other domain!!!!!!")
+  // const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
+  // const role = isLoggedIn ? getRoleFromToken() : null;
+  // useEffect(() => {
+  //   setIsLoggedIn(!!getCookie('jwt'));
+  // }, []);
+  // //delete!!!!!!!!!!!!
+  // //  var isLoggedIn=true;
+  // // var role='Admin';
+  // const checkToken = async () => {
+  //       const isValid = await validateToken();
+  //       if (!isValid) {
+  //         console.log("go to other domain!!!!!!")
+  //         window.location.replace ('https://login.foirstein.diversitech.co.il') ;
+  //         console.log("go to other domain!!!!!!")
   
+  //       }
+  //       else
+  //       console.log("valid tokennnn");
+  //     };
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const jwt = getCookie('jwt');
+      if (jwt) {
+        const isValid = await validateToken();
+        if (isValid) {
+          setIsLoggedIn(true);
+          setRole(getRoleFromToken());
+        } else {
+          window.location.replace(loginDomain);
         }
-        else
-        console.log("valid tokennnn");
-      };
+      } else {
+        window.location.replace(loginDomain);
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  if (!isLoggedIn || role === 'Student') {
+    return null;
+  }
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -77,9 +103,9 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
-          { (!isLoggedIn || role=='Student') && (
+          {/* { (!isLoggedIn || role=='Student') && (
                   window.location.replace ('https://login.foirstein.diversitech.co.il') 
-                )}
+                )} */}
 
           {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
 
