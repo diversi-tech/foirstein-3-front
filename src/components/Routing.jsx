@@ -36,6 +36,7 @@ import { AccessibilityProvider } from "./AccessibilityContext";
 import { useEffect, useState } from "react";
 import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
+import BarcodeGenerator from "./__BarcodeGenerator";
 
 const baseDomain = '.foirstein.diversitech.co.il/#/'
 const loginDomain = `https://login${baseDomain}`
@@ -47,6 +48,7 @@ function ExternalRedirect({ url }) {
   return null;
 }
 export const Routing = () => {
+  const [item, setItem] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
   const role = isLoggedIn ? getRoleFromToken() : null;
   useEffect(() => {
@@ -67,6 +69,7 @@ export const Routing = () => {
   return (
     <HashRouter>
       <AccessibilityProvider>
+        <BarcodeGenerator setItem={setItem} />
         <nav className="navbar">
           <Nav />
         </nav>
@@ -118,6 +121,12 @@ export const Routing = () => {
             <Route path='/StatusListView' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/StatusListView" />} />
             <Route path='/SavedItemsScreen' element={<ExternalRedirect url="https://search.foirstein.diversitech.co.il/#/SavedItemsScreen" />} />
             <Route path="*" element={<h1>Page Not Found</h1>} />
+
+            <Route
+              path="/borrow"
+              element={<ExternalRedirect url={`https://search.foirstein.diversitech.co.il/#/borrow?item=${encodeURIComponent(JSON.stringify(item))}`} />}
+            />
+
           </Routes>
           <Footer />
         </div>

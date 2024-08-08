@@ -80,7 +80,7 @@ const ItemDdd = observer(() => {
         tag: [],
         filePath: '',
         recommended: false,
-        userID: 5,
+        userID: 0,
         itemType: TypeEnum.FILE,
         itemLevel: LevelEnum.HIGH,
         amount: 0,

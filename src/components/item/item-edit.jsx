@@ -287,7 +287,7 @@ export default function ItemEdit({ mediaItem, onClose }) {
       style={{ direction: "rtl" }}
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle>עריכת פרטים</DialogTitle>
+        <DialogTitle>עריכת {getTypeText(formData.itemType)}</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"

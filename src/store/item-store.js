@@ -228,31 +228,35 @@ class ItemStore {
     // //     }
     // // }
 
-    // async deleteMedia(mediaId) {
-    //     console.log("hiiDeleteMedia!!!!!!!!");
-    //     try {
-    //         const res = await fetch(`${baseURL}/${mediaId}`, {
-    //             method: 'DELETE'
-    //         });
-    //         if (res.status === 200) {
-    //             this.isDeleteItem = true;
-    //         }
-    //         else {
-    //             this.isDeleteItem = false;
-    //         }
-    //         this.fetchMedia();
-    //     } catch (error) {
-    //         console.error('Failed to delete media:', error);
-    //     }
-    // }
+    async deleteMedia(mediaId) {
+        console.log("hiiDeleteMedia!!!!!!!!");
+        try {
+            const res = await fetch(`${baseURL}/${mediaId}`, {
+                method: 'DELETE'
+            });
+            if (res.status === 200) {
+                this.isDeleteItem = true;
+                
+            }
+            else {
+                this.isDeleteItem = false;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+        return isDeleteItem;
+    }
 
     async uploadMediaObject(mediaData) {
         try {
+            console.log("mediaData", mediaData);
+            
             const res = await fetch(`${baseURL}/physicalItem`, {
                 method: 'POST',
                 body: mediaData,
             });
-
+            console.log("mediaDataAfter", mediaData);
             const data = await res.json(); // לוודא שהתוכן מפורק כ-JSON
             console.log("Response from server:", data); // להדפיס את התוכן מהשרת
 

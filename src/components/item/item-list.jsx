@@ -201,15 +201,17 @@ const DataTable = observer(() => {
           });
           setSelectedItems([]);
           itemStore.fetchMedia();
-        } catch (error) {
-          Swal.fire({
-            title: "שגיאה",
-            text: "התרחשה שגיאה בעת מחיקת הפריטים",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          console.error("Error deleting selected items:", error);
+        } catch (error) {       
+            Swal.fire({
+              title: "שגיאה",
+              text: "התרחשה שגיאה בעת מחיקת הפריטים",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            console.error("Error deleting selected items:", error);
+          
+
         }
       } else if (result.isDenied) {
         Swal.fire({
@@ -537,7 +539,7 @@ const DataTable = observer(() => {
       }
     },
     {
-      field: "userID", headerName: "שם המעלה", flex: 1, align: "right",
+      field: "userId", headerName: "שם המעלה", flex: 1, align: "right",
       renderCell: (params) => (
         <div
           style={{
@@ -548,7 +550,9 @@ const DataTable = observer(() => {
             textOverflow: "ellipsis",
           }}
         >
-          {params.row.userID ? (params.row.userID) : ('')}
+          {console.log("params.row.userId", params.row)}
+          
+          {params.row.userId ? `${params.row.fname} ${params.row.sname}` : ''}
           {/* {console.log("params.row.userID", params.row.userID)} */}
 
         </div>
@@ -966,7 +970,7 @@ const DataTable = observer(() => {
         </Grid>
         {isLoading ? (
 
-          <Box display="flex" justifyContent = 'center' alignItems = "center" height = "400px">
+          <Box display="flex" justifyContent='center' alignItems="center" height="400px">
             <CircularProgress />
           </Box>
         ) : (<>
