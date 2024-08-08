@@ -24,25 +24,66 @@ import './PendingItems.css';
 import ItemEdit from '../item/item-edit';
 import { useState } from "react";
 import EditIcon from '@mui/icons-material/Edit';
-function createData(itemId, title, author, category, createdAt, description, fileP, publishingYear) {
-  return {
-    itemId,
-    title,
-    author,
-    category,
-    createdAt: createdAt.replace(/T/g, ' '),
-    moreDetails: [
+// function createData(itemId, title, author, category, createdAt, description, fileP, publishingYear) {
+//   return {
+//     itemId,
+//     title,
+//     author,
+//     category,
+//     createdAt: createdAt.replace(/T/g, ' '),
+//     moreDetails: [
+//       {
+//         desc: description,
+//         filePath: fileP,
+//         link: title,
+//         publishingYear: publishingYear,
+//         isFile: fileP ? fileP.includes('http') : false,
+//       },
+//     ],
+//   };
+// }
+function createData(item) {
+  const moreDetails = [
       {
-        desc: description,
-        filePath: fileP,
-        link: title,
-        publishingYear: publishingYear,
-        isBook: fileP.includes('http'),
+          desc: item.description,
+          itemLevel: item.itemLevel,
+          filePath: item.filePath,
+          link: item.title,
+          publishingYear: item.publishingYear,
+          isFile: item.filePath ? item.filePath.includes('http') : false,
       },
-    ],
+  ];
+  
+
+  if (item.itemType === 1) {
+    //  moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
+      moreDetails[0].note = item.note;
+      moreDetails[0].amount = item.amount;
+      moreDetails[0].edition = item.edition;
+      moreDetails[0].series = item.series;
+      moreDetails[0].available = item.available;
+      moreDetails[0].numOfSeries = item.numOfSeries;
+      moreDetails[0].language = item.language;
+      moreDetails[0].accompanyingMaterial = item.accompanyingMaterial;
+      moreDetails[0].hebrewPublicationYear = item.hebrewPublicationYear;
+  }
+  else if (item.itemType === 0) {
+    moreDetails[0].note = item.note;
+  }
+  else if (item.itemType === 2) {
+   // moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
+    moreDetails[0].note = item.note;
+  }
+  return {
+      itemId: item.id,
+      title: item.title,
+      author: item.author,
+      category: item.category,
+      itemType: item.itemType,
+      createdAt: item.createdAt.replace(/T/g, ' '),
+      moreDetails: moreDetails,
   };
 }
-
 function Row(props) {
   const { row, onEdit } = props;
   const [open, setOpen] = React.useState(false);
@@ -53,10 +94,10 @@ function Row(props) {
     const editData = {
       id:itemId,
       title,
-      author,
-      category,
-      createdAt,
       description: moreDetails[0].desc,
+      category,
+      author,
+      createdAt,
       filePath: moreDetails[0].filePath,
       publishingYear: moreDetails[0].publishingYear,
     };
@@ -102,7 +143,7 @@ function Row(props) {
                     {moreDetail.publishingYear}
                   </Typography>
                 </Box>
-                {moreDetail.isBook ? (
+                {moreDetail.isFile ? (
                   <Box display="flex" dir='rtl'>
                     <Typography variant="subtitle1" dir='rtl'><b>קובץ: </b></Typography>
                     <Typography variant="subtitle1" style={{ marginRight: "10px" }} dir='rtl'>
@@ -118,6 +159,46 @@ function Row(props) {
                       {moreDetail.filePath}
                     </Typography>
                   </Box>
+                )}
+                 {row.itemType === 1 && (
+                  <>
+                    <Box display="flex" dir='rtl'>
+                      <Typography variant="subtitle1" dir='rtl'><b>חומר נלווה: </b></Typography>
+                      <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                        {moreDetail.accompanyingMaterial}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" dir='rtl'>
+                      <Typography variant="subtitle1" dir='rtl'><b>שנת הוצאה עברית: </b></Typography>
+                      <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                        {moreDetail.hebrewPublicationYear}
+                      </Typography>
+                    </Box>
+                  </>
+                )}
+                {row.itemType === 0 && (
+                  <Box display="flex" dir='rtl'>
+                    <Typography variant="subtitle1" dir='rtl'><b>הערה: </b></Typography>
+                    <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                      {moreDetail.note}
+                    </Typography>
+                  </Box>
+                )}
+                {row.itemType === 2 && (
+                  <>
+                    <Box display="flex" dir='rtl'>
+                      <Typography variant="subtitle1" dir='rtl'><b>מספר ימים לשאלה: </b></Typography>
+                      <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                        {moreDetail.numberOfDaysOfQuestion}
+                      </Typography>
+                    </Box>
+                    <Box display="flex" dir='rtl'>
+                      <Typography variant="subtitle1" dir='rtl'><b>הערה: </b></Typography>
+                      <Typography dir='rtl' variant="subtitle1" style={{ marginRight: "10px" }}>
+                        {moreDetail.note}
+                      </Typography>
+                    </Box>
+                  </>
                 )}
               </div>
             ))}
@@ -164,8 +245,15 @@ async function approval(itemId) {
           timer: 1500
         });
       }
-        
-
+      else if(itemStore.messegeApprove==="אין לך הרשאה לאשר את הפריט הזה.")
+      {
+         Swal.fire({
+          icon: "error",
+          title: "אין לך הרשאה לאשר את הפריט הזה.",
+          showConfirmButton: false,
+          timer: 1500
+        }); 
+      }
       else
         Swal.fire({
           icon: "error",
@@ -227,7 +315,8 @@ export const PendingItems = observer(() => {
   const [editedItem, setEditedItem] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
 
-  const rows = toJS(itemStore.getPendingList).map((i) => createData(i.id, i.title, i.author, i.category, i.createdAt, i.description, i.filePath, i.publishingYear));
+  // const rows = toJS(itemStore.getPendingList).map((i) => createData(i.id, i.title, i.author, i.category, i.createdAt, i.description, i.filePath, i.publishingYear,i.numberOfDaysOfQuestion,i.itemType,i.itemLevel,i.note));
+  const rows = toJS(itemStore.getPendingList).map((item) => createData(item));
 
   const handleClickEdit = (item) => {
     setEditedItem(item);
