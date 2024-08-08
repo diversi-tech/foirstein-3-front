@@ -32,7 +32,6 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
-            messegeApprove: observable,
             pendingItemsList: observable,
             fetchPendingItems: action,
             approvalItem: action,
@@ -105,16 +104,11 @@ class ItemStore {
             debugger
             if (res.status === 200) {
                 this.isApprov = true;
-                 this.messegeApprove = " הפריט אושר";
+                // this.message = " הפריט אושר";
                 await itemStore.fetchPendingItems();
             }
-            else if (res.status === 403) {
-                const errorData = await res.json(); 
-                console.error("Error:", errorData.message);
-                this.messegeApprove = "אין לך הרשאה לאשר את הפריט הזה."; 
-            } 
             else {
-                 this.messegeApprove = "אישור פריט לא הצליח"
+                // this.message = "אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
@@ -214,23 +208,27 @@ class ItemStore {
     //     }
     // }
 
+
+
     async deleteMedia(mediaId) {
          console.log("hiiDeleteMedia!!!!!!!!");
         try {
-             const res = await fetch(`${baseURL}/${mediaId}`, {
-                 method: 'DELETE'
-             });
-             if (res.status === 200) {
-                 this.isDeleteItem = true;
-             }
-             else {
-                 this.isDeleteItem = false;
-             }
-             this.fetchMedia();
-         } catch (error) {
-             console.error('Failed to delete media:', error);
-         }
-     }
+            const res = await fetch(`${baseURL}/${mediaId}`, {
+                method: 'DELETE'
+            });
+            if (res.status === 200) {
+                this.isError = false;
+                
+            }
+            else {
+                this.isError = true;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+        //return isDeleteItem;
+    }
 
     async uploadMediaObject(mediaData) {
 
