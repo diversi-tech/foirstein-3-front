@@ -241,17 +241,17 @@ class ItemStore {
                 method: 'DELETE'
             });
             if (res.status === 200) {
-                this.isDeleteItem = true;
+                this.isError = false;
                 
             }
             else {
-                this.isDeleteItem = false;
+                this.isError = true;
             }
             this.fetchMedia();
         } catch (error) {
             console.error('Failed to delete media:', error);
         }
-        return isDeleteItem;
+        //return isDeleteItem;
     }
 
     async uploadMediaObject(mediaData) {

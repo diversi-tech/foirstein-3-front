@@ -8,7 +8,6 @@ import ItemAdd from "./item-add";
 import { observer } from "mobx-react-lite";
 import CategoryIcon from "@mui/icons-material/Category";
 import ItemSearch from "./item-search";
-import { getRoleFromToken } from "../decipheringToken";
 import {
   IconButton,
   Tooltip,
@@ -57,6 +56,9 @@ import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 import { LevelEnum } from "../Enums";
+
+import { getRoleFromToken } from '../decipheringToken'
+
 export const localeText = {
   // תרגום של אפשרויות המיון והפילטור לעברית
   columnMenuSortAsc: "מיון לפי סדר עולה",
@@ -185,13 +187,13 @@ const DataTable = observer(() => {
               </Typography>
             )}
             {item.itemLevel && (
-             <Typography
-             variant="body1"
-             style={{ marginRight: "10px" }}
-             dir="rtl"
-           >
-             <strong> רמה: </strong>{nameLevle(item.itemLevel)}
-           </Typography>
+              <Typography
+                variant="body1"
+                style={{ marginRight: "10px" }}
+                dir="rtl"
+              >
+                <strong> רמה: </strong>{nameLevle(item.itemLevel)}
+              </Typography>
             )}
             {item.accompanyingMaterial && (
               <Typography>
@@ -213,7 +215,16 @@ const DataTable = observer(() => {
       </Modal>
     );
   };
-
+  const [role, setRole] = useState(null);
+  useEffect(() => {
+    const fetchRole = async () => {
+      const userRole = await getRoleFromToken();
+      setRole(userRole);
+      console.log('User Role1111111111111111111111111111111111111111111111111111111111:', userRole);
+    };
+    fetchRole();
+  }, [])
+  const isAdminOrLibrarian = role === 'Admin' || role === 'librairin';
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -247,6 +258,67 @@ const DataTable = observer(() => {
     setPage(value);
   };
 
+  // const handleDelete = (item) => {
+  //   setDeleteItem(item);
+  //   Swal.fire({
+  //     title: "האם אתה בטוח שברצונך למחוק",
+  //     text: "לא תוכל לשחזר",
+  //     icon: "warning",
+  //     showDenyButton: true,
+  //     denyButtonText: `ביטול`,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "כן, מחק",
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+
+  //       await itemStore.deleteMedia(item.id);
+  //       if (itemStore.isDeleteItem) {
+  //         Swal.fire({
+  //           title: "נמחק בהצלחה",
+  //           text: "הפריט נמחק בהצלחה",
+  //           icon: "success",
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //       }
+  //       else{
+  //         Swal.fire({
+  //           title: "שגיאה",
+  //           text: "התרחשה שגיאה בעת מחיקת הפריט",
+  //           icon: "error",
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //         console.error("Error deleting item new:", error);
+  //       }
+
+  //       // עדכן את רשימת הפריטים אחרי מחיקה
+  //       itemStore.fetchMedia();
+
+
+  //     } else if (result.isDenied) {
+  //       Swal.fire({
+  //         title: "בוטל",
+  //         text: "הפריט לא נמחק",
+  //         icon: "info",
+  //         showConfirmButton: false,
+  //         timer: 1500,
+  //       });
+  //     }
+  //     if (!itemStore.isDeleteItem) {
+  //       Swal.fire({
+  //         title: "שגיאה",
+  //         text: "התרחשה שגיאה בעת מחיקת הפריט",
+  //         icon: "error",
+  //         showConfirmButton: false,
+  //         timer: 1500,
+  //       });
+  //       console.error("Error deleting item:", error);
+  //     }
+  //   });
+  // };
+
   const handleDelete = (item) => {
     setDeleteItem(item);
     Swal.fire({
@@ -261,17 +333,38 @@ const DataTable = observer(() => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+
+          console.log("sxdcfvgbhnjmk,lkmjnhbgvfcdxsdcfvgbhnjmkjnhbgvfcdxcfvgbhnjmk,lkmjnhbgvfcdfvgbhnjmk,lmnbvfcdxcfvgbhnjmk,l");
+          
+          // Perform the deletion
           await itemStore.deleteMedia(item.id);
-          Swal.fire({
-            title: "נמחק בהצלחה",
-            text: "הפריט נמחק בהצלחה",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          // עדכן את רשימת הפריטים אחרי מחיקה
-          itemStore.fetchMedia();
+
+          // Wait for `itemStore.isDeleteItem` to be updated or add your own success check here
+          if (!itemStore.isError) {
+          
+
+            // Successful deletion
+            Swal.fire({
+              title: "נמחק בהצלחה",
+              text: "הפריט נמחק בהצלחה",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            // Update the media list after successful deletion
+            itemStore.fetchMedia();
+          } else {
+            // If `isDeleteItem` is false, show an error
+            Swal.fire({
+              title: "שגיאה",
+              text: "התרחשה שגיאה בעת מחיקת הפריט",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
         } catch (error) {
+          // Show error if there's an exception in deletion process
           Swal.fire({
             title: "שגיאה",
             text: "התרחשה שגיאה בעת מחיקת הפריט",
@@ -292,6 +385,7 @@ const DataTable = observer(() => {
       }
     });
   };
+
 
   const handleDeleteSelectedItems = async () => {
     Swal.fire({
@@ -321,16 +415,16 @@ const DataTable = observer(() => {
           });
           setSelectedItems([]);
           itemStore.fetchMedia();
-        } catch (error) {       
-            Swal.fire({
-              title: "שגיאה",
-              text: "התרחשה שגיאה בעת מחיקת הפריטים",
-              icon: "error",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            console.error("Error deleting selected items:", error);
-          
+        } catch (error) {
+          Swal.fire({
+            title: "שגיאה",
+            text: "התרחשה שגיאה בעת מחיקת הפריטים",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          console.error("Error deleting selected items:", error);
+
 
         }
       } else if (result.isDenied) {
@@ -386,6 +480,8 @@ const DataTable = observer(() => {
   };
 
   const handleClickAdd = () => {
+    console.log("itemStore.add = true");
+
     itemStore.add = true;
   };
 
@@ -527,9 +623,8 @@ const DataTable = observer(() => {
             `<p>הוספת התג "${tag.name}" לפריט "${item.title}" נכשלה</p>`
         )
         .join("");
-      const finalMessage = `${successMessages}${
-        successMessages && errorMessages ? "<br><br>" : ""
-      }${errorMessages}`;
+      const finalMessage = `${successMessages}${successMessages && errorMessages ? "<br><br>" : ""
+        }${errorMessages}`;
       Swal.fire({
         title: "תוצאות ההוספות",
         html: finalMessage || "לא היו שינויים.",
@@ -645,10 +740,7 @@ const DataTable = observer(() => {
             textOverflow: "ellipsis",
           }}
         >
-          {console.log("params.row.userId", params.row)}
-          
           {params.row.userId ? `${params.row.fname} ${params.row.sname}` : ''}
-          {/* {console.log("params.row.userID", params.row.userID)} */}
         </div>
       ),
     },
@@ -693,7 +785,7 @@ const DataTable = observer(() => {
           }}
         >
           {(params.row.filePath && params.row.filePath.includes("https")) ||
-          !params.row.author
+            !params.row.author
             ? "--"
             : params.row.publishingYear}
         </div>
@@ -978,36 +1070,34 @@ const DataTable = observer(() => {
               spacing: 4,
             }}
           >
-            <Button
-              style={{
-                backgroundColor: "#0D1E46",
-                color: "#FFD700",
-                padding: "4px 8px",
-                minWidth: "40px",
-                minHeight: "40px",
-                borderRadius: "5px",
-                "&:hover": {
-                  backgroundColor: "#0D1E46",
-                  color: "#FFD700",
-                },
-                marginRight: "10px",
-              }}
-              onClick={
-                selectedItems.length > 0
-                  ? handleDeleteSelectedItems
-                  : handleClickAdd
-              }
-            >
-              {selectedItems.length > 0 ? (
-                <Tooltip title="למחיקת פריטים מרובים">
-                  <DeleteIcon style={{ fontSize: "25px" }} />
-                </Tooltip>
-              ) : (
-                <Tooltip title="להוספת פריט חדש" arrow>
-                  <AddIcon style={{ fontSize: "25px" }} />
-                </Tooltip>
-              )}
-            </Button>
+            <Tooltip title={!isAdminOrLibrarian ? "אין הרשאת הוספה" : ""} arrow>
+              <span>
+                <Button
+                  style={{
+                    backgroundColor: '#0D1E46',
+                    color: '#FFD700',
+                    padding: '4px 8px',
+                    minWidth: '40px',
+                    minHeight: '40px',
+                    borderRadius: '5px',
+                    marginRight: '10px',
+                  }}
+                  disabled={!isAdminOrLibrarian} // Disable button if not Admin or Librarian
+                  onClick={
+                    selectedItems.length > 0
+                      ? handleDeleteSelectedItems
+                      : handleClickAdd
+                  }
+                >
+                  {selectedItems.length > 0 ? (
+                    <DeleteIcon style={{ fontSize: "25px" }} />
+                  ) : (
+                    <AddIcon style={{ fontSize: "25px" }} />
+                  )}
+                </Button>
+              </span>
+            </Tooltip>
+
           </Grid>
           {selectedItems.length > 0 && (
             <Grid
@@ -1026,7 +1116,7 @@ const DataTable = observer(() => {
     },
   ].filter((column) => {
     if (typeTab === "file" && column.field === "publishingYear") return false;
-    if ( typeTab === "object" &&
+    if (typeTab === "object" &&
       (column.field === "publishingYear" ||
         column.field === "author" ||
         column.field === "status")
