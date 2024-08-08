@@ -215,16 +215,16 @@ const DataTable = observer(() => {
       </Modal>
     );
   };
-  const [role, setRole] = useState(null);
-  useEffect(() => {
-    const fetchRole = async () => {
-      const userRole = await getRoleFromToken();
-      setRole(userRole);
-      console.log('User Role1111111111111111111111111111111111111111111111111111111111:', userRole);
-    };
-    fetchRole();
-  }, [])
-  const isAdminOrLibrarian = role === 'Admin' || role === 'librairin';
+  // const [role, setRole] = useState(null);
+  // useEffect(() => {
+  //   const fetchRole = async () => {
+  //     const userRole = await getRoleFromToken();
+  //     setRole(userRole);
+  //     console.log('User Role1111111111111111111111111111111111111111111111111111111111:', userRole);
+  //   };
+  //   fetchRole();
+  // }, [])
+ // const isAdminOrLibrarian = role === 'Admin' || role === 'librairin';
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -1070,7 +1070,7 @@ const DataTable = observer(() => {
               spacing: 4,
             }}
           >
-            <Tooltip title={!isAdminOrLibrarian ? "אין הרשאת הוספה" : ""} arrow>
+            <Tooltip title={ "אין הרשאת הוספה" } arrow>
               <span>
                 <Button
                   style={{
@@ -1082,7 +1082,7 @@ const DataTable = observer(() => {
                     borderRadius: '5px',
                     marginRight: '10px',
                   }}
-                  disabled={!isAdminOrLibrarian} // Disable button if not Admin or Librarian
+                  //disabled={!isAdminOrLibrarian} // Disable button if not Admin or Librarian
                   onClick={
                     selectedItems.length > 0
                       ? handleDeleteSelectedItems
