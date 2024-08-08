@@ -32,7 +32,6 @@ class ItemStore {
             fetchMedia: action,
             updateMedia: action,
             isApprov: observable,
-            messegeApprove: observable,
             pendingItemsList: observable,
             fetchPendingItems: action,
             approvalItem: action,
@@ -103,16 +102,11 @@ class ItemStore {
             console.log("status:" + res.status);
             if (res.status === 200) {
                 this.isApprov = true;
-                 this.messegeApprove = " הפריט אושר";
+                // this.message = " הפריט אושר";
                 await itemStore.fetchPendingItems();
             }
-            else if (res.status === 403) {
-                const errorData = await res.json(); 
-                console.error("Error:", errorData.message);
-                this.messegeApprove = "אין לך הרשאה לאשר את הפריט הזה."; 
-            } 
             else {
-                 this.messegeApprove = "אישור פריט לא הצליח"
+                // this.message = "אישור פריט לא הצליח"
             }
             this.fetchPendingItems();
         } catch (error) {
@@ -214,28 +208,8 @@ class ItemStore {
 
 
 
-
-
-    // // async deleteObject(mediaId) {
-    // //     console.log("hiiDeleteMedia!!!!!!!!");
-    // //     try {
-    // //         const res = await fetch(`${baseURL}/${mediaId}`, {
-    // //             method: 'DELETE'
-    // //         });
-    // //         if (res.status === 200) {
-    // //             this.isDeleteObject = true;
-    // //         }
-    // //         else {
-    // //             this.isDeleteObject = false;
-    // //         }
-    // //         this.fetchMedia();
-    // //     } catch (error) {
-    // //         console.error('Failed to delete media:', error);
-    // //     }
-    // // }
-
     async deleteMedia(mediaId) {
-        console.log("hiiDeleteMedia!!!!!!!!");
+         console.log("hiiDeleteMedia!!!!!!!!");
         try {
             const res = await fetch(`${baseURL}/${mediaId}`, {
                 method: 'DELETE'
@@ -257,13 +231,11 @@ class ItemStore {
     async uploadMediaObject(mediaData) {
 
         try {
-            console.log("mediaData", mediaData);
-            
             const res = await fetch(`${baseURL}/physicalItem`, {
                 method: 'POST',
                 body: mediaData,
             });
-            console.log("mediaDataAfter", mediaData);
+
             const data = await res.json(); // לוודא שהתוכן מפורק כ-JSON
             console.log("Response from server:", data); // להדפיס את התוכן מהשרת
 

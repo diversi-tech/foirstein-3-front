@@ -1,8 +1,8 @@
-import * as React from "react";
-import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
+import * as React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useState, useEffect } from 'react';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import {
     Button,
     Radio,
@@ -45,7 +45,16 @@ const MenuProps = {
             width: 250,
         },
     },
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
 };
+
+
+
 
 const ItemDdd = observer(() => {
     const theme = useTheme();
@@ -88,7 +97,7 @@ const ItemDdd = observer(() => {
         tag: [],
         filePath: '',
         recommended: false,
-        userID: 0,
+        userID: 5,
         itemType: TypeEnum.FILE,
         itemLevel: LevelEnum.HIGH,
         amount: 0,
@@ -211,9 +220,15 @@ const ItemDdd = observer(() => {
         //       //  setUploadedProduct.append(id, 192);
         //       setUploadedProduct({ id: 103 })
         //     }
+        //         }))
+        //       //  setUploadedProduct.append(id, 192);
+        //       setUploadedProduct({ id: 103 })
+        //     }
 
         // }
     };
+    // }
+
 
     const handleRecommendationToggle = () => {
         setFormData((prevData) => ({
@@ -261,7 +276,13 @@ const ItemDdd = observer(() => {
     const [finelly, setFinelly] = useState(false);
 
     //const [isDialogClosed, setIsDialogClosed] = useState(false);
+    //const [isDialogClosed, setIsDialogClosed] = useState(false);
 
+    useEffect(() => {
+        if (uploadedProduct) {
+            console.log("UploadedProduct updated:", uploadedProduct);
+        }
+    }, [uploadedProduct]);
     useEffect(() => {
         if (uploadedProduct) {
             console.log("UploadedProduct updated:", uploadedProduct);
@@ -397,6 +418,10 @@ const ItemDdd = observer(() => {
         // setFinelly(true)
         handleClose();
     };
+    setIsUpload(true);
+    // setFinelly(true)
+    handleClose();
+
     const handleBarcodeDialogClose = () => {
         setIsBarcodeDialogOpen(false);
         itemStore.uploadedProduct = null;

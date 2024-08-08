@@ -38,8 +38,8 @@ import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
 import BarcodeGenerator from "./__BarcodeGenerator";
 
-const baseDomain='.foirstein.diversitech.co.il/#/'
-const loginDomain=`https://login${baseDomain}`
+const baseDomain = '.foirstein.diversitech.co.il/#/'
+const loginDomain = `https://login${baseDomain}`
 
 function ExternalRedirect({ url }) {
   useEffect(() => {
@@ -54,20 +54,18 @@ export const Routing = () => {
   useEffect(() => {
     setIsLoggedIn(!!getCookie('jwt'));
   }, []);
-  //delete!!!!!!!!!!!!
-  //  var isLoggedIn=true;
-  // var role='Admin';
+
   const checkToken = async () => {
-        const isValid = await validateToken();
-        if (!isValid) {
-          console.log("go to other domain!!!!!!")
-          window.location.replace ('https://login.foirstein.diversitech.co.il') ;
-          console.log("go to other domain!!!!!!")
-  
-        }
-        else
-        console.log("valid tokennnn");
-      };
+    const isValid = await validateToken();
+    if (!isValid) {
+      console.log("go to other domain!!!!!!")
+      window.location.replace('https://login.foirstein.diversitech.co.il');
+      console.log("go to other domain!!!!!!")
+
+    }
+    else
+      console.log("valid tokennnn");
+  };
   return (
     <HashRouter>
       <AccessibilityProvider>
@@ -80,13 +78,13 @@ export const Routing = () => {
             <AccessibilityOptions />
           </div>
           <Routes>
-          { (!isLoggedIn || role=='Student') && (
-                  window.location.replace ('https://login.foirstein.diversitech.co.il') 
-                )}
+            {(!isLoggedIn || role == 'Student') && (
+              window.location.replace('https://login.foirstein.diversitech.co.il')
+            )}
 
-          {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
+            {(isLoggedIn && (role == 'Admin' || role == 'Librarian')) && (
 
-           <Route path="/" element={<Box ><ItemList /></Box>} />)}
+              <Route path="/" element={<Box ><ItemList /></Box>} />)}
 
             <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
             {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
