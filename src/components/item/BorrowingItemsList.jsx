@@ -24,7 +24,7 @@ import { TypeEnum } from "../Enums";
 import { localeText } from './item-list';
 
 const keyToHebrew = {
-  id: "מספר זיהוי",
+  id: "מספר ההשאלה",
   date: 'תאריך ההשאלה',
   librarianFname: "שם פרטי של הספרנית",
   librarianSname: "שם משפחה של הספרנית",
@@ -110,7 +110,6 @@ const StudentDetailsModal = ({ open, handleClose, student }) => (
 );
 
 const BorrowingTable = observer(() => {
-  const [borrowingItems, setBorrowingItems] = useState([]);
   const [filterType, setFilterType] = useState("all");
   const [filteredItems, setFilteredItems] = useState([]);
   const [librarianDetails, setLibrarianDetails] = useState(null);
@@ -128,32 +127,23 @@ const BorrowingTable = observer(() => {
     };
 
     fetchData();
-  }, [borrowingStore]);
+  }, []);
 
   useEffect(() => {
-    const items = borrowingStore.getborrowingList;
-    setBorrowingItems(items);
-  }, [borrowingStore.borrowingList]);
-
-  useEffect(() => {
+    console.log("borStore:" + toJS(borrowingStore.borrowingList))
     const items = filterItems(toJS(borrowingStore.borrowingList));
     setFilteredItems(items);
-  }, [borrowingItems, filterType]);
+  }, [borrowingStore.borrowingList, filterType]);
 
   const filterItems = (items) => {
-    if (!items) {
-      return [];
+    debugger
+    console.log("items:", items)
+    switch (filterType) {
+      case "all": return items;
+      case "book": return items.filter((item) => item.itemType === "book");
+      case "physical": return items.filter((item) => item.itemType === "physical");
+      default: return [];
     }
-    if (filterType === "all") {
-      return items;
-    }
-    if (filterType === "book") {
-      return items.filter((item) => item.itemType === 1);
-    }
-    if (filterType === 'object') {
-      return items.filter((item) => item.itemType === 2);
-    }
-    return items.filter((item) => item.itemType === 0);
   };
 
   const handleSearch = (searchTerm) => {
@@ -171,11 +161,13 @@ const BorrowingTable = observer(() => {
   ) : [];
   const columns = [
     { field: 'id', headerName: keyToHebrew['id'], flex: 1, headerAlign: 'center', align: 'center' },
-    { field: 'date', headerName: keyToHebrew['date'],
-    renderCell: (params) => {
-     return formatDate(params.row.date)
+    {
+      field: 'date', headerName: keyToHebrew['date'],
+      renderCell: (params) => {
+        return formatDate(params.row.date)
+      },
+      flex: 1, headerAlign: 'center', align: 'center'
     },
-     flex: 1, headerAlign: 'center', align: 'center' },
     { field: 'itemTitle', headerName: keyToHebrew['itemTitle'], flex: 1, headerAlign: 'center', align: 'center' },
     {
       field: 'itemType', headerName: keyToHebrew['itemType'],
@@ -183,7 +175,7 @@ const BorrowingTable = observer(() => {
         switch (params.row.itemType) {
           case 'book': return <MenuBookRoundedIcon sx={{ color: "#0D1E46" }} />
           case 'file': return <TextSnippetRoundedIcon sx={{ color: "#0D1E46" }} />
-          case 'physical': <CategoryIcon sx={{ color: "#0D1E46" }} />
+          case 'physical': return <CategoryIcon sx={{ color: "#0D1E46" }} />
         }
       },
       flex: 1,
@@ -251,7 +243,7 @@ const BorrowingTable = observer(() => {
   ];
   const totalItems = filteredItems ? filteredItems.length : 0;
   return (
-    <div className="itemListDiv" dir="rtl">
+    <div className="itemListDiv" dir="rtl" style={{ marginBottom: 0, paddingBottom: 0 }}>
       <h2 align="center">רשימת פריטים מושאלים</h2>
       <Grid container spacing={2} sx={{ backgroundColor: "#0D1E46", padding: 2 }}>
         <Grid
@@ -325,7 +317,7 @@ const BorrowingTable = observer(() => {
               localeText={localeText}
               autoHeight
               style={{ overflow: "hidden" }}
-              pagination={false} 
+              pagination={false}
               hideFooterPagination
               position="sticky"
               hideFooter
