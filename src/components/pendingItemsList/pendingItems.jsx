@@ -56,7 +56,7 @@ function createData(item) {
   
 
   if (item.itemType === 1) {
-      moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
+    //  moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
       moreDetails[0].note = item.note;
       moreDetails[0].amount = item.amount;
       moreDetails[0].edition = item.edition;
@@ -71,7 +71,7 @@ function createData(item) {
     moreDetails[0].note = item.note;
   }
   else if (item.itemType === 2) {
-    moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
+   // moreDetails[0].numberOfDaysOfQuestion = item.numberOfDaysOfQuestion;
     moreDetails[0].note = item.note;
   }
   return {
