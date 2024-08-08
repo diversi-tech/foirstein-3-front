@@ -142,6 +142,7 @@ const BorrowingTable = observer(() => {
       case "all": return items;
       case "book": return items.filter((item) => item.itemType === "book");
       case "physical": return items.filter((item) => item.itemType === "physical");
+      case "file": return items.filter((item) => item.itemType === "file");
       default: return [];
     }
   };
