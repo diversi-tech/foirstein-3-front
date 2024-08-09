@@ -100,7 +100,7 @@ export const getRoleFromToken = () => {
       const permissions = decoded['permissions'];
       console.log(permissions);
       console.log(permissions.include("Book"));
-      permissions.include("Physical");
+      console.log(permissions.include("Physical"));
       
        // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
       return {
