@@ -24,16 +24,17 @@ import {
     OutlinedInput,
     Checkbox,
     ListItemText,
-    IconButton
-} from '@mui/material';
-import itemStore from '../../store/item-store';
-import Swal from 'sweetalert2'
-import { createTheme, useTheme } from '@mui/material/styles';
-import tagStore from '../../store/tag-store';
+    IconButton,
+} from "@mui/material";
+import itemStore from "../../store/item-store";
+import Swal from "sweetalert2";
+import { createTheme, useTheme } from "@mui/material/styles";
+import tagStore from "../../store/tag-store";
 // import { useTheme } from '@mui/material/styles';
-import { LevelEnum } from '../Enums';
-import { TypeEnum } from '../Enums';
-
+import { LevelEnum } from "../Enums";
+import { TypeEnum } from "../Enums";
+import BarcodeGenerator from '../__BarcodeGenerator';
+import { getUserIdFromToken } from "../decipheringToken";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -44,7 +45,16 @@ const MenuProps = {
             width: 250,
         },
     },
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
 };
+
+
+
 
 const ItemDdd = observer(() => {
     const theme = useTheme();
@@ -53,12 +63,30 @@ const ItemDdd = observer(() => {
     const [error, setError] = useState(false);
     const [isApproved, setIsApproved] = useState();
     const [isHandleUpload, setIsHndleUpload] = useState(false);
-    const [selectedValue, setSelectedValue] = useState('');
+    const [selectedValue, setSelectedValue] = useState("");
     const [isUpload, setIsUpload] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
     const [touchedFields, setTouchedFields] = useState({});
     // const [error, setTouchedFields] = useState({});
     //const [isRecommended, setIsRecommended] = useState(false);
+
+    const [uploadedProduct, setUploadedProduct] = useState(null); // שמירת המוצר שהועלה
+    const LevelEnumMapping = {
+        [LevelEnum.PRESCHOOL]: "גיל הרך",
+        [LevelEnum.LOW]: "נמוכה",
+        [LevelEnum.HIGH]: "גבוהה",
+        [LevelEnum.CLASS]: "כיתה"
+    };
+
+    // const [id, setRole] = useState(null);
+    // useEffect(() => {
+    //     const fetchUserId = async () => {
+    //         const userId = await getUserIdFromToken();
+    //         setRole(userId);
+    //         console.log('User IDIDIDIDIDIDIDIDIDIDIDIDIDIIDIDID:', userId);
+    //     };
+    //     fetchUserId();
+    // }, [])
 
     const [formData, setFormData] = useState({
         title: '',
@@ -84,39 +112,61 @@ const ItemDdd = observer(() => {
 
     });
 
+    useEffect(() => {
+        const fetchUserId = async () => {
+            const userId = await getUserIdFromToken(); // קבלת userID מהטוקן
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                userID: userId // עדכון ה-userID ב-formData
+            }));
+            console.log('User IDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIDIIDIDIDIDIDIDIDID:', userId);
+        };
+
+        fetchUserId();
+    }, []);
+
     const getRecommendationText = (value) => {
         switch (value) {
-            case 'book':
-                return 'האם הספר מומלץ?';
-            case 'file':
-                return 'האם הקובץ מומלץ?';
-            case 'object':
-                return 'האם המוצר מומלץ?';
+            case "book":
+                return "האם הספר מומלץ?";
+            case "file":
+                return "האם הקובץ מומלץ?";
+            case "object":
+                return "האם המוצר מומלץ?";
             default:
-                return 'האם פריט זה מומלץ?';
+                return "האם פריט זה מומלץ?";
         }
     };
 
-    const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'zip', 'mp4', 'docx', 'mp3'];
+    const allowedExtensions = [
+        "pdf",
+        "jpg",
+        "jpeg",
+        "png",
+        "zip",
+        "mp4",
+        "docx",
+        "mp3",
+    ];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     const handleClose = () => {
         setOpen(false);
         itemStore.add = false;
         setFormData({
-            title: '',
-            description: '',
-            category: '',
-            author: '',
-            publishingYear: '',
+            title: "",
+            description: "",
+            category: "",
+            author: "",
+            publishingYear: "",
             tag: [],
-            filePath: '',
+            filePath: "",
             itemType: TypeEnum.FILE,
-            itemLevel: LevelEnum.HIGH
+            itemLevel: LevelEnum.HIGH,
         });
         setIsHndleUpload(false);
-        setSelectedValue('');
-        setIsApproved('');
+        setSelectedValue("");
+        setIsApproved("");
         setTouchedFields({});
     };
 
@@ -125,11 +175,15 @@ const ItemDdd = observer(() => {
         const value = event.target.value;
         setFormData((prevData) => ({
             ...prevData,
-            itemType: value === 'book' ? TypeEnum.BOOK : value === 'object' ? TypeEnum.PHYSICALITEM : TypeEnum.FILE,
-            filePath: value === 'book' ? '' : value === 'object' ? '' : null,
+            itemType:
+                value === "book"
+                    ? TypeEnum.BOOK
+                    : value === "object"
+                        ? TypeEnum.PHYSICALITEM
+                        : TypeEnum.FILE,
+            filePath: value === "book" ? "" : value === "object" ? "" : null,
         }));
         setSelectedValue(value);
-
     };
     const [selectedLevel, setSelectedLevel] = useState();
     const handleChangeSelect = (event) => {
@@ -139,13 +193,13 @@ const ItemDdd = observer(() => {
         // setIsRecommended(!isRecommended);
         const { name, value, type, files } = e.target;
         setTouchedFields((prev) => ({ ...prev, [name]: true }));
-        if (type === 'file') {
+        if (type === "file") {
             setFormData((prevData) => ({
                 ...prevData,
                 [name]: files[0],
             }));
         } else {
-            if (name === 'category' || name === 'author') {
+            if (name === "category" || name === "author") {
                 const lettersRegex = /^[א-תA-Za-z\s]*$/;
                 if (!lettersRegex.test(value)) {
                     return; // If the value doesn't match, do nothing
@@ -156,14 +210,31 @@ const ItemDdd = observer(() => {
                 [name]: value,
             }));
         }
+        // if (selectedValue === 'object') {
+        //     if (name === 'filePath' || name === 'title') {
+        //         setUploadedProduct((prevData) => ({
+        //             ...prevData,
+        //             [name]: value,
+
+        //         }))
+        //       //  setUploadedProduct.append(id, 192);
+        //       setUploadedProduct({ id: 103 })
+        //     }
+        //         }))
+        //       //  setUploadedProduct.append(id, 192);
+        //       setUploadedProduct({ id: 103 })
+        //     }
+
+        // }
     };
+    // }
+
 
     const handleRecommendationToggle = () => {
         setFormData((prevData) => ({
             ...prevData,
             recommended: !prevData.recommended,
-            userID: prevData.userID + 1,
-
+            // userID: prevData.userID + 1,
         }));
     };
 
@@ -171,19 +242,21 @@ const ItemDdd = observer(() => {
         const { value } = event.target;
         setTouchedFields((prev) => ({ ...prev, tag: true }));
         setFormData((prevData) => {
-            const newTags = typeof value === 'string' ? value.split(',') : value;
+            const newTags = typeof value === "string" ? value.split(",") : value;
             return {
-                ...prevData, tag: newTags.map(tagName => {
-                    const tag = tagStore.tagList.find(t => t.name === tagName);
+                ...prevData,
+                tag: newTags.map((tagName) => {
+                    const tag = tagStore.tagList.find((t) => t.name === tagName);
                     return tag ? tag.id : tagName;
-                })
+                }),
             };
         });
     };
 
-    const fileExtension = formData.filePath && typeof formData.filePath.name === 'string'
-        ? formData.filePath.name.split('.').pop().toLowerCase()
-        : '';
+    const fileExtension =
+        formData.filePath && typeof formData.filePath.name === "string"
+            ? formData.filePath.name.split(".").pop().toLowerCase()
+            : "";
 
     useEffect(() => {
         const isValid =
@@ -193,15 +266,30 @@ const ItemDdd = observer(() => {
             formData.author.length >= 3 &&
             formData.publishingYear.length >= 4 &&
             formData.tag.length > 0 &&
-            (selectedValue === 'book' ||
-                (selectedValue === 'file' &&
+            (selectedValue === "book" ||
+                (selectedValue === "file" &&
                     formData.filePath &&
-                    allowedExtensions.includes(fileExtension)
-                    //formData.filePath.size <= maxSize
-                )
-            );
+                    allowedExtensions.includes(fileExtension)));
+        //formData.filePath.size <= maxSize
         setIsFormValid(isValid);
     }, [formData, selectedValue, fileExtension]);
+    const [finelly, setFinelly] = useState(false);
+
+    //const [isDialogClosed, setIsDialogClosed] = useState(false);
+    //const [isDialogClosed, setIsDialogClosed] = useState(false);
+
+    useEffect(() => {
+        if (uploadedProduct) {
+            console.log("UploadedProduct updated:", uploadedProduct);
+        }
+    }, [uploadedProduct]);
+    useEffect(() => {
+        if (uploadedProduct) {
+            console.log("UploadedProduct updated:", uploadedProduct);
+        }
+    }, [uploadedProduct]);
+
+    const [isBarcodeDialogOpen, setIsBarcodeDialogOpen] = useState(true);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -210,113 +298,134 @@ const ItemDdd = observer(() => {
         const objectToSend = new FormData();
         const fileToSend = new FormData();
         for (const key in dataToSend) {
-            if (key === 'tag') {
-                const tagIds = dataToSend[key].map(tagName => {
-                    const tag = tagStore.tagList.find(t => t.name === tagName);
+            if (key === "tag") {
+                const tagIds = dataToSend[key].map((tagName) => {
+                    const tag = tagStore.tagList.find((t) => t.name === tagName);
                     return tag ? tag.id : tagName;
                 });
-                tagIds.forEach(tagId => formDataToSend.append('tags[]', tagId));
-                tagIds.forEach(tagId => objectToSend.append('tags[]', tagId));
-                tagIds.forEach(tagId => fileToSend.append('tags[]', tagId));
+                tagIds.forEach((tagId) => formDataToSend.append("tags[]", tagId));
+                tagIds.forEach((tagId) => objectToSend.append("tags[]", tagId));
+                tagIds.forEach((tagId) => fileToSend.append("tags[]", tagId));
             } else {
                 formDataToSend.append(key, dataToSend[key]);
-                objectToSend.append(key, dataToSend[key]);
+                //objectToSend.append(key, dataToSend[key]);
                 fileToSend.append(key, dataToSend[key]);
             }
         }
-        handleClose();
         Swal.fire({
             title: "?האם ברצונך לשמור את הפריט",
             showDenyButton: true,
             confirmButtonText: "אישור",
-            denyButtonText: `ביטול`
+            denyButtonText: `ביטול`,
         }).then(async (result) => {
             if (result.isConfirmed) {
-                if (selectedValue === 'object') {
-
+                let response = null;
+                if (selectedValue === "object") {
                     for (const key in formData) {
                         // if (key === 'title' || key === 'description' || key === 'category' || key === 'note' || key === 'amount' || key === 'itemLevel' || key === 'numberOfDaysOfQuestion' ||
                         //     key === 'itemType' || key === 'recommended'
                         // ) {
-                            objectToSend.append(key, formData[key]);
-                       // }
+                        objectToSend.append(key, formData[key]);
                     }
-                    await itemStore.uploadMediaObject(objectToSend);
+                    response = await itemStore.uploadMediaObject(objectToSend);
+                    console.log("response", response);
+
                     Swal.fire({
                         icon: "success",
                         title: "הפריט נשמר בהצלחה",
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 1500,
+                    }).then(() => {
+                        setIsBarcodeDialogOpen(true);
                     });
-                }
-                else if (selectedValue === 'file') {
+                    // if (response.status === 'success') {
+                    //     console.log("response.status === 'success'");
+                    //     console.log("response.data.id,", response.data.id);
+                    //     setFinelly(true)
+                    //     setTimeout(() => {
+                    //         console.log("UploadedProduct after timeout:", itemStore.uploadedProduct);
+                    //     }, 3000);
+
+                    //     console.log("UploadedProduct", itemStore.uploadedProduct);
+                    // }
+                } else if (selectedValue === "file") {
                     for (const key in formData) {
-                        if (key === 'filePath' && formData[key] instanceof File) {
+                        if (key === "filePath" && formData[key] instanceof File) {
                             fileToSend.append(key, formData[key]);
                         }
                         fileToSend.append(key, formData[key]);
                     }
-                    await itemStore.uploadMediaFile(fileToSend);
+                    response = await itemStore.uploadMediaFile(fileToSend);
                     Swal.fire({
                         icon: "success",
                         title: "הפריט נשמר בהצלחה",
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 1500,
                     });
                 } else {
-                    await itemStore.uploadMediaBook(formDataToSend);
+                    response = await itemStore.uploadMediaBook(formDataToSend);
                     Swal.fire({
                         icon: "success",
                         title: "הפריט נשמר בהצלחה",
                         showConfirmButton: false,
-                        timer: 1500
+                        timer: 1500,
                     });
                 }
-            } else if (result.isDenied) {
 
-                Swal.fire({
-                    icon: "info",
-                    title: "הפריט לא נשמר",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            } if (itemStore.isError) {
-                Swal.fire({
-                    icon: "error",
-                    title: "אופס... תקלה בעת שמירת הפריט",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                if (result.isDenied) {
+                    Swal.fire({
+                        icon: "info",
+                        title: "הפריט לא נשמר",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                }
+                if (itemStore.isError) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "אופס... תקלה בעת שמירת הפריט",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                }
             }
         });
         setFormData({
-            title: '',
-            description: '',
-            category: '',
-            author: '',
-            publishingYear: '',
+            title: "",
+            description: "",
+            category: "",
+            author: "",
+            publishingYear: "",
             tag: [],
-            filePath: '',
+            filePath: "",
             recommended: false,
             userID: 5,
             itemType: TypeEnum.FILE,
             itemLevel: LevelEnum.HIGH,
             amount: 0,
             numberOfDaysOfQuestion: 0,
-            edition: '',
-            series: '',
+            edition: "",
+            series: "",
             numOfSeries: 0,
-            language: '',
-            note: '',
-            accompanyingMaterial: '',
-            hebrewPublicationYear: ''
+            language: "",
+            note: "",
+            accompanyingMaterial: "",
+            hebrewPublicationYear: "",
         });
         setIsHndleUpload(true);
-        setSelectedValue('');
-        setIsUpload(true);
-        // handleClose();
-    }
 
+        setIsUpload(true);
+        // setFinelly(true)
+        handleClose();
+    };
+    setIsUpload(true);
+    // setFinelly(true)
+    handleClose();
+
+    const handleBarcodeDialogClose = () => {
+        setIsBarcodeDialogOpen(false);
+        itemStore.uploadedProduct = null;
+    };
 
     return (
         <>
@@ -329,13 +438,25 @@ const ItemDdd = observer(() => {
                         value={selectedValue}
                         onChange={handleRadioChange}
                     >
-                        <FormControlLabel value="book" control={<Radio style={{ color: '#0D1E46' }} />} label="ספר" />
-                        <FormControlLabel value="file" control={<Radio style={{ color: '#0D1E46' }} />} label="קובץ דיגיטלי" />
-                        <FormControlLabel value="object" control={<Radio style={{ color: '#0D1E46' }} />} label="חפץ" />
+                        <FormControlLabel
+                            value="book"
+                            control={<Radio style={{ color: "#0D1E46" }} />}
+                            label="ספר"
+                        />
+                        <FormControlLabel
+                            value="file"
+                            control={<Radio style={{ color: "#0D1E46" }} />}
+                            label="קובץ דיגיטלי"
+                        />
+                        <FormControlLabel
+                            value="object"
+                            control={<Radio style={{ color: "#0D1E46" }} />}
+                            label="חפץ"
+                        />
                     </RadioGroup>
                 </FormControl>
 
-                {openF &&
+                {openF && (
                     <DialogContent>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -348,13 +469,17 @@ const ItemDdd = observer(() => {
                                         value={formData.title}
                                         onChange={handleChange}
                                         required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, title: true }))}
+                                        onBlur={() =>
+                                            setTouchedFields((prev) => ({ ...prev, title: true }))
+                                        }
                                     />
                                     {touchedFields.title && !formData.title && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
                                     {formData.title && formData.title.length < 2 && (
-                                        <Typography color="error">כותרת חייבת להכיל לפחות 2 תווים</Typography>
+                                        <Typography color="error">
+                                            כותרת חייבת להכיל לפחות 2 תווים
+                                        </Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -374,7 +499,9 @@ const ItemDdd = observer(() => {
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
                                     {formData.description && formData.description.length < 3 && (
-                                        <Typography color="error">התיאור חייב להכיל לפחות 3 תווים</Typography>
+                                        <Typography color="error">
+                                            התיאור חייב להכיל לפחות 3 תווים
+                                        </Typography>
                                     )}
                                 </FormControl>
                             </Grid>
@@ -388,17 +515,21 @@ const ItemDdd = observer(() => {
                                         value={formData.category}
                                         onChange={handleChange}
                                         required
-                                        onBlur={() => setTouchedFields((prev) => ({ ...prev, category: true }))}
+                                        onBlur={() =>
+                                            setTouchedFields((prev) => ({ ...prev, category: true }))
+                                        }
                                     />
                                     {touchedFields.category && !formData.category && (
                                         <Typography color="error">שדה חובה</Typography>
                                     )}
                                     {formData.category && formData.category.length < 2 && (
-                                        <Typography color="error">הקטגוריה חייבת להכיל לפחות 2 תווים</Typography>
+                                        <Typography color="error">
+                                            הקטגוריה חייבת להכיל לפחות 2 תווים
+                                        </Typography>
                                     )}
                                 </FormControl>
                             </Grid>
-                            {selectedValue !== 'object' &&
+                            {selectedValue !== "object" && (
                                 <>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
@@ -410,13 +541,20 @@ const ItemDdd = observer(() => {
                                                 value={formData.author}
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, author: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        author: true,
+                                                    }))
+                                                }
                                             />
                                             {touchedFields.author && !formData.author && (
                                                 <Typography color="error">שדה חובה</Typography>
                                             )}
                                             {formData.author && formData.author.length < 2 && (
-                                                <Typography color="error">מחבר חייב להכיל לפחות 2 תווים</Typography>
+                                                <Typography color="error">
+                                                    מחבר חייב להכיל לפחות 2 תווים
+                                                </Typography>
                                             )}
                                         </FormControl>
                                     </Grid>
@@ -431,7 +569,12 @@ const ItemDdd = observer(() => {
                                                 value={formData.edition}
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, edition: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        edition: true,
+                                                    }))
+                                                }
                                             />
                                             {touchedFields.edition && !formData.edition && (
                                                 <Typography color="error">שדה חובה</Typography>
@@ -446,16 +589,18 @@ const ItemDdd = observer(() => {
                                                 variant="outlined"
                                                 name="series"
                                                 value={formData.series}
-
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, series: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        series: true,
+                                                    }))
+                                                }
                                             />
                                             {touchedFields.series && !formData.series && (
                                                 <Typography color="error">שדה חובה</Typography>
                                             )}
-
-
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
@@ -466,10 +611,15 @@ const ItemDdd = observer(() => {
                                                 variant="outlined"
                                                 name="numOfSeries"
                                                 value={formData.numOfSeries}
-                                                type='number'
+                                                type="number"
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, numOfSeries: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        numOfSeries: true,
+                                                    }))
+                                                }
                                             />
                                             {touchedFields.numOfSeries && !formData.numOfSeries && (
                                                 <Typography color="error">שדה חובה</Typography>
@@ -486,7 +636,12 @@ const ItemDdd = observer(() => {
                                                 value={formData.language}
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, language: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        language: true,
+                                                    }))
+                                                }
                                             />
                                             {touchedFields.language && !formData.language && (
                                                 <Typography color="error">שדה חובה</Typography>
@@ -504,13 +659,17 @@ const ItemDdd = observer(() => {
                                                 value={formData.accompanyingMaterial}
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, accompanyingMaterial: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        accompanyingMaterial: true,
+                                                    }))
+                                                }
                                             />
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth margin="dense">
-
                                             <InputLabel id="availability-label">זמינות</InputLabel>
                                             <Select
                                                 margin="dense"
@@ -526,8 +685,8 @@ const ItemDdd = observer(() => {
                                         </FormControl>
                                     </Grid>
                                 </>
-                            }
-                            {selectedValue === 'book' && (
+                            )}
+                            {selectedValue === "book" && (
                                 <>
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
@@ -539,17 +698,25 @@ const ItemDdd = observer(() => {
                                                 value={formData.publishingYear}
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, publishingYear: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        publishingYear: true,
+                                                    }))
+                                                }
                                             />
-                                            {touchedFields.publishingYear && !formData.publishingYear && (
-                                                <Typography color="error">שדה חובה</Typography>
-                                            )}
-                                            {formData.publishingYear && formData.publishingYear.length < 4 && (
-                                                <Typography color="error">שנת הוצאה חייבת להכיל 4 תווים</Typography>
-                                            )}
+                                            {touchedFields.publishingYear &&
+                                                !formData.publishingYear && (
+                                                    <Typography color="error">שדה חובה</Typography>
+                                                )}
+                                            {formData.publishingYear &&
+                                                formData.publishingYear.length < 4 && (
+                                                    <Typography color="error">
+                                                        שנת הוצאה חייבת להכיל 4 תווים
+                                                    </Typography>
+                                                )}
                                         </FormControl>
                                     </Grid>
-
 
                                     <Grid item xs={12}>
                                         <FormControl fullWidth>
@@ -562,36 +729,72 @@ const ItemDdd = observer(() => {
                                                 // type='number'
                                                 onChange={handleChange}
                                                 required
-                                                onBlur={() => setTouchedFields((prev) => ({ ...prev, hebrewPublicationYear: true }))}
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        hebrewPublicationYear: true,
+                                                    }))
+                                                }
                                             />
-                                            {touchedFields.hebrewPublicationYear && !formData.hebrewPublicationYear && (
+                                            {touchedFields.hebrewPublicationYear &&
+                                                !formData.hebrewPublicationYear && (
+                                                    <Typography color="error">שדה חובה</Typography>
+                                                )}
+                                        </FormControl>
+                                    </Grid>
+                                </>
+                            )}
+                            {selectedValue !== "file" && (
+                                <>
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="numberOfDaysOfQuestionId"
+                                                label="מספר ימי השאלה"
+                                                variant="outlined"
+                                                name="numberOfDaysOfQuestion"
+                                                value={formData.numberOfDaysOfQuestion}
+                                                type="number"
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        numberOfDaysOfQuestion: true,
+                                                    }))
+                                                }
+                                            />
+                                            {touchedFields.numberOfDaysOfQuestion &&
+                                                !formData.numberOfDaysOfQuestion && (
+                                                    <Typography color="error">שדה חובה</Typography>
+                                                )}
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                id="filePathId"
+                                                label="מיקום"
+                                                variant="outlined"
+                                                name="filePath"
+                                                value={formData.filePath}
+                                                onChange={handleChange}
+                                                required
+                                                onBlur={() =>
+                                                    setTouchedFields((prev) => ({
+                                                        ...prev,
+                                                        filePath: true,
+                                                    }))
+                                                }
+                                                type="text"
+                                            />
+                                            {touchedFields.filePath && !formData.filePath && (
                                                 <Typography color="error">שדה חובה</Typography>
                                             )}
                                         </FormControl>
                                     </Grid>
                                 </>
-                            )}
-                            {selectedValue !== 'file' && (
-
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <TextField
-                                            id="numberOfDaysOfQuestionId"
-                                            label="מספר ימי השאלה"
-                                            variant="outlined"
-                                            name="numberOfDaysOfQuestion"
-                                            value={formData.numberOfDaysOfQuestion}
-                                            type='number'
-                                            onChange={handleChange}
-                                            required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, numberOfDaysOfQuestion: true }))}
-                                        />
-                                        {touchedFields.numberOfDaysOfQuestion && !formData.numberOfDaysOfQuestion && (
-                                            <Typography color="error">שדה חובה</Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid>
-
                             )}
                             <Grid item xs={12}>
                                 <TextField
@@ -612,12 +815,12 @@ const ItemDdd = observer(() => {
                                         labelId="level-select-label"
                                         id="level-select"
                                         name="itemLevel"
-                                        onChange={handleChangeSelect}
+                                        onChange={handleChange}
                                         input={<OutlinedInput label="רמה" />}
                                     >
-                                        {Object.values(LevelEnum).map((level) => (
-                                            <MenuItem key={level} value={level}>
-                                                {level}
+                                        {Object.keys(LevelEnum).map((key) => (
+                                            <MenuItem key={LevelEnum[key]} value={LevelEnum[key]}>
+                                                {LevelEnumMapping[LevelEnum[key]]}
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -635,11 +838,19 @@ const ItemDdd = observer(() => {
                                         multiple
                                         value={formData.tag}
                                         onChange={handleTagChange}
-                                        input={<OutlinedInput id="select-multiple-chip" label="תגיות" />}
+                                        input={
+                                            <OutlinedInput id="select-multiple-chip" label="תגיות" />
+                                        }
                                         renderValue={(selected) => (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                                                 {selected.map((value) => (
-                                                    <Chip key={value} label={tagStore.tagList.find(tag => tag.id === value)?.name || value} />
+                                                    <Chip
+                                                        key={value}
+                                                        label={
+                                                            tagStore.tagList.find((tag) => tag.id === value)
+                                                                ?.name || value
+                                                        }
+                                                    />
                                                 ))}
                                             </Box>
                                         )}
@@ -654,51 +865,42 @@ const ItemDdd = observer(() => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {selectedValue === 'book' &&
-                                <Grid item xs={12}>
-                                    <FormControl fullWidth>
-                                        <TextField
-                                            id="filePathId"
-                                            label="מיקום"
-                                            variant="outlined"
-                                            name="filePath"
-                                            value={formData.filePath}
-                                            onChange={handleChange}
-                                            required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
-                                            type='text'
-                                        />
-                                        {touchedFields.filePath && !formData.filePath && (
-                                            <Typography color="error">שדה חובה</Typography>
-                                        )}
-                                    </FormControl>
-                                </Grid>}
-                            {selectedValue === 'file' && (
+                            {/* {selectedValue === 'book' &&
+                              } */}
+                            {selectedValue === "file" && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
                                             id="fileId"
                                             type="file"
                                             label="קובץ"
-
                                             name="filePath"
                                             onChange={handleChange}
                                             required
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, filePath: true }))}
+                                            onBlur={() =>
+                                                setTouchedFields((prev) => ({
+                                                    ...prev,
+                                                    filePath: true,
+                                                }))
+                                            }
                                         />
                                         {touchedFields.filePath && !formData.filePath && (
                                             <Typography color="error">שדה חובה</Typography>
                                         )}
-                                        {formData.filePath && !allowedExtensions.includes(fileExtension) && (
-                                            <Typography color="error">סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx, ZIP, mp3, או MP4 file.</Typography>
-                                        )}
+                                        {formData.filePath &&
+                                            !allowedExtensions.includes(fileExtension) && (
+                                                <Typography color="error">
+                                                    סוג קובץ לא נתמך. אנא בחר/י PDF, JPG, JPEG, PNG, docx,
+                                                    ZIP, mp3, או MP4 file.
+                                                </Typography>
+                                            )}
                                     </FormControl>
                                 </Grid>
                             )}
-                            {selectedValue === 'object' && (
+                            {selectedValue === "object" && (
                                 <Grid item xs={12}>
                                     <FormControl fullWidth>
                                         <TextField
@@ -709,24 +911,61 @@ const ItemDdd = observer(() => {
                                             // value={formData.filePath}
                                             onChange={handleChange}
                                             required
-                                            onBlur={() => setTouchedFields((prev) => ({ ...prev, amount: true }))}
-                                            type='text'
+                                            onBlur={() =>
+                                                setTouchedFields((prev) => ({ ...prev, amount: true }))
+                                            }
+                                            type="text"
                                         />
                                     </FormControl>
                                 </Grid>
                             )}
-                            <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
-                                <Typography variant="body1">{getRecommendationText(selectedValue)}</Typography>
+                            <Grid
+                                item
+                                xs={12}
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <Typography variant="body1">
+                                    {getRecommendationText(selectedValue)}
+                                </Typography>
                                 <IconButton onClick={handleRecommendationToggle}>
-                                    {formData.recommended ? <StarIcon style={{ color: 'yellow' }} /> : <StarBorderIcon />}
+                                    {formData.recommended ? (
+                                        <StarIcon style={{ color: "yellow" }} />
+                                    ) : (
+                                        <StarBorderIcon />
+                                    )}
                                 </IconButton>
                             </Grid>
                         </Grid>
                     </DialogContent>
-                }
+                )}
                 <DialogActions>
-                    <Button type="submit" onClick={handleSubmit} style={{ color: '#0D1E46' }}  >העלאה</Button>
-                    <Button onClick={handleClose} style={{ color: '#0D1E46' }}>ביטול</Button>
+                    <Button
+                        type="submit"
+                        onClick={handleSubmit}
+                        style={{ color: "#0D1E46" }}
+                    >
+                        העלאה
+                    </Button>
+                    <Button onClick={handleClose} style={{ color: "#0D1E46" }}>
+                        ביטול
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={itemStore.uploadedProduct}
+                onClose={handleBarcodeDialogClose}
+            >
+                <DialogTitle>ברקוד עבור פריט</DialogTitle>
+                <DialogContent>
+                    {itemStore.uploadedProduct && (
+                        <BarcodeGenerator productData={itemStore.uploadedProduct} />
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleBarcodeDialogClose}>סגור</Button>
                 </DialogActions>
             </Dialog>
         </>

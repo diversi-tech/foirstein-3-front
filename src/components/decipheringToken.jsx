@@ -97,15 +97,17 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const permissions = decoded['permissions'];
+      const permissions = decoded['permission'];
       console.log(permissions);
-      console.log(permissions.include("Book"));
-      console.log(permissions.include("Physical"));
+      // console.log("book: "+permissions.includes("Book"));
+      // console.log("physical: "+permissions.includes("Physical"));
       
        // ההרשאות אמורות להיות כאן לפי הקוד שכתבת
-      return {
-        permissions: permissions || []
-      };
+
+      // return {
+      //   permissions: permissions || []
+      // };
+      return permissions || [];
     } catch (error) {
       console.error('Error decoding token:', error);
       return null;

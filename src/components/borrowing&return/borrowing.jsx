@@ -65,7 +65,7 @@ export default function borrowing() {
           width: "100%",
         }}
       >
-        {permissions.includes("Book") && permissions.include("Physical") ? (
+        {permissions.includes("Book") && permissions.includes("Physical") ? (
           <Tabs
             value={value}
             onChange={handleChange}

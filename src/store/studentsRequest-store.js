@@ -34,27 +34,30 @@ class StudentsRequestStore {
     });
     this.fetchRequest();
   }
-  async fetchRequest(){
+  async fetchRequest() {
     try {
-      const res = await fetch(`${baseUrl}BorrowRequest`);
+      const res = await fetch(`${baseUrl}BorrowRequest/withDetails`);
       const data = await res.json();
-      this.requestList=data;
+      runInAction(() => {
+        this.requestList = data;
+      });
       return data;
     } catch (error) {
       console.error("Failed to fetch data:", error);
-      console.log("!!!!!");
       return [];
     }
   }
+  
   get getRequest() {
-    console.log("request: "+this.requestList)
+    
+    // console.log("request: "+this.requestList)
     return this.requestList;
   }
   //עדכון שהבקשה אושרה
-  async updateApproveRequest(requestId) {
+  async updateApproveRequest(requestId,librarianId) {
     try {
       const res = await fetch(
-        `${baseUrl}BorrowApprovalRequest/approve/${requestId}`,
+        `${baseUrl}BorrowApprovalRequest/approve/${requestId}/${librarianId}`,
         {
           method: "PUT",
         }
@@ -68,10 +71,10 @@ class StudentsRequestStore {
     }
   }
   //עדכון שהבקשה נדחתה
-  async updateDenyRequest(requestId) {
+  async updateDenyRequest(requestId,librarianId) {
     try {
       const res = await fetch(
-        `${baseUrl}BorrowApprovalRequest/deny/${requestId}`,
+        `${baseUrl}BorrowApprovalRequest/deny/${requestId}/${librarianId}`,
         {
           method: "PUT",
         }
