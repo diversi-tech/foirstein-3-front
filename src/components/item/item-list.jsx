@@ -224,7 +224,7 @@ const DataTable = observer(() => {
   //   };
   //   fetchRole();
   // }, [])
- // const isAdminOrLibrarian = role === 'Admin' || role === 'librairin';
+  // const isAdminOrLibrarian = role === 'Admin' || role === 'librairin';
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
@@ -335,13 +335,13 @@ const DataTable = observer(() => {
         try {
 
           console.log("sxdcfvgbhnjmk,lkmjnhbgvfcdxsdcfvgbhnjmkjnhbgvfcdxcfvgbhnjmk,lkmjnhbgvfcdfvgbhnjmk,lmnbvfcdxcfvgbhnjmk,l");
-          
+
           // Perform the deletion
           await itemStore.deleteMedia(item.id);
 
           // Wait for `itemStore.isDeleteItem` to be updated or add your own success check here
           if (!itemStore.isError) {
-          
+
 
             // Successful deletion
             Swal.fire({
@@ -1070,33 +1070,33 @@ const DataTable = observer(() => {
               spacing: 4,
             }}
           >
-            <Tooltip title={ "אין הרשאת הוספה" } arrow>
-              <span>
-                <Button
-                  style={{
-                    backgroundColor: '#0D1E46',
-                    color: '#FFD700',
-                    padding: '4px 8px',
-                    minWidth: '40px',
-                    minHeight: '40px',
-                    borderRadius: '5px',
-                    marginRight: '10px',
-                  }}
-                  //disabled={!isAdminOrLibrarian} // Disable button if not Admin or Librarian
-                  onClick={
-                    selectedItems.length > 0
-                      ? handleDeleteSelectedItems
-                      : handleClickAdd
-                  }
-                >
-                  {selectedItems.length > 0 ? (
-                    <DeleteIcon style={{ fontSize: "25px" }} />
-                  ) : (
-                    <AddIcon style={{ fontSize: "25px" }} />
-                  )}
-                </Button>
-              </span>
-            </Tooltip>
+
+
+            <Button
+              style={{
+                backgroundColor: '#0D1E46',
+                color: '#FFD700',
+                padding: '4px 8px',
+                minWidth: '40px',
+                minHeight: '40px',
+                borderRadius: '5px',
+                marginRight: '10px',
+              }}
+              //disabled={!isAdminOrLibrarian} // Disable button if not Admin or Librarian
+              onClick={
+                selectedItems.length > 0
+                  ? handleDeleteSelectedItems
+                  : handleClickAdd
+              }
+            >
+              {selectedItems.length > 0 ? (
+                <DeleteIcon style={{ fontSize: "25px" }} />
+              ) : (
+                <AddIcon style={{ fontSize: "25px" }} />
+              )}
+            </Button>
+
+
 
           </Grid>
           {selectedItems.length > 0 && (
