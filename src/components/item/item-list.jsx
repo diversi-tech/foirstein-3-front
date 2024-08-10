@@ -579,6 +579,7 @@ const DataTable = observer(() => {
           }}
         >
           {(params.row.isApproved && params.row.author) ? "מאושר" : "ממתין לאישור"}
+         { console.log("(params.row.isApproved && params.row.author)",params.row.isApproved,params.row.author )}
         </div>
       ),
     },

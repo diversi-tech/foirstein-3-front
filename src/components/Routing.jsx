@@ -36,6 +36,7 @@ import { AccessibilityProvider } from "./AccessibilityContext";
 import { useEffect, useState } from "react";
 import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
+import AddNewRequest from "./AddNewRequest/AddNewRequest";
 
 const baseDomain='.foirstein.diversitech.co.il/#/'
 const loginDomain=`https://login${baseDomain}`
@@ -92,6 +93,7 @@ export const Routing = () => {
         <Route path="/itemsPendingApproval" element={<Box ><PendingItems /></Box>} />
         <Route path="/items/add" element={<Box ><ItemAdd /></Box>} />
         <Route path="/tag-list" element={<Box><TagList /></Box>} />
+        <Route path="/AddNewRequest" element={<Box><AddNewRequest /></Box>} />
         <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
         <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
         <Route path="/borrowing" element={<Box><Borrowing /></Box>} /> 

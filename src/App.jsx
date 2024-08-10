@@ -87,7 +87,7 @@ function App() {
     {/* <SideNav></SideNav> */}
     {/* <PendingItems /> */}
     {/* <Routing></Routing> */}
-    <AddNewRequest></AddNewRequest>
+    {/* <AddNewRequest></AddNewRequest> */}
   
   </>
   )

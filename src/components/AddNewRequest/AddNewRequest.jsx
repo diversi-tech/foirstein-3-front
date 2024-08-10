@@ -40,6 +40,16 @@ const AddNewRequest = observer(() => {
   const [editedItem, setEditedItem] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const totalItems = filteredItems ? filteredItems.length : 0;
+  const [role, setRole] = useState(null);
+  
+  // useEffect(() => {
+  //   const fetchRole = async () => {
+  //     const userRole = await getRoleFromToken();
+  //     setRole(userRole);
+  //     console.log('User Role1111111111111111111111111111111111111111111111111111111111:', userRole);
+  //   };
+  //   fetchRole();
+  // }, [])
 
   useEffect(() => {
     setFilteredItems(filterItems(addNewRequestStore.mediaList));
@@ -335,27 +345,7 @@ const columns = [
   //     </div>
   //   ),
   // },
-  // {
-  //     field: "status",
-  //     headerName: "סטטוס",
-  //     flex: 1,
-  //     align: "right",
-  //     sortable: false,
-  //     renderCell: (params) => (
-  //       <div
-  //         style={{
-  //           textAlign: "right",
-  //           width: "100%",
-  //           whiteSpace: "nowrap",
-  //           overflow: "hidden",
-  //           textOverflow: "ellipsis",
-  //           // color: params.row.isApproved ? "#2C6B2F" : "#E57373",
-  //         }}
-  //       >
-  //         {/* {params.row.isApproved ? "מאושר" : "ממתין לאישור"} */}
-  //       </div>
-  //     ),
-  //   },
+
     {
       field: "filePath",
       headerName: getHeaderName(typeTab),

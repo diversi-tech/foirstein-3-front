@@ -271,7 +271,7 @@ const handleProfileClickToRequestStatus = () => {
             </>
           )}
    
-          {(role === 'Librarian' || role === 'Admin')  && ( 
+          {( role === 'Librarian' || role === 'Admin')  && ( 
             <>
             
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
@@ -309,6 +309,7 @@ const handleProfileClickToRequestStatus = () => {
                             <MenuItem onClick={() => navigate('/items')}>כל הפריטים</MenuItem>
                             <MenuItem onClick={() => navigate('/itemsPendingApproval')}>ממתינים לאישור </MenuItem>
                             <MenuItem onClick={() => navigate('/studentRequest')}>בקשות של תלמידות</MenuItem>
+                            <MenuItem onClick={() => navigate('/AddNewRequest')}>הצעות לפריטים חדשים</MenuItem>
                             <MenuItem onClick={() => navigate('/tag-list')}>ניהול תגיות</MenuItem>
                             <MenuItem onClick={() => navigate('/items/borrowingItems')}>פריטים מושאלים</MenuItem>
                             <MenuItem onClick={() => navigate('/borrowing')}>טופס השאלה</MenuItem>

@@ -290,12 +290,12 @@ class ItemStore {
 
     async updateMediaBook(mediaId, mediaData) {
         try {
-
+            
             console.log("formData: ", mediaData, "beforeFetch");
             const res = await fetch(`${baseURL}/book/${mediaId}`, {
                 method: 'PUT',
                 body: mediaData
-                
+
             });
             console.log("formData: ", mediaData, "afterFetch");
             this.fetchMedia();
