@@ -95,11 +95,13 @@ class ItemStore {
         }
     }
     async approvalItem(itemId) {
+        debugger
         console.log(itemId)
         // this.isApprov = false;
         try {
             const res = await fetch(`${baseURL}/approvItem/${itemId}`, { method: 'PUT' });
             console.log("status:" + res.status);
+            debugger
             if (res.status === 200) {
                 this.isApprov = true;
                 // this.message = " הפריט אושר";
@@ -211,20 +213,22 @@ class ItemStore {
     async deleteMedia(mediaId) {
          console.log("hiiDeleteMedia!!!!!!!!");
         try {
-             const res = await fetch(`${baseURL}/${mediaId}`, {
-                 method: 'DELETE'
-             });
-             if (res.status === 200) {
-                 this.isDeleteItem = true;
-             }
-             else {
-                 this.isDeleteItem = false;
-             }
-             this.fetchMedia();
-         } catch (error) {
-             console.error('Failed to delete media:', error);
-         }
-     }
+            const res = await fetch(`${baseURL}/${mediaId}`, {
+                method: 'DELETE'
+            });
+            if (res.status === 200) {
+                this.isError = false;
+                
+            }
+            else {
+                this.isError = true;
+            }
+            this.fetchMedia();
+        } catch (error) {
+            console.error('Failed to delete media:', error);
+        }
+        //return isDeleteItem;
+    }
 
     async uploadMediaObject(mediaData) {
 

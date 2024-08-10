@@ -158,9 +158,7 @@ const BarcodeGenerator = ({ productData }) => {
                          text-align: center; 
                          font-family: Arial, sans-serif; 
                          background-color: #f4f4f4;
-                     }
-
-                     .label {
+                     }.label {
                          display: flex;
                          flex-direction: column;
                          align-items: center;
@@ -173,23 +171,18 @@ const BarcodeGenerator = ({ productData }) => {
                          width: fit-content;
                          margin: 0 auto;
                          max-width: 300px; 
-                     }
-
-                     .label-title { 
+                     } .label-title { 
                          font-size: 22px; 
                          font-weight: bold; 
                          color: #3f51b5; 
                          margin-bottom: 5px; 
                          text-align: center; 
-                     }
-
-                     .label-location { 
+                     } .label-location { 
                          font-size: 16px; 
                          margin-bottom: 15px; 
                          color: #555; 
                          text-align: center; 
-                     }
-
+                     }  
                      img { 
                          max-width: 100%; 
                          height: auto; 
