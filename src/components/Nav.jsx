@@ -271,7 +271,7 @@ const handleProfileClickToRequestStatus = () => {
             </>
           )}
    
-          {(1==1||role === 'Librarian' || role === 'Admin')  && ( 
+          {(role === 'Librarian' || role === 'Admin')  && ( 
             <>
             
               <StyledLink to="/UserManagementComponent" active={location.pathname === '/UserManagementComponent'}>
