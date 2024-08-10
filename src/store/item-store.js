@@ -95,11 +95,13 @@ class ItemStore {
         }
     }
     async approvalItem(itemId) {
+        debugger
         console.log(itemId)
         // this.isApprov = false;
         try {
             const res = await fetch(`${baseURL}/approvItem/${itemId}`, { method: 'PUT' });
             console.log("status:" + res.status);
+            debugger
             if (res.status === 200) {
                 this.isApprov = true;
                 // this.message = " הפריט אושר";

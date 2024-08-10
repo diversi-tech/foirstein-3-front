@@ -1,6 +1,9 @@
+// import { BrowserRouter, Route, Routes, HashRouter } from "react-router-dom";
 import { Nav } from "./Nav";
+
 import Footer from "./footer";
 import DataTable from "./item/BorrowingItemsList";
+
 import React from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -18,6 +21,7 @@ import RequestIcon from '@mui/icons-material/Assignment';
 import { BrowserRouter as Router, Routes, Route, Link, HashRouter } from 'react-router-dom';
 import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle';
 import { styled } from '@mui/material/styles';
+
 import ItemList from './item/item-list';
 import PendingItems from './pendingItemsList/pendingItems';
 import ItemAdd from './item/item-add';
@@ -32,8 +36,10 @@ import { AccessibilityProvider } from "./AccessibilityContext";
 import { useEffect, useState } from "react";
 import { getCookie, getRoleFromToken } from "./decipheringToken";
 import '../App.css'
+
 const baseDomain='.foirstein.diversitech.co.il/#/'
 const loginDomain=`https://login${baseDomain}`
+
 function ExternalRedirect({ url }) {
   useEffect(() => {
     window.location.href = url;
@@ -55,6 +61,7 @@ export const Routing = () => {
           console.log("go to other domain!!!!!!")
           window.location.replace ('https://login.foirstein.diversitech.co.il') ;
           console.log("go to other domain!!!!!!")
+  
         }
         else
         console.log("valid tokennnn");
@@ -71,10 +78,13 @@ export const Routing = () => {
           </div>
           <Routes>
           { (!isLoggedIn || role=='Student') && (
-                  window.location.replace ('https://login.foirstein.diversitech.co.il')
+                  window.location.replace ('https://login.foirstein.diversitech.co.il') 
                 )}
+
           {(isLoggedIn && (role=='Admin'|| role=='Librarian'))  &&(
+
            <Route path="/" element={<Box ><ItemList /></Box>} />)}
+
           <Route path='/homePage' element={<ExternalRedirect url={loginDomain} />} />
           {/* <Route path='/home' element={<div><ItemList /></div>} /> */}
         <Route path="/Librarian" element={<div><ItemList /></div>} />
@@ -83,9 +93,9 @@ export const Routing = () => {
         <Route path="/items/add" element={<Box ><ItemAdd /></Box>} />
         <Route path="/tag-list" element={<Box><TagList /></Box>} />
         <Route path="/tags/add" element={<Box><TagAdd /></Box>} />
-        <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} />
-        <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
-        <Route path="/returning" element={<Box><Returning /></Box>} />
+        <Route path="/items/borrowingItems" element={<Box><DataTable /></Box>} /> 
+        <Route path="/borrowing" element={<Box><Borrowing /></Box>} /> 
+        <Route path="/returning" element={<Box><Returning /></Box>} /> 
         <Route path="/studentRequest" element={<Box><StudentRequest /></Box>} />
         <Route path="/borrowing" element={<Box><Borrowing /></Box>} />
         <Route path="/returning" element={<Box><Returning /></Box>} />
