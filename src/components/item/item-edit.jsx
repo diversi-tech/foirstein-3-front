@@ -751,10 +751,10 @@ export default function ItemEdit({ numOfDay, mediaItem, onClose }) {
             zIndex: 1,
           }}
         >
-          <Button onClick={onClose} style={{ color: "#468585" }}>
+          <Button onClick={onClose} style={{ color:"#0D1E46"}}>
             ביטול
           </Button>
-          <Button type="submit" style={{ color: "#468585" }}>
+          <Button type="submit" style={{ color: "#0D1E46" }}>
             שמירה
           </Button>
         </DialogActions>

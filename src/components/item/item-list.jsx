@@ -34,7 +34,6 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import { LevelEnum } from "../Enums";
 
-import { getRoleFromToken } from '../decipheringToken'
 
 export const localeText = {
   // תרגום של אפשרויות המיון והפילטור לעברית

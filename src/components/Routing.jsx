@@ -48,14 +48,14 @@ function ExternalRedirect({ url }) {
   return null;
 }
 export const Routing = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
-  const role = isLoggedIn ? getRoleFromToken() : null;
-  useEffect(() => {
-    setIsLoggedIn(!!getCookie('jwt'));
-  }, []);
+  // const [isLoggedIn, setIsLoggedIn] = useState(!!getCookie('jwt'));
+  // const role = isLoggedIn ? getRoleFromToken() : null;
+  // useEffect(() => {
+  //   setIsLoggedIn(!!getCookie('jwt'));
+  // }, []);
   //delete!!!!!!!!!!!!
-  //  var isLoggedIn=true;
-  // var role='Admin';
+   var isLoggedIn=true;
+  var role='Admin';
   const checkToken = async () => {
         const isValid = await validateToken();
         if (!isValid) {
