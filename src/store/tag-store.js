@@ -1,8 +1,9 @@
 import { makeObservable, runInAction, observable, action } from "mobx";
 import Swal from "sweetalert2";
 
-const baseUrl = "https://libererisas-backend.onrender.com/api/Tag";
-
+//const baseUrl = "https://libererisas-backend.onrender.com/api/Tag";
+const baseServerURL = import.meta.env.BASE_SERVER_URL;
+const baseUrl = `${baseServerURL}/api/Tag`;
 class TagStore {
   tagList = [];
   isMessage = false;

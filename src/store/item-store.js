@@ -1,7 +1,10 @@
 import { makeAutoObservable, observable, action, computed, runInAction } from 'mobx';
 import { toJS } from 'mobx';
 
-const baseURL = 'https://libererisas-backend.onrender.com/api/Item';
+//const baseURL = 'https://libererisas-backend.onrender.com/api/Item';
+const baseServerURL = import.meta.env.BASE_SERVER_URL;
+const baseURL = `${baseServerURL}/api/Item`;
+
 // const baseURL = 'https://localhost:7297/api/Item';
 // const url = 'https://localhost:7297/api/PhysicalItem';
 

@@ -53,9 +53,7 @@ export const Routing = () => {
   useEffect(() => {
     setIsLoggedIn(!!getCookie('jwt'));
   }, []);
-  //delete!!!!!!!!!!!!
-  //  var isLoggedIn=true;
-  // var role='Admin';
+
   const checkToken = async () => {
         const isValid = await validateToken();
         if (!isValid) {

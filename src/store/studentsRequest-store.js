@@ -6,8 +6,9 @@ import {
   action,
 } from "mobx";
 import Swal from "sweetalert2";
-const baseUrl = "https://libererisas-backend.onrender.com/api/";
-
+//const baseUrl = "https://libererisas-backend.onrender.com/api/";
+const baseServerURL = import.meta.env.BASE_SERVER_URL;
+const baseUrl = `${baseServerURL}/api/`;
 // Utility function to extract raw data
 const extractRawData = (proxyObject) => {
   if (proxyObject && proxyObject.data) {

@@ -2,8 +2,9 @@ import { makeObservable, runInAction, observable, action } from "mobx";
 import Swal from "sweetalert2";
 import itemStore from "./item-store";
 
-const baseUrl = "https://libererisas-backend.onrender.com/api/Borrowing";
-
+//const baseUrl = "https://libererisas-backend.onrender.com/api/Borrowing";
+const baseServerURL = import.meta.env.BASE_SERVER_URL;
+const baseUrl = `${baseServerURL}/api/Borrowing`;
 class BorrowingStore {
   borrowingList = [];
   studentList = [];

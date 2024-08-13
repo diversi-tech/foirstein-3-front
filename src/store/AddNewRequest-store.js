@@ -1,7 +1,9 @@
 import { makeAutoObservable, observable, action, computed } from 'mobx';
 import { toJS } from 'mobx';
 
-const baseUrl='https://libererisas-backend.onrender.com/api/AddNewRequest';
+//const baseUrl='https://libererisas-backend.onrender.com/api/AddNewRequest';
+const baseServerURL = import.meta.env.BASE_SERVER_URL;
+const baseUrl = `${baseServerURL}/api/AddNewRequest`;
 // const baseUrl1 = "https://localhost:7297/api/AddNewRequest";
 // const url = 'https://librerisas-bafkend.onrender.com/api/Object';
 
