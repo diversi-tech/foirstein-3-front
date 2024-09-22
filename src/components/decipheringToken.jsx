@@ -14,7 +14,7 @@ export const getRoleFromToken = () => {
     try {
       const decoded = jwtDecode(token);
       console.log('Decoded Token:', decoded); // בדיקת תוכן הטוקן
-      const response =  axios.post('https://foirstein-1-back.onrender.com/api/validate-token', { token });
+      const response =  axios.post('https://foirstein-1-back-83qd.onrender.com/api/validate-token', { token });
     
       console.log("token data===>",response.data)
       console.log(`the roll from token`,decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']);
